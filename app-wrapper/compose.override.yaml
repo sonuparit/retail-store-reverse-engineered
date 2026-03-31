@@ -1,0 +1,63 @@
+networks:
+  main-app-net:
+    external: false
+
+services:
+  ui:
+    environment:
+      - RETAIL_UI_ENDPOINTS_CATALOG=http://catalog:8080
+      - RETAIL_UI_ENDPOINTS_CARTS=http://carts:8080
+      - RETAIL_UI_ENDPOINTS_ORDERS=http://orders:8080
+      - RETAIL_UI_ENDPOINTS_CHECKOUT=http://checkout:8080
+    networks:
+      - main-app-net
+    depends_on:
+      catalog:
+        condition: service_healthy
+        restart: true
+      cart:
+        condition: service_healthy
+        restart: true
+      orders:
+        condition: service_healthy
+        restart: true
+      checkout:
+        condition: service_healthy
+        restart: true
+
+  catalog:
+    ports: !override []
+    networks:
+      - main-app-net
+  catalog-db:
+    networks:
+      - main-app-net
+  cart:
+    ports: !override []
+    networks:
+      - main-app-net
+  carts-db:
+    networks:
+      - main-app-net
+  orders:
+    ports: !override []
+    networks:
+      - main-app-net
+  orders-db:
+    ports: !override []
+    networks:
+      - main-app-net
+  checkout:
+    ports: !override []
+    networks:
+      - main-app-net
+    environment:
+      - RETAIL_CHECKOUT_ENDPOINTS_ORDERS=http://orders:8080
+  checkout-redis:
+    ports: !override []
+    networks:
+      - main-app-net
+  rabbitmq:
+    ports: !override []
+    networks:
+      - main-app-net
