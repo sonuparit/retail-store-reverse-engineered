@@ -17,12 +17,12 @@ Deploy and manage the application in a Kubernetes cluster.
 4. **🏗️ Infrastructure as Code (IaC):**  
 Provision infrastructure using Terraform for automated and consistent environments.
 
-5. **🔁 CI/CD Implementation:**  
+5. **ↈ CI/CD Implementation:**  
 Build complete CI/CD pipelines using:
     - GitOps approach (ArgoCD)
     - Jenkins approach (traditional pipeline)  
 
-6. **🚀 GitOps with ArgoCD:**
+6. **🔁 GitOps with ArgoCD:**
 Automate Kubernetes deployments using ArgoCD for continuous delivery.
 
 7. **📧 Notification System:**  
@@ -45,30 +45,30 @@ Enable complete infrastructure and application setup with a single command:
 
 *The focus is on mastering end-to-end system design, automation, and scalability, while developing the mindset required to design, build, and operate reliable, cloud-native systems. Rather than just learning tools, the goal is to understand the **"Why?"** behind each decision—covering architecture, automation, deployment strategies, and observability within a production-like environment.*
 
-## Why I Chose This Project
+## 📌 Why I Chose This Project
 
-### This project is intentionally outside my comfort zone.
+### 🔗 This project is intentionally outside my comfort zone.
 
 I am primarily proficient in Python and JavaScript, and deploying applications using these technologies is something I can do with confidence. However, I wanted to challenge myself with something more complex and unfamiliar.
 
-**That’s why I chose a different technology with microservices architecture.**
+**💡 That’s why I chose a different technology with microservices architecture.**
 
 ---
 
-### At the time of starting this project:
+### 📌 At the time of starting this project:
 
 - I had no prior experience with Java
 - The system consists of 5 independent microservices  
 - The architecture is significantly more complex than typical projects
 
-**Instead of avoiding this gap, I decided to use it as an opportunity to grow.**
+**🧩 Instead of avoiding this gap, I decided to use it as an opportunity to grow.**
 
 ---
 
-### This project represents my ability to:
+### 🧠 This project represents my ability to:
 
 - Learn unfamiliar technologies quickly  
 - Understand and work with complex distributed systems  
 - Step out of my comfort zone and take on real-world challenges
 
-**For me, this is not just about building a project — it’s about building the mindset required for production-grade DevOps engineering.**
+**🌱 For me, this is not just about building a project — it’s about building the mindset required for production-grade DevOps engineering.**
