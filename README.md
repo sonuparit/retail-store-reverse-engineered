@@ -73,8 +73,10 @@ I am primarily proficient in Python and JavaScript, and deploying applications u
 
 **🌱 For me, this is not just about building a project — it’s about building the mindset required for production-grade DevOps engineering.**
 
-## My Implementations
+## 🧠 My Key Learnings & Implementation
 
-[Containerzation with Docker](./screenshots/docker/README.md)
+ - ### [🏗️ App Architecture](./docs/architecture/README.md)
 
-[Running app with docker-compose](./screenshots/docker-compose/README.md)
+- ### [📦 Containerzation with Docker](./docs/docker/README.md)
+
+- ### [🐳 Running app with docker-compose](./docs/docker-compose/README.md)
