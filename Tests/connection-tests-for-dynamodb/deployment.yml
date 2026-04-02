@@ -1,0 +1,132 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cart
+  namespace: retail-app
+  labels:
+    app: cart
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cart
+  template:
+    metadata:
+      labels:
+        app: cart
+    spec:
+
+      # serviceAccountName: cart-service-account
+      containers:
+      - name: cart
+        image: sonuparit/retail-app:cart
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+
+        # resources to limit the pod
+        resources:
+          limits:
+            cpu: 256m
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 256Mi
+
+        # Security Context maps to cap_drop, cap_add, and read_only
+        securityContext:
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          capabilities:
+            drop:
+              - ALL
+            add:
+              - NET_BIND_SERVICE
+              
+        # Environment variables
+        env:
+        - name: SERVER_TOMCAT_ACCESSLOG_ENABLED
+          value: "true"
+
+        # Change provider from 'in-memory' to 'dynamodb'
+        - name: RETAIL_CART_PERSISTENCE_PROVIDER
+          value: "dynamodb"
+
+        # Map the table name from your YAML (retail.cart.persistence.dynamodb.table-name)
+        - name: RETAIL_CART_PERSISTENCE_DYNAMODB_TABLE_NAME
+          value: "Items"
+
+        # Disable 'create-table' for real AWS (handled by your infra/terraform)
+        - name: RETAIL_CART_PERSISTENCE_DYNAMODB_CREATE_TABLE
+          value: "false"
+
+        # Remove or leave empty the endpoint to use the default AWS SDK resolution
+        - name: RETAIL_CART_PERSISTENCE_DYNAMODB_ENDPOINT
+        # value: "https://dynamodb.ap-south-1.amazonaws.com" 
+          value: ""
+
+        # The SDK needs a region even if not in application.yml
+        # Standard AWS SDKs look for this specific env var name.
+        - name: AWS_REGION
+          value: "ap-south-1" 
+
+        # Credentials (Using Secrets)
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: aws-creds
+              key: key      # key
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aws-creds
+              key: secret   # dummy
+
+        # Healthcheck maps to LivenessProbe
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 30 # Increased to give Java time to boot
+
+
+        # livenessProbe:
+        #   exec:
+        #     command: ["sh", "-c", "curl -f http://localhost:8080/actuator/health || exit 1"]
+        #   initialDelaySeconds: 15
+        #   periodSeconds: 10
+        #   timeoutSeconds: 10
+        #   failureThreshold: 3
+
+        # tmpfs mount
+        volumeMounts:
+        - name: tmp-volume
+          mountPath: /tmp
+      volumes:
+      - name: tmp-volume
+        emptyDir:
+          medium: Memory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: carts
+spec:
+  selector:
+    app: cart
+  ports:
+    - protocol: TCP
+      port: 8080        # External port
+      targetPort: 8080  # Internal container port
+  type: ClusterIP
+
+---
+
+# apiVersion: v1
+# kind: ServiceAccount
+# metadata:
+#   name: cart-service-account
+#   annotations:
+#     arn:aws:dynamodb:ap-south-1:623381633192:table/Items
