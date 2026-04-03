@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: orders-db
+  namespace: retail-app
+  labels:
+    app: orders-db
+spec:
+  serviceName: "orders-db"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orders-db
+  template:
+    metadata:
+      labels:
+        app: orders-db
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:16.1
+        env:
+        - name: POSTGRES_DB
+          value: "orders"
+        - name: POSTGRES_USER
+          value: "orders_user"
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: retail-secrets
+              key: db-password
+        ports:
+        - containerPort: 5432
+        readinessProbe:
+          exec:
+            command: ["pg_isready", "-d", "orders", "-U", "orders_user"]
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          
+        volumeMounts:
+        - name: pg-storage
+          mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+  - metadata:
+      name: pg-storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: standard # ebs-retain-sc
+      resources:
+        requests:
+          storage: 5Gi
+          
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: orders-db
+  namespace: retail-app
+  labels:
+    app: orders-db
+spec:
+  ports:
+  - port: 5432
+    name: postgres
+  clusterIP: None   # headless
+  selector:
+    app: orders-db

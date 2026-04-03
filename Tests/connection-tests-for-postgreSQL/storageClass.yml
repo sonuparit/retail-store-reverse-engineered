@@ -1,0 +1,10 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: ebs-retain-sc
+provisioner: ebs.csi.aws.com
+reclaimPolicy: Retain      # CRITICAL: Keeps the AWS volume alive after cluster deletion
+volumeBindingMode: WaitForFirstConsumer
+parameters:
+  type: gp3                # Latest generation SSD (cheaper and faster)
+  encrypted: "false"

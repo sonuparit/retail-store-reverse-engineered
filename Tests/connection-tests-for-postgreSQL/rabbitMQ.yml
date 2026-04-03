@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: StatefulSet # Changed from Deployment for data stability
+metadata:
+  name: rabbitmq
+  namespace: retail-app
+spec:
+  serviceName: "rabbitmq"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+      - name: rabbitmq
+        image: rabbitmq:3-management
+        env:
+        - name: RABBITMQ_DEFAULT_USER
+          value: "rabbitmq"
+        - name: RABBITMQ_DEFAULT_PASS
+          valueFrom:
+            secretKeyRef:
+              name: retail-secrets
+              key: db-password
+        ports:
+        - containerPort: 5672
+        - containerPort: 15672
+        # --- Liveness and Readiness Probes ---
+
+        livenessProbe:
+          exec:
+            command:
+            - rabbitmq-diagnostics
+            - -q
+            - check_port_connectivity
+          initialDelaySeconds: 60
+          periodSeconds: 15
+          timeoutSeconds: 5
+        readinessProbe:
+          exec:
+            command:
+            - rabbitmq-diagnostics
+            - -q
+            - check_local_alarms
+          initialDelaySeconds: 20
+          periodSeconds: 10
+          timeoutSeconds: 5
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/rabbitmq/rabbitmq.conf
+          subPath: rabbitmq.conf
+      volumes:
+      - name: config-volume
+        configMap:
+          name: rabbitmq-config
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq
+  namespace: retail-app
+spec:
+  selector:
+    app: rabbitmq
+  ports:
+  - name: amqp
+    port: 5672
+    targetPort: 5672
+  - name: management
+    port: 15672 # Standardized this to match targetPort
+    targetPort: 15672
