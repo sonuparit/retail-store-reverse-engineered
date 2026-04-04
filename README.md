@@ -80,3 +80,5 @@ I am primarily proficient in Python and JavaScript, and deploying applications u
 - ### [📦 Containerzation with Docker](./docs/docker/README.md)
 
 - ### [🐳 Running app with docker-compose](./docs/docker-compose/README.md)
+
+- ### [⚡ Real DynamoDB integration for cart service](./Tests/connection-tests-for-dynamodb/README.md)
