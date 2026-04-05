@@ -1,6 +1,6 @@
 services:
   checkout:
-    image: sonuparit/retail-app:checkout
+    image: sonuparit/retail-app:checkout-small
     hostname: checkout
     restart: always
     cap_drop:

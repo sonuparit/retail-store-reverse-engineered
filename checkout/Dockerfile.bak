@@ -7,13 +7,13 @@ RUN yarn install --frozen-lockfile
 RUN yarn build
 
 # --- Stage 2: Final Runtime ---
-FROM public.ecr.aws/amazonlinux/amazonlinux:2023-minimal
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023
 
-RUN microdnf --setopt=install_weak_deps=0 install -y \
+RUN dnf --setopt=install_weak_deps=False install -q -y \
     nodejs20 \
     shadow-utils \
     && \
-    microdnf clean all
+    dnf clean all
 
 RUN alternatives --install /usr/bin/node node /usr/bin/node-20 90
 

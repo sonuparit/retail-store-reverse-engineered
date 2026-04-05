@@ -1,6 +1,6 @@
 services:
   cart:
-    image: sonuparit/retail-app:cart
+    image: sonuparit/retail-app:cart-small
     hostname: carts
     restart: always
     cap_drop:

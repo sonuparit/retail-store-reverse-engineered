@@ -1,16 +1,16 @@
 # ----Order Docker File----
 # --- Stage 1: Build Stage ---
-FROM public.ecr.aws/amazonlinux/amazonlinux:2023-minimal AS build-env
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023 as build-env
 
 # Install only what's needed to build
-RUN microdnf --setopt=install_weak_deps=0 install -y \
+RUN dnf --setopt=install_weak_deps=False install -q -y \
     maven \
     java-21-amazon-corretto-headless \
     which \
     tar \
     gzip \
     && \
-    microdnf clean all
+    dnf clean all
 
 VOLUME /tmp
 WORKDIR /
@@ -30,16 +30,17 @@ RUN ./mvnw -DskipTests package -q && \
     mv /target/orders-0.0.1-SNAPSHOT.jar /app.jar
 
 # --- Stage 2: Final Runtime ---
-FROM public.ecr.aws/amazonlinux/amazonlinux:2023-minimal
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023
 
-RUN microdnf --setopt=install_weak_deps=0 install -y \
+RUN dnf --setopt=install_weak_deps=False install -q -y \
     java-21-amazon-corretto-headless \
     shadow-utils \
-    && microdnf clean all
+    && dnf clean all && \
+    rm -rf /var/cache/dnf
 
 # use curl-full to use "telnet://" scheme
-# RUN dnf -q -y swap libcurl-minimal libcurl-full \
-#    && dnf -q -y swap curl-minimal curl-full
+RUN dnf -q -y swap libcurl-minimal libcurl-full \
+    && dnf -q -y swap curl-minimal curl-full
 
 ENV APPUSER=appuser
 ENV APPUID=1000

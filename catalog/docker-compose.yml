@@ -1,6 +1,6 @@
 services:
   catalog:
-    image: sonuparit/retail-app:catalog
+    image: sonuparit/retail-app:catalog-small
     hostname: catalog
     depends_on:
       catalog-db:

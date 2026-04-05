@@ -1,6 +1,6 @@
 services:
   orders:
-    image: sonuparit/retail-app:orders
+    image: sonuparit/retail-app:orders-small
     hostname: orders
     restart: always
     cap_drop:

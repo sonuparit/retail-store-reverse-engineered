@@ -1,13 +1,13 @@
 # ----Catalog Docker File----
 # --- Stage 1: Build Stage ---
-FROM public.ecr.aws/amazonlinux/amazonlinux:2023-minimal AS build-env
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023 AS build-env
 
 # Install only what's needed to build
-RUN microdnf --setopt=install_weak_deps=0 install -y \
+RUN dnf --setopt=install_weak_deps=False install -q -y \
     git \
     golang \
     && \
-    microdnf clean all
+    dnf clean all
 
 RUN mkdir -p "${GOPATH}/src" "${GOPATH}/bin" /appsrc
 
@@ -23,16 +23,16 @@ COPY . .
 RUN go build -o main main.go
 
 # --- Stage 2: Final Runtime ---
-FROM public.ecr.aws/amazonlinux/amazonlinux:2023-minimal
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023
 
 ENV APPUSER=appuser
 ENV APPUID=1000
 ENV APPGID=1000
 
-RUN microdnf --setopt=install_weak_deps=0 install -y \
+RUN dnf --setopt=install_weak_deps=False install -q -y \
     shadow-utils \
     && \
-    microdnf clean all
+    dnf clean all
 
 RUN useradd \
     --home "/app" \

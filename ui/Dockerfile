@@ -1,16 +1,16 @@
 # ----Ui Docker File----
 # --- Stage 1: Build Stage ---
-FROM public.ecr.aws/amazonlinux/amazonlinux:2023 AS build-env
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023-minimal AS build-env
 
 # Install only what's needed to build
-RUN dnf --setopt=install_weak_deps=False install -q -y \
+RUN microdnf --setopt=install_weak_deps=0 install -y \
     maven \
     java-21-amazon-corretto-headless \
     which \
     tar \
     gzip \
     && \
-    dnf clean all
+    microdnf clean all
 
 VOLUME /tmp
 WORKDIR /
@@ -30,13 +30,13 @@ RUN ./mvnw -DskipTests package -q && \
     mv /target/ui-0.0.1-SNAPSHOT.jar /app.jar
 
 # --- Stage 2: Final Runtime ---
-FROM public.ecr.aws/amazonlinux/amazonlinux:2023
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023-minimal
 
-RUN dnf --setopt=install_weak_deps=False install -q -y \
+RUN microdnf --setopt=install_weak_deps=0 install -y \
     java-21-amazon-corretto-headless \
     shadow-utils \
-    && dnf clean all && \
-    rm -rf /var/cache/dnf
+    && microdnf clean all && \
+    rm -rf /var/cache/microdnf
 
 ENV APPUSER=appuser
 ENV APPUID=1000

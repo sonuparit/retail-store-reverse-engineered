@@ -60,7 +60,7 @@ spec:
 
         # Disable 'create-table' for real AWS (handled by your infra/terraform)
         - name: RETAIL_CART_PERSISTENCE_DYNAMODB_CREATE_TABLE
-          value: "false"
+          value: "true"
 
         # Remove or leave empty the endpoint to use the default AWS SDK resolution
         - name: RETAIL_CART_PERSISTENCE_DYNAMODB_ENDPOINT
@@ -113,6 +113,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: carts
+  namespace: retail-app
 spec:
   selector:
     app: cart
