@@ -54,13 +54,13 @@ spec:
         - name: RETAIL_CART_PERSISTENCE_PROVIDER
           value: "dynamodb"
 
-        # Map the table name from your YAML (retail.cart.persistence.dynamodb.table-name)
+        # Map the table name from your YAML (retail.cart.persistence.dynamodb.table.name)
         - name: RETAIL_CART_PERSISTENCE_DYNAMODB_TABLE_NAME
           value: "Items"
 
         # Disable 'create-table' for real AWS (handled by your infra/terraform)
         - name: RETAIL_CART_PERSISTENCE_DYNAMODB_CREATE_TABLE
-          value: "true"
+          value: "false"
 
         # Remove or leave empty the endpoint to use the default AWS SDK resolution
         - name: RETAIL_CART_PERSISTENCE_DYNAMODB_ENDPOINT
@@ -113,7 +113,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: carts
-  namespace: retail-app
 spec:
   selector:
     app: cart

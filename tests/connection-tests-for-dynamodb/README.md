@@ -2,7 +2,7 @@
 
 ## 📌 Overview
 
-This project demonstrates the transition from in-memory mock storage to
+This section of project demonstrates the transition from in-memory mock storage to
 a real AWS DynamoDB integration within a microservices-based retail
 application.
 
