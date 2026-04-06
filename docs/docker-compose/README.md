@@ -95,11 +95,17 @@ docker ps
 
 ### 5. Runtime Validation  
 **Verified:**
-- Service health and communication  
+- Service health and communication 
+
+    ![alt text](screenshots/screenshot03.png)
+
 - Application functionality through end-to-end testing  
+
+    ![alt text](./screenshots/app.gif)
+
 - Stability of containerized environment  
 
-![alt text](./screenshots/app.gif)
+    ![alt text](screenshots/performance.gif)
 
 ---
 
