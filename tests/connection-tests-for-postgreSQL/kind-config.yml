@@ -5,5 +5,5 @@ nodes:
 - role: control-plane
 - role: worker
   extraMounts:
-  - hostPath: /mnt/k8s-data    # The path on your EC2
+  - hostPath: /mnt/postgre-data    # The path on my EC2
     containerPath: /var/local-path-provisioner # The path inside the Kind node

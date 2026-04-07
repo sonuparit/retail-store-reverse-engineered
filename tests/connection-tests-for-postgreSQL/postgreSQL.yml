@@ -36,10 +36,11 @@ spec:
             command: ["pg_isready", "-d", "orders", "-U", "orders_user"]
           initialDelaySeconds: 10
           periodSeconds: 10
-          
+        
         volumeMounts:
         - name: pg-storage
           mountPath: /var/lib/postgresql/data
+ 
   volumeClaimTemplates:
   - metadata:
       name: pg-storage

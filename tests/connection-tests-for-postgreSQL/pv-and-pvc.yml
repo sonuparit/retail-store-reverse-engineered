@@ -59,6 +59,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  # name: pg-storage-claim
   name: pg-storage-orders-db-0
   # [VolumeClaimTemplate Name]-[StatefulSet Name]-[Pod Index]
   namespace: retail-app
