@@ -97,4 +97,4 @@
 ### 4. ☸️ Kubernetes Deployment (in parts ↴)
 
 - **4a. [⚡ Real DynamoDB integration for cart service](./tests/connection-tests-for-dynamodb/README.md)**
-- **4b. [🐘 PV and PVC for PostgreSQL database service](./tests/connection-tests-for-dynamodb/README.md)**
+- **4b. [🐘 PV and PVC for PostgreSQL database service](./tests/connection-tests-for-postgreSQL/README.md)**

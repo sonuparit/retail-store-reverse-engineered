@@ -18,7 +18,7 @@
 
 *This section of project demonstrates the transition from in-memory mock storage to a **`real AWS DynamoDB integration`** within a microservices-based retail application.*
 
-*The goal is to move closer to a production-ready architecture by replacing simulated components with actual cloud services, however I got several **`errors`** in the process, but finally I was able to **`fix them all`**.*
+*The goal is to move closer to a production-ready architecture by replacing simulated components with actual cloud services, however I got several **`errors`** in the process, but finally I **`fixed them all`**.*
 
 ------------------------------------------------------------------------
 
