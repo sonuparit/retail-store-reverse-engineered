@@ -6,19 +6,17 @@
 - **[Key Implementations](#-key-implementations)**
 - **[Challenges & Solutions](#️-challenges--solutions)**
 - **[Outcome](#-outcome)**
-- **[Source Code Analysis](#️️-source-code-analysis)**
 - **[Architectural Decision Record (ADR)](#️-architectural-decision-record--adr)**
 - **[Key Learnings](#-key-learnings)**
-- **[Tech Stack](#-tech-stack)**
 - **[Next Steps](#-next-steps)**
 - **[Extra Screenshots](#-extra-screenshots)**
 
 
 ## 📌 Overview
 
-*This section of project demonstrates the transition from in-memory mock storage to a **`real persistent PostgreSQL Database`** within a microservices-based retail application.*
+*This section of project demonstrates the **`transition from in-memory mock storage to a real persistent PostgreSQL Database`** within a microservices-based retail application.*
 
-*The goal is to move closer to a production-ready architecture by replacing simulated components with actual cloud services, however I got several **`errors`** in the process, but finally I was able to **`fix them all`**.*
+*The **`goal is to move closer to a production-ready architecture`** by replacing simulated components with actual cloud services, however I **`got several errors`** in the process, but finally I **`fixed them all`**.*
 
 ------------------------------------------------------------------------
 
@@ -26,154 +24,130 @@
 
 -   *Created all resources for **`Orders`** service*
 
--   *Analyzed service dependencies and database requirements (**`application.yml`**)*
+    ![alt text](screenshots/screenshot20.png)
 
-    ![alt text](screenshots/Screenshot08.png)
+-   *Replaced in-memory / local postgreSQL image storage with **`persistent PostgreSQL database storage`***
 
--   *Replaced in-memory storage with **`AWS DynamoDB`***
+    ![alt text](screenshots/screenshot15.png)
 
-    ![alt text](screenshots/screenshot05.png)
+-   *Attached EBS volume to **`persist the data after cluster dispose`** using **`PV and PVC`***
 
--   *Configured **`IAM user`** with appropriate DynamoDB permissions (**`temporary full access for tests`**)*
+    ![alt text](screenshots/screenshot02.png)
 
-    ![alt text](screenshots/Screenshot04.png)
+    ![alt text](screenshots/screenshot13.png)
 
--   *Implemented secure access using **`AWS Access Keys`** (lab setup using **`K8s secret`**)*
+    ![alt text](screenshots/screenshot14.png)
+
+-   *Implemented correct **`fsgroup`** permission for **`PostgreSQL container`**) to have read / write access to EBS volume*
+
+    ![alt text](screenshots/screenshot19.png)
+
+-   *Implemented **`PGDATA`** env variable variable to mitigate **`PostgreSQL initdb error`**)*
 
 ------------------------------------------------------------------------
 
 ## ⚠️ Challenges & Solutions
 
-**Issue:**
+### Problem:
 
-*The application failed initially due to a **`missing DynamoDB index`** required by the cart service.*
+***PostgreSQL Initialization Failure on EBS Volumes:***\
+*While implementing persistent storage for the orders-db service using AWS EBS volumes, the PostgreSQL container failed to initialize with the following error:*
 
-![alt text](screenshots/screenshot11.png)
+```
+initdb: error: directory "/var/lib/postgresql/data" exists but is not empty (lost+found found)
+```
 
-**Solution:**
-- *Investigated service logic and query patterns*
+![alt text](screenshots/screenshot17.png)
 
-    ![alt text](screenshots/screenshot09.png)
+- ***Technical Root Cause:***\
+*Block Storage Metadata: AWS EBS volumes (ext4/xfs) automatically include a lost+found directory at the mount point root.*
 
-- Searched AI for "what can be the partition key"
+- ***PostgreSQL Pickiness:***\
+*The initdb utility requires a completely empty directory to initialize a new database cluster to prevent accidental data overwrites.*
 
-    ![alt text](screenshots/screenshot24.png)
+- ***Permission Mismatch:***\
+*By default, EBS volumes are mounted with root ownership, preventing the postgres user (UID 999) from creating sub-directories.*
 
-- *Identified the required index structure by verifying it from source code*
+### The Engineered Solution:
 
-    ![alt text](screenshots/screenshot10.png)
-    But this source code created a concern for my project goal [read here](#️️-source-code-analysis)
+***I resolved this by implementing a two-tier configuration strategy in the Kubernetes `StatefulSet`:***
 
-- *Designed and created the missing index*
+1. ***Decoupling Storage Root from Data Root (`PGDATA`):***\
+*Instead of using the volume mount point root as the data directory, I utilized the PGDATA environment variable to point PostgreSQL to a **`sub-directory:`***
 
-    ![alt text](screenshots/screenshot07.png)
+    - ***Mount Path**: **`/var/lib/postgresql/data`** (Points to the EBS hardware)*
+
+        ![alt text](screenshots/screenshot18.png)
+
+    - ***PGDATA Path**: **`/var/lib/postgresql/data/pgdata`** (A clean sub-folder managed by Postgres)*
+
+    ***This bypasses the lost+found folder conflict while ensuring all data still persists on the EBS volume.***
+
+    ![alt text](screenshots/screenshot11.png)
+
+2. ***Automated Volume Ownership (`fsGroup`):***\
+*To handle the permission handshake between the AWS infrastructure and the Linux container, I configured a **`Pod-level Security Context`**:*
+
+    ```yml
+    securityContext:
+        fsGroup: 999
+    ```
+
+    ![alt text](screenshots/screenshot04.png)
+
+    ***This instructs Kubernetes to recursively change the ownership of the EBS volume to the postgres group ID upon attachment, ensuring the database process has the necessary read/write privileges without manual intervention.***
 
 ------------------------------------------------------------------------
 
 ## ✅ Outcome
 
--   Successfully integrated DynamoDB with the cart service
+***`Zero-Touch Persistence`**:*\
+*Successfully integrated AWS EBS with a StatefulSet, ensuring database records survive Pod restarts or node failures without manual data recovery.*
 
-    ![alt text](screenshots/screenshot23.png)
+***`Resolved Storage Collisions`**:*\
+*Automated the bypass of the lost+found block storage error by reconfiguring the PGDATA path, allowing for seamless automated database initialization.*
 
--   Achieved a **fully functional, cloud-backed microservice**
--   Improved system reliability and realism for production scenarios
+***`Infrastructure-as-Code Security`**:*\
+*Implemented Pod-level Security Contexts (fsGroup), enforcing the **`Principle of Least Privilege`** by ensuring the container only accesses necessary storage volumes without requiring root permissions.*
 
-------------------------------------------------------------------------
+***`Production-Ready Stability`**:*\
+*Achieved a stable "Ready" state for the retail-app data tier, handling the complex handshake between AWS infrastructure and Kubernetes storage primitives.*
 
-## 🕵️‍♂️ Source Code Analysis
-
-**The problem:**
-- *Application is never meant to use real dynamodb from AWS, it is designed to use dynamodb in two distinct ways:*
-    1. *`"Dynamodb In-memory storage"`*
-    2. *`"Dynamodb local image"`*
-
-- ***Env variable's critical role***
-
-    ![alt text](screenshots/screenshot12.png)
-
-    - *If value is set to **`true`:***\
-    **The application by itself creates/deletes the table**
-
-    ![alt text](screenshots/screenshot15.png)
-
-    - *If value is set to **`false`:***\
-    **The application expects the table with right indexing value already exist.**
+![alt text](screenshots/screenshot25.png)
 
 ------------------------------------------------------------------------
 
 ## 🏛️ Architectural Decision Record 📝 (ADR)
 
-### If `CREATE_TABLE` == `true`:
+### Rabbitmq:
 
-**`Advantages`**:
-1. *It's great for local development and testing.*
-
-**`Disadvantages`**:
-
-1. ***`Race Condition`:** Scaling to multiple replicas in K8s would trigger a "race" where one pod might delete the table while another is trying to create/write to it.*
-
-2. ***`Data Loss`**: The delete table call ensures that data is ephemeral. For a retail app, cart persistence is critical for conversion.*
-
-3. ***`Violation of Principal of Least Previledges (PoLP)`**: For the app to run this, the IAM Role needs DeleteTable and CreateTable permissions. In production, an app should only have Read/Write access.*
-
-4. ***`Infrastructure Drift`**: By creating the table inside the app, Terraform loses the "Source of Truth." The infrastructure becomes "invisible" to management tools.*
-
-### If `CREATE_TABLE` == `false`:
-
-**`Advantages`**:
-*All disadvantages from above becomes advantage.*
-
-1. ***`No Infrastructure Drift`**: By creating the table through Terraform, We maintain the "Single Source of Truth.*
-
-2. ***`No Race Condition`:** Scalling the app will not trigger creation/deletion of table. It just needs the table to be present.*
-
-3. ***`No Data Loss`**: Table never deletes upon scalling or creation of pod. So, no data loss.*
-
-4. ***`No Violation of PoLP`**: App does not need create or delete table permission, It needs only read and write access.*
-
-**`Disadvantages`**:
-
-1. *It requires the table to be present. So, either have to create the table manually or provisioned it through terraform, before app even starts*
+*From the very start of this project. My focus was to achieve deep proficiency in **`Docker`**, **`IaC (Terraform)`**, **`Kubernetes orchestration`**, **`CI/CD pipeline`**, **`Monitoring`** and **`Automation`**. By removing the message broker, I reduced unnecessary stateful complexity, allowing me to focus entirely on my initial goal*.
 
 ### The Decicision:
-*I chose to keep it **`false`** to simulate real-world scenarios and **`Focused on making the system production-safe rather than just functional`.***
+*I chose to keep the application logic synchronous to my **`GOAL`** to ensure the **`"one click - full automation"`** remains the star of the show.*
 
 ------------------------------------------------------------------------
 
 ## 💡 Key Learnings
 
-This implementation reinforced several core DevOps principles:
+*Moving from a stateless mock environment to a persistent production-grade architecture taught me that the **`"devil is in the details"`** of the infrastructure handshake. Here are my core takeaways:*
 
-**1. Bridging the gap between development and production reality**
-- *Moving from in-memory mocks to real cloud services exposed hidden architectural assumptions and forced alignment with real-world constraints.*
+**1. Decoupling Storage from Logic**
+- *I learned that managing state in Kubernetes isn't just about attaching a disk.Iit’s about managing the lifecycle of data. **`Implementing PVs and PVCs taught me how to abstract physical storage (AWS EBS) from the application pods`**, ensuring data outlives the compute.*
 
-**2. Infrastructure must be treated as a first-class concern**
-- *Delegating resource creation to application code leads to **infrastructure drift**, **lack of visibility**, and **poor control** — reinforcing the importance of tools like **`Terraform`** as the single source of truth is invaluable.*
+**2. Navigating the "Impedance Mismatch" of Cloud Storage:**
+- *The **`lost+found error`** was a masterclass in how Linux filesystems and database engines interact. I learned that production-ready configurations require a deep understanding of how tools like **`initdb`** behave, leading me to use **`PGDATA`** sub-directories as a standard practice for clean initializations.*
 
-**3. Designing for distributed systems requires careful state management**
-- *Decisions like table creation inside services can introduce **`race conditions`**, especially in horizontally scaled Kubernetes environments.*
+**3. Security-First Infrastructure:**
+- *My experience with fsGroup reinforced the importance of the **`Principle of Least Privilege`**. I realized that solving **"Permission Denied"** errors by using **chmod 777** is a debt-heavy shortcut. Instead, I focused on using Kubernetes Security Contexts to handle volume ownership gracefully and securely.*
 
-**4. Security is an architectural decision, not an afterthought**
-- *Implementing DynamoDB access highlighted the importance of **Principle of Least Privilege** **`(PoLP)`** and avoiding over-permissioned IAM roles.*
+**4. StatefulSet Nuances**
+- *Working with PostgreSQL in K8s highlighted **`why StatefulSets are preferred over Deployments for databases`**. I gained a better grasp of stable network identifiers and the necessity of ordered, graceful deployments when dealing with persistent data.*
 
-**5. Environment-driven behavior can significantly alter system behavior**
-- *A single environment variable (CREATE_TABLE) changed the system from **self-managing** to **`production-ready`**, emphasizing the need for clear configuration strategies.*
+**6. Production-Oriented Thinking over Local Success**
+- *Transitioned from **“it works locally”** to **`“it survives restarts, failures, and redeployments,”`** focusing on durability, reproducibility, and zero-touch recovery.*
 
-**6. Understanding service internals is critical for effective integration**
-- *Debugging the missing index required deep analysis of source code and query patterns — not just configuration changes.*
-
-**7. Production readiness is about predictability, not convenience**
-- *Choosing pre-provisioned infrastructure over auto-creation ensured **`stability, persistence, and reliability.`***
-
-------------------------------------------------------------------------
-
-## 🛠 Tech Stack
-
--   **AWS DynamoDB**
--   **IAM (Access Management)**
--   **Microservices Architecture**
--   **Docker / Containerized Services**
+![alt text](screenshots/screenshot28.png)
 
 ------------------------------------------------------------------------
 
@@ -184,19 +158,39 @@ This implementation reinforced several core DevOps principles:
 3. *Implement **`CI/CD`** pipeline*
 4. *Add **`email notification`** system*
 5. *Add monitoring (**`Prometheus + Grafana`**)*
-6. *Full Automation via one command **`terraform apply`** on **`EKS`***
+6. *Full Automation via one command **`terraform apply`** on **`AWS EKS`***
 
 
 ## 📸 Extra Screenshots
 
-- *Creation of KinD Cluster for local development*
-
-    ![alt text](screenshots/screenshot02.png)
-
-- *Creation of all K8s resources*
+- *Setting up the EBS File system*
 
     ![alt text](screenshots/screenshot03.png)
 
-- *Local port-forwarding*
+- *Kind Config to mount storage to EC2*
 
-    ![alt text](screenshots/screenshot14.png)
+    ![alt text](screenshots/screenshot07.png)
+
+- *Mounting EBS to EC2*
+
+    ![alt text](screenshots/screenshot08.png)
+
+- *Creating KinD cluster*
+
+    ![alt text](screenshots/screenshot16.png)
+
+- *Running orders service on K8s*
+
+    ![alt text](screenshots/screenshot23.png)
+
+- *Successful implementation of orders service*
+
+    ![alt text](screenshots/screenshot25.png)
+
+- *Persisted PostgreSQL data on EBS*
+
+    ![alt text](screenshots/screenshot28.png)
+
+- *Wrapping up the session*
+
+    ![alt text](screenshots/screenshot29.png)
