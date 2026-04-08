@@ -16,10 +16,17 @@ spec:
       labels:
         app: orders-db
     spec:
+      # --- THE PERMISSION FIX ---
+      securityContext:
+        fsGroup: 999
       containers:
       - name: postgres
         image: postgres:16.1
         env:
+        # variable to instruct postgre to write to the specific path
+        # if path does not exist it creates it automatically
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
         - name: POSTGRES_DB
           value: "orders"
         - name: POSTGRES_USER
