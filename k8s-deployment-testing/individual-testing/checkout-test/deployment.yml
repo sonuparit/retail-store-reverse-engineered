@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checkout-deployment
+  namespace: retail-app
+  labels:
+    app: checkout
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: checkout
+  template:
+    metadata:
+      labels:
+        app: checkout
+    spec:
+      # Pod-level security settings
+      securityContext:
+        fsGroup: 1000
+      containers:
+      - name: checkout-app
+        image: sonuparit/retail-app:checkout-small
+        
+        # Container-level security settings
+        securityContext:
+          runAsUser: 1000
+          runAsNonRoot: true
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+            add: ["NET_BIND_SERVICE"]
+            
+        resources:
+          limits:
+            cpu: 256m
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 256Mi
+        env:
+          
+        # optional default="in-memory"
+        # - name: RETAIL_CHECKOUT_PERSISTENCE_PROVIDER
+        #   value: "in-memory"
+          
+        # optional default=""
+        # - name: RETAIL_CHECKOUT_PERSISTENCE_REDIS_URL
+        #   value: ""
+          
+        # optional default=""
+        # - name: RETAIL_CHECKOUT_PERSISTENCE_REDIS_READER_URL
+        #   value: ""
+          
+        # optional default=""
+        # - name: RETAIL_CHECKOUT_ENDPOINTS_ORDERS
+        #   value: ""
+          
+        # optional default=""
+        # - name: RETAIL_CHECKOUT_SHIPPING_NAME_PREFIX
+        #   value: ""
+        
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        volumeMounts:
+        - mountPath: /tmp
+          name: tmp-volume
+      volumes:
+      - name: tmp-volume
+        emptyDir:
+          medium: Memory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: checkout-service
+  namespace: retail-app
+spec:
+  selector:
+    app: checkout
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080

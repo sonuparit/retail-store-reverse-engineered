@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-deployment
+  namespace: retail-app
+  labels:
+    app: catalog
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: catalog
+  template:
+    metadata:
+      labels:
+        app: catalog
+    spec:
+      # Pod-level security settings
+      securityContext:
+        fsGroup: 1000
+      containers:
+      - name: catalog-app
+        image: sonuparit/retail-app:catalog-small
+        
+        # Container-level security settings
+        securityContext:
+          runAsUser: 1000
+          runAsNonRoot: true
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+            add: ["NET_BIND_SERVICE"]
+            
+        resources:
+          limits:
+            cpu: 256m
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 256Mi
+        env:
+        - name: GIN_MODE
+          value: "release"
+          
+        # optional default="in-memory"
+        # - name: RETAIL_CATALOG_PERSISTENCE_PROVIDER
+        #   value: "in-memory"
+          
+        # optional default="5"
+        # - name: RETAIL_CATALOG_PERSISTENCE_CONNECT_TIMEOUT
+        #   value: ""
+          
+        # optional default="catalogdb"
+        # - name: RETAIL_CATALOG_PERSISTENCE_DB_NAME
+        #   value: "catalogdb"
+          
+        # optional default="catalog_user"
+        # - name: RETAIL_CATALOG_PERSISTENCE_USER
+        #   value: "catalog_user"
+          
+        # important for in-memory=""
+        - name: RETAIL_CATALOG_PERSISTENCE_ENDPOINT
+          value: ""
+        #   value: "catalog-db:3306"
+        
+        # important
+        - name: RETAIL_CATALOG_PERSISTENCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: retail-secrets
+              key: db-password
+        
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        volumeMounts:
+        - mountPath: /tmp
+          name: tmp-volume
+      volumes:
+      - name: tmp-volume
+        emptyDir:
+          medium: Memory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog-service
+  namespace: retail-app
+spec:
+  selector:
+    app: catalog
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080

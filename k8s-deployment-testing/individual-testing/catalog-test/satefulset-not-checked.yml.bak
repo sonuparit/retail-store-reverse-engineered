@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: catalog-db
+  namespace: retail-app
+spec:
+  serviceName: "catalog-db" # Links to a Headless Service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: catalog-db
+  template:
+    metadata:
+      labels:
+        app: catalog-db
+    spec:
+      securityContext:
+        runAsNonRoot: true
+      containers:
+      - name: mariadb
+        image: mariadb:10.9
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: retail-secrets
+              key: db-password
+        - name: MYSQL_DATABASE
+          value: catalogdb
+        - name: MYSQL_ALLOW_EMPTY_PASSWORD
+          value: true
+        - name: MYSQL_USER
+          value: catalog_user
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: retail-secrets
+              key: db-password
+        ports:
+        - containerPort: 3306
+          name: mysql
+        
+        livenessProbe:
+          exec:
+            command: ["mysqladmin", "ping", "-h", "localhost", "-u", "catalog_user", "-p$(MYSQL_PASSWORD)"]
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        
+        volumeMounts:
+        - name: db-data
+          mountPath: /var/lib/mysql # Where MariaDB stores data
+  volumeClaimTemplates:
+  - metadata:
+      name: db-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi # Adjust size as needed
+          
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog-db
+  namespace: retail-app
+spec:
+  clusterIP: None
+  selector:
+    app: catalog-db
+  ports:
+    - port: 3306
+      targetPort: 3306
