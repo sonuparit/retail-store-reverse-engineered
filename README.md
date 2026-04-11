@@ -101,16 +101,16 @@
     - ⚡ Persistent DynamoDB integration for carts service *`(to retain data after cluster disposal)`*\
     [read here](./ind-micro-svc-deploy-test-k8s/cart-dynamodb-test/)
 
-    - 🐘 PV and PVC for PostgreSQL database service *`(to retain data after cluster disposal)`*\
+    - 🐘 PV and PVC for PostgreSQL Orders service *`(to retain data after cluster disposal)`*\
     [read here](./ind-micro-svc-deploy-test-k8s/orders-postgreSQL-test/)
+
+    - Testing Catalog service\
+    [read here](./ind-micro-svc-deploy-test-k8s/catalog-test/)
 
     - Testing Checkout service\
-    [read here](./ind-micro-svc-deploy-test-k8s/orders-postgreSQL-test/)
-
-    - Testing Orders service\
-    [read here](./ind-micro-svc-deploy-test-k8s/orders-postgreSQL-test/)
+    [read here](./ind-micro-svc-deploy-test-k8s/checkout-test/)
 
     - Testing UI service\
-    [read here](./ind-micro-svc-deploy-test-k8s/orders-postgreSQL-test/)
+    [read here](./ind-micro-svc-deploy-test-k8s/ui-test/)
 
 2. [**Full app deployment on K8s via Helm**](./full-app-helm-deploy-k8s/)
