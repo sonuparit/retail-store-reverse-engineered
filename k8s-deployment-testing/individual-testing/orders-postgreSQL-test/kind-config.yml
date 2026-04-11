@@ -1,9 +1,0 @@
-# three node (one workers) cluster config
-kind: Cluster
-apiVersion: kind.x-k8s.io/v1alpha4
-nodes:
-- role: control-plane
-- role: worker
-  extraMounts:
-  - hostPath: /mnt/postgre-data    # The path on my EC2
-    containerPath: /var/local-path-provisioner # The path inside the Kind node

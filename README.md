@@ -96,5 +96,21 @@
 
 ### 4. ☸️ Kubernetes Deployment (in parts ↴)
 
-- **4a. [⚡ Real DynamoDB integration for cart service](./tests/connection-tests-for-dynamodb/README.md)**
-- **4b. [🐘 PV and PVC for PostgreSQL database service](./tests/connection-tests-for-postgreSQL/README.md)**
+1. [**Individual micro service deployment on K8s for operational validation**](./ind-micro-svc-deploy-test-k8s/)
+
+    - ⚡ Persistent DynamoDB integration for carts service *`(to retain data after cluster disposal)`*\
+    [read here](./ind-micro-svc-deploy-test-k8s/cart-dynamodb-test/)
+
+    - 🐘 PV and PVC for PostgreSQL database service *`(to retain data after cluster disposal)`*\
+    [read here](./ind-micro-svc-deploy-test-k8s/orders-postgreSQL-test/)
+
+    - Testing Checkout service\
+    [read here](./ind-micro-svc-deploy-test-k8s/orders-postgreSQL-test/)
+
+    - Testing Orders service\
+    [read here](./ind-micro-svc-deploy-test-k8s/orders-postgreSQL-test/)
+
+    - Testing UI service\
+    [read here](./ind-micro-svc-deploy-test-k8s/orders-postgreSQL-test/)
+
+2. [**Full app deployment on K8s via Helm**](./full-app-helm-deploy-k8s/)

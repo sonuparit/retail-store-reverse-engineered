@@ -12,29 +12,29 @@ Once confident, I moved toward full Kubernetes deployment.
 
 🔗 *Individual service **`testing and configs`** are linked below:*
 
-- ### 1. Carts Service *[(know more)](./individual-testing/cart-dynamodb-test/README.md)*
+- ### 1. Carts Service *[(know more)](./cart-dynamodb-test/README.md)*
 
     - *Integrated **`persistent DynamoDB`** integration for Carts service*
 
 
-- ### 2. Catalog Service *[(know more)](./individual-testing/catalog-test/README.md)*
+- ### 2. Catalog Service *[(know more)](./catalog-test/README.md)*
 
     - *Used **`in-memory storage`** for Catalog service*
 
 
-- ### 3. Checkout Service *[(know more)](./individual-testing/checkout-test/README.md)*
+- ### 3. Checkout Service *[(know more)](./checkout-test/README.md)*
 
     - *Used **`in-memory storage`** for Checkout service*
 
 
-- ### 4. Orders Service *[(know more)](./individual-testing/orders-postgreSQL-test/README.md)*
+- ### 4. Orders Service *[(know more)](./orders-postgreSQL-test/README.md)*
 
     - *Implemeted **`persistent PostgreSQL DB`** integration for Orders service*
 
     - *Deferred **`RabbitMQ`** integration to **`focus on Kubernetes orchestration and Terraform-driven automation`***
 
 
-- ### 5. UI Service *[(know more)](./individual-testing/ui-test/README.md)*
+- ### 5. UI Service *[(know more)](./ui-test/README.md)*
 
     - *Removed **`Kubernetes-specific environment flags`** to keep the application agnostic of its runtime environment*
 
