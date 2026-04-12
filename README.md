@@ -88,29 +88,31 @@
 
 ## 🧠 My Key Learnings & Implementation
 
-### 1. 🏗️ App Architecture [(read here)](./docs/architecture/)
+### 1. 🏗️ App Architecture [(read here)](./my-work/architecture/)
 
-### 2. 📦 Containerzation with Docker [(read here)](./docs/docker/)
+### 2. 📦 Containerzation with Docker [(read here)](./my-work/docker/)
 
-### 3. 🐳 Running app with docker-compose [(read here)](./docs/docker-compose/)
+### 3. 🐳 Running app with docker-compose [(read here)](./my-work/docker-compose/)
 
-### 4. ☸️ Kubernetes Deployment (in parts ↴)
+### 4. ☸️ Kubernetes Deployment (in parts ↴) [(read more)](./my-work/kubernetes/)
 
-1. **Individual micro service deployment on K8s for operational validation** [(read here)](./ind-micro-svc-deploy-test-k8s/)
+1. **Individual micro service deployment on K8s for operational validation** [(read here)](./my-work/kubernetes/ind-svc-test/)
 
     - ⚡ Persistent DynamoDB integration for carts service *`(to retain data after cluster disposal)`*\
-    [(read here)](./ind-micro-svc-deploy-test-k8s/cart-dynamodb-test/)
+    [(read here)](./my-work/kubernetes/ind-svc-test/cart-dynamodb-test/)
 
     - 🐘 PV and PVC for PostgreSQL Orders service *`(to retain data after cluster disposal)`*\
-    [(read here)](./ind-micro-svc-deploy-test-k8s/orders-postgreSQL-test/)
+    [(read here)](./my-work/kubernetes/ind-svc-test/orders-postgreSQL-test/)
 
     - Testing Catalog service\
-    [(read here)](./ind-micro-svc-deploy-test-k8s/catalog-test/)
+    [(read here)](./my-work/kubernetes/ind-svc-test/catalog-test/)
 
     - Testing Checkout service\
-    [(read here)](./ind-micro-svc-deploy-test-k8s/checkout-test/)
+    [(read here)](./my-work/kubernetes/ind-svc-test/checkout-test/)
 
     - Testing UI service\
-    [(read here)](./ind-micro-svc-deploy-test-k8s/ui-test/)
+    [(read here)](./my-work/kubernetes/ind-svc-test/ui-test/)
 
-2. **Full app deployment on K8s via Helm** [(read here)](./full-app-helm-deploy-k8s/)
+2. **Full app deployment on K8s via Helm** [(read here)](./my-work/kubernetes/final-app/)
+
+    - In progress...

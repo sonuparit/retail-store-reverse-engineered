@@ -5,7 +5,7 @@ This project is a retail store application built using a microservices architect
 ## 📑 Table of contents:
 1. **[Overview](#-overview)**
 2. **[What I Discovered](#-what-i-discovered)**
-3. **[App Architecture](#-app-architecture)**
+3. **[App Architecture](#️-app-architecture-original)**
 4. **[Why this design?](#-why-this-design)**
 5. **[Why This Project Matters](#-why-this-project-matters)**
 6. **[Next Steps](#-next-steps)**
@@ -79,7 +79,7 @@ This app is not my work - I'm just reverse engineering it to better understand m
 ---
 
 ## 🔧 Next Steps
-1. *Deep dive into **`Dockerfile optimization`** → [Docker Analysis](../docker/README.md)*
+1. *Deep dive into **`Dockerfile optimization`** [(read here)](../docker/)*
 2. *Refactor setup for production-ready Docker Compose*
 3. *Implement Kubernetes deployments*
 4. *Provision infrastructure using Terraform (IaC)*

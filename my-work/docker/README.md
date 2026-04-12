@@ -6,7 +6,7 @@ A hands-on reverse-engineered microservices project to better understand contain
 
 1. **[Overview](#-overview)**
 2. **[What I Learned](#-what-i-learned)**
-3. **[Architecture](#-architecture)**
+3. **[Architecture](#️-architecture)**
 4. **[Dockerfile Breakdown](#-dockerfile-breakdown-key-insights)**
 5. **[What I choose](#-what-i-chose-for-my-project)**
 6. **[My Contribution](#-my-contribution)**
@@ -112,7 +112,7 @@ This Dockerfile reflects practical, production-oriented decisions where compatib
 
 ## 📈 Next Improvements
 
-1. *Refactor setup for production-ready **`Docker Compose usage`** → [Docker Compose Analysis](../docker-compose/README.md)*
+1. *Refactor setup for production-ready **`Docker Compose usage`** → [(read here)](../docker-compose/)*
 2. *Add **`Kubernetes deployment`***
 3. *IaC Provisioning via **`Terraform`***
 4. *Implement **`CI/CD`** pipeline*

@@ -146,7 +146,7 @@ docker ps
 
 Moving forward, this setup will be transitioned to Kubernetes:
 
-1. *Add **`Kubernetes deployment`***
+1. *Add **`Kubernetes deployment`** [(read here)](../kubernetes/)*
 2. *IaC Provisioning via **`Terraform`***
 3. *Implement **`CI/CD`** pipeline*
 4. *Add **`email notification`** system*
