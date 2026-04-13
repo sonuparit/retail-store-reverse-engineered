@@ -60,3 +60,14 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Create the name of the config map to use
+*/}}
+{{- define "carts.configMapName" -}}
+{{- if .Values.configMap.create }}
+{{- default (include "carts.fullname" .) .Values.configMap.name }}
+{{- else }}
+{{- default "default" .Values.configMap.name }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,14 @@
+{{- if .Values.configMap.create -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "carts.configMapName" . }}
+data:
+  JAVA_OPTS: {{ .Values.env.java.options }}
+  SERVER_TOMCAT_ACCESSLOG_ENABLED: {{ .Values.env.tomcatServer.enabled }}
+  RETAIL_CART_PERSISTENCE_PROVIDER: {{ .Values.env.table.provider }}
+  AWS_REGION: {{ .Values.env.table.awsRegion }}
+  RETAIL_CART_PERSISTENCE_DYNAMODB_TABLE_NAME: {{ .Values.env.table.tableName }}
+  RETAIL_CART_PERSISTENCE_DYNAMODB_CREATE_TABLE: {{ .Values.env.table.createTable }}
+  RETAIL_CART_PERSISTENCE_DYNAMODB_ENDPOINT: ""
+{{- end }}
