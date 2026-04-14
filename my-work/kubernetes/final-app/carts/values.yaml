@@ -37,20 +37,19 @@ configMap:
   name:
 env:
   table:
-    provider: dynamodb
+    provider: "dynamodb"
     awsRegion: "ap-south-1"
-    createTable: false
-    tableName: Items
+    createTable: "false"
+    tableName: "Items"
     endpoint:
   tomcatServer:
-    enabled: true
+    enabled: "true"
   java:
-    options: -XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/urandom
+    options: "-XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/urandom"
     
 secret:
   create: false
   name:
-env:
   key:
 
 service:
@@ -95,10 +94,12 @@ livenessProbe:
     path: /actuator/health
     port: http
   initialDelaySeconds: 30
-readinessProbe:
-  httpGet:
-    path: /
-    port: http
+  timeoutSeconds: 5
+
+# readinessProbe:
+#  httpGet:
+#    path: /
+#    port: http
 
 autoscaling:
   enabled: false
