@@ -62,7 +62,7 @@ spec:
         # important for in-memory=""
         - name: RETAIL_CATALOG_PERSISTENCE_ENDPOINT
           value: ""
-        #   value: "catalog-db:3306"
+        #  value: "catalog-db:3306"
         
         # important
         - name: RETAIL_CATALOG_PERSISTENCE_PASSWORD

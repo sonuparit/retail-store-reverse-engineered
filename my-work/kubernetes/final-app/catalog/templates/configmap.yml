@@ -1,0 +1,11 @@
+{{- if .Values.configMap.create -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "catalog.configMapName" . }}
+data:
+  RETAIL_CATALOG_PERSISTENCE_PROVIDER: {{ .Values.env.catalog.provider | quote }}
+  RETAIL_CATALOG_PERSISTENCE_CONNECT_TIMEOUT: {{ .Values.env.catalog.timeout | quote }}
+  RETAIL_CATALOG_PERSISTENCE_DB_NAME: {{ .Values.env.catalog.dbname | quote }}
+  RETAIL_CATALOG_PERSISTENCE_ENDPOINT: ""
+{{- end }}

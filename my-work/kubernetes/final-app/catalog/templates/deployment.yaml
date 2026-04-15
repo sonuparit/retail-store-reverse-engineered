@@ -34,6 +34,11 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "catalog.configMapName" . }}
+            - secretRef:
+                name: {{ .Values.secret.name }}-secret
           {{- with .Values.securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}

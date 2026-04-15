@@ -65,7 +65,7 @@ spec:
           httpGet:
             path: /actuator/health/
             port: 8080
-          initialDelaySeconds: 10
+          initialDelaySeconds: 30
         volumeMounts:
         - mountPath: /tmp
           name: tmp-volume

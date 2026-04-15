@@ -60,3 +60,34 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Create the name of the config map to use
+*/}}
+{{- define "catalog.configMapName" -}}
+{{- if .Values.configMap.create }}
+{{- default (include "catalog.fullname" .) .Values.configMap.name }}
+{{- else }}
+{{- default "default" .Values.configMap.name }}
+{{- end }}
+{{- end }}
+
+{{- define "getOrGeneratePass" }}
+{{- $len := (default 16 .Length) | int -}}
+{{- $obj := (lookup "v1" .Kind .Namespace .Name).data -}}
+{{- if $obj }}
+{{- index $obj .Key -}}
+{{- else if (eq (lower .Kind) "secret") -}}
+{{- randAlphaNum $len | b64enc -}}
+{{- else -}}
+{{- randAlphaNum $len -}}
+{{- end -}}
+{{- end }}
+
+{{- define "catalog.password" -}}
+{{- if not (empty .Values.secret.password) -}}
+  {{- .Values.secret.password | b64enc -}}
+{{- else -}}
+  {{- include "getOrGeneratePass" (dict "Namespace" .Release.Namespace "Kind" "Secret" "Name" .Values.secret.name "Key" "RETAIL_CATALOG_PERSISTENCE_PASSWORD") -}}
+{{- end -}}
+{{- end -}}
