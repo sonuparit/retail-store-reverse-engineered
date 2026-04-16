@@ -60,3 +60,19 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Create the name of the config map to use
+*/}}
+{{- define "orders.configMapName" -}}
+{{- if .Values.configMap.create }}
+{{- default (include "orders.fullname" .) .Values.configMap.name }}
+{{- else }}
+{{- default "default" .Values.configMap.name }}
+{{- end }}
+{{- end }}
+
+{{/* Define a consistent secret name */}}
+{{- define "orders.secretName" -}}
+{{- printf "%s-db-secret" .Release.Name -}}
+{{- end -}}

@@ -92,7 +92,7 @@ resources:
 livenessProbe:
   httpGet:
     path: /actuator/health
-    port: http
+    port: 8080
   initialDelaySeconds: 30
   timeoutSeconds: 5
 

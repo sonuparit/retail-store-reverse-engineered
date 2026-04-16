@@ -40,13 +40,8 @@ spec:
             drop: ["ALL"]
             add: ["NET_BIND_SERVICE"]
         env:
-        - name: RETAIL_ORDERS_PERSISTENCE_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: retail-secrets
-              key: db-password
-        - name: RETAIL_ORDERS_MESSAGING_RABBITMQ_PASSWORD
-          value: ""
+        
+        # postgreSQL
         - name: RETAIL_ORDERS_PERSISTENCE_PROVIDER
           value: "postgres"
         - name: RETAIL_ORDERS_PERSISTENCE_ENDPOINT
@@ -55,12 +50,22 @@ spec:
           value: "orders"
         - name: RETAIL_ORDERS_PERSISTENCE_USERNAME
           value: "orders_user"
+        - name: RETAIL_ORDERS_PERSISTENCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: retail-secrets
+              key: db-password
+          
+        # rabbitMQ
         - name: RETAIL_ORDERS_MESSAGING_PROVIDER
           value: "in-memory" # [default = in-memory | rabbitmq]
         - name: RETAIL_ORDERS_MESSAGING_RABBITMQ_ADDRESSES
           value: ""
         - name: RETAIL_ORDERS_MESSAGING_RABBITMQ_USERNAME
           value: ""
+        - name: RETAIL_ORDERS_MESSAGING_RABBITMQ_PASSWORD
+          value: ""
+          
         livenessProbe:
           httpGet:
             path: /actuator/health

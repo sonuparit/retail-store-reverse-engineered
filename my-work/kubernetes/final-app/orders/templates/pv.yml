@@ -1,0 +1,78 @@
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   name: postgres-pv
+# spec:
+#   capacity:
+#     storage: 5Gi
+#   accessModes:
+#     - ReadWriteOnce
+#   persistentVolumeReclaimPolicy: Retain
+#   storageClassName: ebs-retain-sc # Must match your StorageClass
+#   csi:
+#     driver: ebs.csi.aws.com
+#     volumeHandle: vol-0abcd1234efgh5678 # YOUR ACTUAL VOLUME ID HERE
+#   nodeAffinity:
+#     required:
+#       nodeSelectorTerms:
+#       - matchExpressions:
+#         - key: topology.ebs.csi.aws.com/zone
+#           operator: In
+#           values:
+#           - ap-south-1a # MUST match the AZ where the volume lives
+
+---
+
+
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: pg-storage-orders-db-0
+#   # [VolumeClaimTemplate Name]-[StatefulSet Name]-[Pod Index]
+#   namespace: retail-app
+# spec:
+#   accessModes:
+#     - ReadWriteOnce
+#   storageClassName: ebs-retain-sc
+#   resources:
+#     requests:
+#       storage: 5Gi
+#   volumeName: postgres-pv # Explicitly point to the PV above
+
+
+
+# {{- if .Values.db.createStorageClass -}}
+# {{- range $i := until (int .Values.replicaCount) }}
+# ---
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   name: {{ include "orders.fullname" $ }}-pv-# {{ $i }}
+# spec:
+#   capacity:
+#     storage: {{ $.Values.db.storageSize }}
+#   accessModes:
+#     - ReadWriteOnce
+#   storageClassName: "standard" # for KinD cluster
+#   hostPath:
+#     # Each replica gets its own sub-folder on your EBS mount
+#     path: {{ $.Values.db.hostPath }}/data-{{ $i }} 
+# {{- end }}
+# {{- end }}
+
+---
+{{- if not .Values.db.createStorageClass -}}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+# This name must be unique
+  name: {{ include "orders.fullname" . }}-pv
+spec:
+  capacity:
+    storage: {{ .Values.db.storageSize }}
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: {{ .Values.db.storageClass }} # Matches the STS
+  hostPath:
+    path: {{ .Values.db.hostPath }}
+{{- end }}

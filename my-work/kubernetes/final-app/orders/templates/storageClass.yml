@@ -1,0 +1,24 @@
+{{- if .Values.db.createStorageClass -}}
+# Need EBS CSI Driver already installed on EKS cluster
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ include "orders.fullname" . }}-sc
+
+# Use the official AWS EBS CSI Driver
+provisioner: ebs.csi.aws.com
+
+# Tells K8s - "I will provide the PV manually"
+# provisioner: kubernetes.io/no-provisioner
+
+# Keeps the EBS/Host data even if you delete
+# the Helm release
+reclaimPolicy: Retain
+
+# Important for Cloud AZ matching
+volumeBindingMode: WaitForFirstConsumer
+parameters:
+  # Latest generation SSD (cheaper and faster)
+  type: gp3
+  encrypted: "false"
+{{- end }}
