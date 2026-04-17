@@ -15,7 +15,7 @@ data:
   RETAIL_ORDERS_PERSISTENCE_NAME: {{ .Values.env.orders.name | quote }}
 # Provided via secrets
 #  RETAIL_ORDERS_PERSISTENCE_USERNAME: ""
-#  RETAIL_ORDERS_PERSISTENCE_PASSWORD: {{ .Values.env.catalog.provider | quote }}
+#  RETAIL_ORDERS_PERSISTENCE_PASSWORD: {{ .Values.env.orders.provider | quote }}
   
 # RabbitMQ Not using
   RETAIL_ORDERS_MESSAGING_PROVIDER: {{ .Values.env.rabbitmq.provider | quote }}

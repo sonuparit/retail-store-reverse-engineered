@@ -4,6 +4,6 @@ kind: ConfigMap
 metadata:
   name: {{ include "orders.configMapName" . }}-sts
 data:
-  PGDATA: {{ .Values.postgres.pgdata | quote }}
+  PGDATA: {{ .Values.env.postgres.pgdata | quote }}
   POSTGRES_DB: {{ .Values.env.orders.name | quote }}
 {{- end }}

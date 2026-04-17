@@ -29,13 +29,13 @@ spec:
         - name: POSTGRES_USER
           valueFrom:
             secretKeyRef:
-              name: {{- include "orders.secretName" . }}
+              name: {{ include "orders.secretName" . }}
               key: RETAIL_ORDERS_PERSISTENCE_USERNAME
               
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{- include "orders.secretName" . }}
+              name: {{ include "orders.secretName" . }}
               key: RETAIL_ORDERS_PERSISTENCE_PASSWORD
               
         ports:
