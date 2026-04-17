@@ -32,6 +32,18 @@ spec:
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      initContainers:
+        - name: wait-for-db
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              until nc -zv {{ include "orders.fullname" . }}-0.{{ include "orders.fullname" . }}-headless {{ .Values.db.port }}; do
+                echo "Waiting for database at the headless service..."
+                sleep 5
+              done
+              echo "Database is reachable!"
       containers:
         - name: {{ .Chart.Name }}
           envFrom:
