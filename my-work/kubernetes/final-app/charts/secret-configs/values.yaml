@@ -1,9 +1,2 @@
 secret:
   name: "external"
-  nameToCreate: "postgre-db-secret"
-env:
-- name: DB_PASSWORD
-  valueFrom:
-    secretKeyRef:
-      name: my-db-secret
-      key: password

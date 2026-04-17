@@ -1,16 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "orders.fullname" . }}
+  name: {{ include "orders.fullname" . }}-dep
   labels:
     {{- include "orders.labels" . | nindent 4 }}
 spec:
+  serviceName: {{ include "orders.fullname" . }}-service
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "orders.selectorLabels" . | nindent 6 }}
+      {{- include "orders.selectorLabels" . | nindent 6 }}-tmpl
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,7 +19,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "orders.labels" . | nindent 8 }}
+        {{- include "orders.labels" . | nindent 8 }}-tmpl
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -48,9 +49,12 @@ spec:
         - name: {{ .Chart.Name }}
           envFrom:
             - configMapRef:
-                name: {{ include "orders.configMapName" . }}
+                name: {{ include "orders.configMapName" . }}-dep-cm
+           # - secretRef:
+           #     name: {{ include "orders.secretName" . }}
             - secretRef:
-                name: {{ include "orders.secretName" . }}
+                name: {{ required "A secret name is required! Please set .Values.secret.name" .Values.secret.name }}-secret
+                # name: {{ .Values.secret.name }}-secret
           {{- with .Values.securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}

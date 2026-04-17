@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "orders.fullname" . }}-db
+  name: {{ include "orders.fullname" . }}-sts
 spec:
   serviceName: {{ include "orders.fullname" . }}-headless
   replicas: 1
   selector:
     matchLabels:
-      app: {{ include "orders.fullname" . }}-db
+      app: {{ include "orders.fullname" . }}-tmpl
   template:
     metadata:
       labels:
-        app: {{ include "orders.fullname" . }}-db
+        app: {{ include "orders.fullname" . }}-tmpl
     spec:
       # --- THE PERMISSION FIX ---
       {{- with .Values.stsSecurityContext }}
@@ -23,19 +23,23 @@ spec:
         image: {{ .Values.dbImage.image }}:{{ .Values.dbImage.tag }}
         envFrom:
         - configMapRef:
-            name: {{ include "orders.configMapName" . }}-sts
+            name: {{ include "orders.configMapName" . }}-sts-cm
             
         env:
         - name: POSTGRES_USER
           valueFrom:
             secretKeyRef:
-              name: {{ include "orders.secretName" . }}
+              # name: {{ .Values.secret.name }}-secret
+              # name: {{ include "orders.secretName" . }}
+              name: {{ required "A secret name is required! Please set .Values.secret.name" .Values.secret.name }}-secret
               key: RETAIL_ORDERS_PERSISTENCE_USERNAME
               
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ include "orders.secretName" . }}
+              # name: {{ .Values.secret.name }}-secret
+              # name: {{ include "orders.secretName" . }}
+              name: {{ required "A secret name is required! Please set .Values.secret.name" .Values.secret.name }}-secret
               key: RETAIL_ORDERS_PERSISTENCE_PASSWORD
               
         ports:

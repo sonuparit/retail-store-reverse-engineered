@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "orders.configMapName" . }}-sts
+  name: {{ include "orders.configMapName" . }}-sts-cm
 data:
   PGDATA: {{ .Values.env.postgres.pgdata | quote }}
   POSTGRES_DB: {{ .Values.env.orders.name | quote }}

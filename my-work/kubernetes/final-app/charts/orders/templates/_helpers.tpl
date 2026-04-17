@@ -74,5 +74,5 @@ Create the name of the config map to use
 
 {{/* Define a consistent secret name */}}
 {{- define "orders.secretName" -}}
-{{- printf "%s-db-secret" .Release.Name -}}
+{{- printf "%s-secret" .Release.Name -}}
 {{- end -}}

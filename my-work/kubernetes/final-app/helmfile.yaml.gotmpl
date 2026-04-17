@@ -5,6 +5,9 @@ environments:
   prod:
     values:
       - values/eks-prod.yml
+  default:
+    values:
+      - secretBaseName: "retail"
 
 ---
 
@@ -27,13 +30,17 @@ releases:
   - name: secrets
     chart: ./charts/secret-configs
     namespace: retail-app
+    values:
+      # - ./charts/secret-configs/values.yaml
+      - secret:
+          name: {{ .Values.secretBaseName }}
     labels:
       tier: secrets
     needs:
       - external-secrets-operator # This tells Helmfile to wait for the operator
     # wait: true
 
-  # 2. Deploy the Database/StatefulSet app
+  # 3. Deploy the Database/StatefulSet app
   - name: orders-db
     chart: ./charts/orders
     namespace: retail-app
@@ -42,11 +49,11 @@ releases:
     needs:
       - secrets
     values:
-      - ./charts/orders/values.yaml
-      - db:
-          createStorageClass: {{ .Values.db.createStorageClass }}
+      # - ./charts/orders/values.yaml
+      - secret:
+          name: {{ .Values.secretBaseName }}
 
-  # 3. Deploy the other Microservices
+  # 4. Deploy the other Microservices
   - name: carts
     chart: ./charts/carts
     namespace: retail-app

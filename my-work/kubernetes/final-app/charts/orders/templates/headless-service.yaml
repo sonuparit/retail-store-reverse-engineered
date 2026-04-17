@@ -5,7 +5,7 @@ metadata:
 spec:
   clusterIP: None # headless
   selector:
-    app: {{ include "orders.fullname" . }}-db
+    app: {{ include "orders.fullname" . }}-sts
   ports:
   - port: 5432
     name: postgres
