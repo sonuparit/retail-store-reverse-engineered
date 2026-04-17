@@ -1,19 +1,37 @@
 environments:
   kind:
     values:
-      - values/kind-ec2.yaml
+      - values/kind-ec2.yml
   prod:
     values:
-      - values/eks-prod.yaml
+      - values/eks-prod.yml
+
+---
+
+helmDefaults:
+  createNamespace: true
+  wait: true
 
 releases:
-  # 1. Deploy Secrets First
+  # 1. Install the Operator FIRST
+  - name: external-secrets-operator
+    chart: external-secrets/external-secrets
+    namespace: retail-app
+    # createNamespace: true
+    labels:
+      tier: secrets
+    values:
+      - installCRDs: false
+  
+  # 2. Then deploy your custom configs
   - name: secrets
     chart: ./charts/secret-configs
     namespace: retail-app
     labels:
       tier: secrets
-    wait: true # Ensures secrets are fetched before other apps start
+    needs:
+      - external-secrets-operator # This tells Helmfile to wait for the operator
+    # wait: true
 
   # 2. Deploy the Database/StatefulSet app
   - name: orders-db
