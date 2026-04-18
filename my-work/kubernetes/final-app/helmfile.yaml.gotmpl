@@ -76,3 +76,9 @@ releases:
     namespace: retail-app
     labels:
       tier: ui
+    needs:
+      - secrets
+      - orders
+      - carts
+      - catalog
+      - checkout

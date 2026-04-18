@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "checkout.fullname" . }}
+  name: {{ include "checkout.fullname" . }}-service
   labels:
     {{- include "checkout.labels" . | nindent 4 }}
 spec:

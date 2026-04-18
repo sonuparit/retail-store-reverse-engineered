@@ -3,14 +3,11 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "ui.configMapName" . }}
-data:
-  {{- $ns := .Release.Namespace -}}
-  {{- $rel := .Release.Name -}}
-  
+data:  
   # using FQDNS
   # Pattern: http://[Release]-[Chart].[Namespace].svc.cluster.local:[Port]
-  RETAIL_UI_ENDPOINTS_CARTS: {{ printf "http://%s-carts.%s.svc.cluster.local:8080" $rel $ns | quote }}
-  RETAIL_UI_ENDPOINTS_CATALOG: {{ printf "http://%s-catalog.%s.svc.cluster.local:8080" $rel $ns | quote }}
-  RETAIL_UI_ENDPOINTS_CHECKOUT: {{ printf "http://%s-checkout.%s.svc.cluster.local:8080" $rel $ns | quote }}
-  RETAIL_UI_ENDPOINTS_ORDERS: {{ printf "http://%s-orders.%s.svc.cluster.local:8080" $rel $ns | quote }}
+  RETAIL_UI_ENDPOINTS_CARTS: {{ printf "http://carts-service:8080" | quote }}
+  RETAIL_UI_ENDPOINTS_CATALOG: {{ printf "http://catalog-service:8080" | quote }}
+  RETAIL_UI_ENDPOINTS_CHECKOUT: {{ printf "http://checkout-service:8080" | quote }}
+  RETAIL_UI_ENDPOINTS_ORDERS: {{ printf "http://orders-service:8080" | quote }}
 {{- end }}

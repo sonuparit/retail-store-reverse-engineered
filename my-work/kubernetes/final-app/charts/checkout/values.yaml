@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   repository: sonuparit/retail-app
   pullPolicy: IfNotPresent
-  tag: "ckeckout-small"
+  tag: "checkout-small"
 
 imagePullSecrets: []
 nameOverride: ""
