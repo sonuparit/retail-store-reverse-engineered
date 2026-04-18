@@ -7,11 +7,11 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ include "orders.fullname" . }}-tmpl
+      app: {{ include "orders.fullname" . }}-db
   template:
     metadata:
       labels:
-        app: {{ include "orders.fullname" . }}-tmpl
+        app: {{ include "orders.fullname" . }}-db
     spec:
       # --- THE PERMISSION FIX ---
       {{- with .Values.stsSecurityContext }}

@@ -2,11 +2,10 @@ environments:
   kind:
     values:
       - values/kind-ec2.yml
+      - secretBaseName: "retail"
   prod:
     values:
       - values/eks-prod.yml
-  default:
-    values:
       - secretBaseName: "retail"
 
 ---
@@ -41,7 +40,7 @@ releases:
     # wait: true
 
   # 3. Deploy the Database/StatefulSet app
-  - name: orders-db
+  - name: orders
     chart: ./charts/orders
     namespace: retail-app
     labels:
