@@ -1,0 +1,123 @@
+replicaCount: 1
+
+image:
+  repository: sonuparit/retail-app
+  pullPolicy: IfNotPresent
+  tag: "cart-small"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: false
+  automount: true
+  # will be using ARN for EKS
+  annotations: {} 
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+
+securityContext:
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+  runAsNonRoot: true
+  runAsUser: 1000
+  capabilities:
+    drop:
+      - ALL
+    add:
+      - NET_BIND_SERVICE
+
+configMap:
+  create: true
+  name:
+env:
+  table:
+    provider: "dynamodb"
+    awsRegion: "ap-south-1"
+    createTable: "false"
+    tableName: "Items"
+    endpoint:
+  tomcatServer:
+    enabled: "true"
+  java:
+    options: "-XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/urandom"
+    
+secret:
+  create: false
+  name:
+  key:
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+httpRoute:
+  enabled: false
+  annotations: {}
+  parentRefs:
+  - name: gateway
+    sectionName: http
+  hostnames:
+  - chart-example.local
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /headers
+
+resources:
+  limits:
+    cpu: 256m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+livenessProbe:
+  httpGet:
+    path: /actuator/health
+    port: 8080
+  initialDelaySeconds: 30
+  timeoutSeconds: 5
+
+# readinessProbe:
+#  httpGet:
+#    path: /
+#    port: http
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 2
+  targetCPUUtilizationPercentage: 80
+
+volumes:
+- name: tmp-volume
+  emptyDir:
+    medium: Memory
+
+volumeMounts:
+- name: tmp-volume
+  mountPath: /tmp
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

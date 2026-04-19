@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "orders.fullname" . }}-headless
+spec:
+  clusterIP: None # headless
+  selector:
+    app: {{ include "orders.fullname" . }}-db
+  ports:
+  - port: 5432
+    name: postgres

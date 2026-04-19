@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "orders.fullname" . }}-sts
+spec:
+  serviceName: {{ include "orders.fullname" . }}-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "orders.fullname" . }}-db
+  template:
+    metadata:
+      labels:
+        app: {{ include "orders.fullname" . }}-db
+    spec:
+      # --- THE PERMISSION FIX ---
+      {{- with .Values.stsSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Values.dbImage.image }}
+        image: {{ .Values.dbImage.image }}:{{ .Values.dbImage.tag }}
+        envFrom:
+        - configMapRef:
+            name: {{ include "orders.configMapName" . }}-sts-cm
+            
+        env:
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              # name: {{ .Values.secret.name }}-secret
+              # name: {{ include "orders.secretName" . }}
+              name: {{ required "A secret name is required! Please set .Values.secret.name" .Values.secret.name }}-secret
+              key: RETAIL_ORDERS_PERSISTENCE_USERNAME
+              
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              # name: {{ .Values.secret.name }}-secret
+              # name: {{ include "orders.secretName" . }}
+              name: {{ required "A secret name is required! Please set .Values.secret.name" .Values.secret.name }}-secret
+              key: RETAIL_ORDERS_PERSISTENCE_PASSWORD
+              
+        ports:
+        - containerPort: {{ .Values.dbImage.port }}
+        {{- with .Values.dbReadinessProbe }}
+        readinessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+          
+        volumeMounts:
+        - name: {{ .Values.volume.name }} # MUST match the template
+          mountPath: {{ .Values.volume.path | quote }}
+        # subPath: not req because we are using PGDATA env var
+        # subPath: postgres-db  # Keeps data in a subfolder on the disk
+  
+  volumeClaimTemplates:
+  - metadata:
+      name: {{ .Values.volume.name }}
+    spec:
+      {{- if .Values.db.createStorageClass }}
+      # Need EBS CSI Driver already installed on EKS cluster
+      storageClassName: {{ include "orders.fullname" . }}-sc
+      {{- else }}
+      storageClassName: "standard" # For KinD
+      {{- end }}
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: {{ .Values.db.storageSize | quote }}

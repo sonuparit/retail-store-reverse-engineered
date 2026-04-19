@@ -1,0 +1,11 @@
+{{- if .Values.configMap.create -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "ui.configMapName" . }}
+data:
+  # Pattern: http://[Chart]-service:[Port]
+  {{- range $key, $value := .Values.ep }}
+  RETAIL_UI_ENDPOINTS_{{ $key | upper }}: {{ printf "http://%s-service:8080" $value | quote }}
+  {{- end }}
+{{- end }}
