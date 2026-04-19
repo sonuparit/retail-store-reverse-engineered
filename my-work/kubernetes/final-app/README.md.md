@@ -24,7 +24,7 @@ scalable, and production-like deployment approach`**.*
 
 ## 🏗️ Project Structure with Helmfile
 
-- *External Secrets Operator-CRD **`ESO-CRD`***
+- *External Secrets Operator-CRD **`eso-crd.yaml`***
 - *Centralized **`helmfile.yaml`** to orchestrate deployments*
 - *kind config for **`KinD cluster`***
 - *Individual **`Helm charts`** for each microservice*
@@ -78,18 +78,24 @@ repo*
 
     ![alt text](screenshots/screenshot14.png)
 
-### 🧪 Incremental Validation Strategy
+### 🛡️ AWS IMDSv2 for DynamoDB access
 
-- ***`Performed isolated, service-by-service validation`** of each Helm chart before full system deployment*
+*To provide the Carts Service with secure, credential-less access to DynamoDB, I leveraged **`AWS Instance Metadata Service v2 (IMDSv2)`**. This approach eliminates the need for hardcoded AWS_ACCESS_KEY_ID or long-lived secrets, significantly reducing the attack surface.*
 
-- ***`Followed a tiered testing approach`** to ensure each component was functional and stable independently*
+- **`Identity-Based Access:`**\
+    *The EC2 Node is assigned an IAM Role with a scoped policy allowing dynamodb:GetItem and dynamodb:Query on the Items table.*
 
-    ![alt text](screenshots/screenshot03.png)
+- **`The Challenge:`**\
+    *By default, IMDSv2 responses have a Time-to-Live (TTL/Hop Limit) of 2. In a containerized environment, the packet must travel from the Node to the Docker Bridge and finally to the Pod.*
 
-- *This helped in:*
-    - **`Identifying and debugging issues at the service level`**
-    - ***`Avoiding compounded errors`** during full-stack deployment*
-    - ***`Improving deployment confidence and reliability`***
+- **`The Solution:`**\
+    *I tuned the http-put-response-hop-limit to 3. This ensures the metadata response can successfully traverse the virtual bridge to reach the application container while maintaining the security boundary.*
+
+**Impact:**
+
+1. ***`Zero-Secret Management:`** No AWS keys are stored in the codebase or K8s Secrets.*
+
+2. ***`Production Readiness:`** Adheres to AWS security best practices by enforcing IMDSv2-only access.*
 
 ### 🔐 Secure Secrets Integration
 
@@ -105,10 +111,28 @@ repo*
 
     ![alt text](screenshots/screenshot04.png)
 
+### 🧪 Incremental Validation Strategy
+
+- ***`Performed isolated, service-by-service validation`** of each Helm chart before full system deployment*
+
+- ***`Followed a tiered testing approach`** to ensure each component was functional and stable independently*
+
+    ![alt text](screenshots/screenshot03.png)
+
+- *This helped in:*
+    - **`Identifying and debugging issues at the service level`**
+    - ***`Avoiding compounded errors`** during full-stack deployment*
+    - ***`Improving deployment confidence and reliability`***
+
 ### ✅ Result:
 
-- ***`Eliminated risk of secret exposure in codebase`**.*
-- ***`Improved security and maintainability`**.*
+- ***`Eliminated risk of secret exposure in codebase`** and moving to identity-based and externalized secret management.*
+
+- ***`Built a production-grade deployment workflow`** with modular Helm charts and isolated validation, improving reliability and debugging efficiency.*
+
+- ***`Achieved secure, scalable architecture`** by integrating AWS-native services (IMDSv2, Secrets Manager) with Kubernetes best practices.*
+
+- ***`Improved system maintainability`** through consistent naming, reusable configurations, and centralized secret handling.*
 
 ------------------------------------------------------------------------
 
@@ -130,9 +154,8 @@ repo*
 
 **✅ Result:**
 
-- *Improved clarity across the system
-Faster debugging and easier traceability*
-- ***`Deployed apps easily`***
+- ***`Improved clarity`** across the system*
+- ***`Faster debugging`** and easier traceability*
 
 ### 🧭 Chart Navigation Complexity
 
@@ -204,7 +227,7 @@ Faster debugging and easier traceability*
 
 **💡 Lesson:**
 
-- *`YAML` is highly sensitive to formatting — template control must be used carefully*
+- ***`YAML`** is highly sensitive to formatting — template control must be used carefully*
 
 ------------------------------------------------------------------------
 
@@ -218,6 +241,9 @@ Faster debugging and easier traceability*
 
 **Incremental validation mindset:**
 - testing services in isolation significantly reduces debugging complexity in distributed systems
+
+**Cloud Security & Container Networking:**
+- Leveraging IMDSv2 with IAM Roles, I learned that in containerized environments like KinD, tuning network hop limits is critical to ensuring metadata can successfully traverse the virtual bridge to reach the Pod.
 
 **Secrets management in production:**
 - integrating AWS Secrets Manager with ESO eliminates hardcoded secrets and improves security posture
@@ -269,9 +295,34 @@ Faster debugging and easier traceability*
 
 ### Prerequisites
 
-### Steps
+**Infra**
+1. ***`EC2 instance`** (minimum t2.midium)*
+2. ***`EBS volume`** attached to EC2 and mounted for orders service*
+3. ***`Dynamodb`** for carts service with:*
+    ```
+    table: Item   |  index: idx_global_cutomerId
+       id: id     |    key: customerId
+    ```
+4. ***`AWS Sercrets Manager`** with secrets:*
+5. ***`IAM role for EC2`** with permissions:*
+    - dynamodb read and write access
+    - secrets manager read access
+6. ***`Metadata hop`** for EC2 set to: `3`*
 
-pending....
+**Tools**
+1. Docker installed and running
+2. kubectl
+3. helm
+4. helmfile
+5. Kind
+
+**Steps**
+1. Create KinD Cluster with these configs
+2. Set context of kind cluster
+3. Install eso-crd.yaml
+4. Run helmfile
+5. Port-forward to aacess UI
+6. View the app
 
 ------------------------------------------------------------------------
 

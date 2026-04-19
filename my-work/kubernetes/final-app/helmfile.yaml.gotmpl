@@ -3,10 +3,14 @@ environments:
     values:
       - values/kind-ec2.yml
       - secretBaseName: "retail"
+      - namespace: "retail-app"
+      - subEnv: "test"
   prod:
     values:
       - values/eks-prod.yml
       - secretBaseName: "retail"
+      - namespace: "retail-app"
+      - subEnv: "prod"
 
 ---
 
@@ -16,69 +20,71 @@ helmDefaults:
 
 releases:
   # 1. Install the Operator FIRST
-  - name: external-secrets-operator
+  - name: {{ .Values.subEnv }}-eso
     chart: external-secrets/external-secrets
-    namespace: retail-app
-    # createNamespace: true
+    namespace: {{ .Values.namespace }}
     labels:
       tier: secrets
     values:
       - installCRDs: false
   
   # 2. Then deploy your custom configs
-  - name: secrets
+  - name: {{ .Values.subEnv }}-secrets
     chart: ./charts/secret-configs
-    namespace: retail-app
+    namespace: {{ .Values.namespace }}
     values:
-      # - ./charts/secret-configs/values.yaml
       - secret:
           name: {{ .Values.secretBaseName }}
     labels:
       tier: secrets
     needs:
-      - external-secrets-operator # This tells Helmfile to wait for the operator
-    # wait: true
+      - {{ .Values.subEnv }}-eso
 
   # 3. Deploy the Database/StatefulSet app
-  - name: orders
+  - name: {{ .Values.subEnv }}-orders
     chart: ./charts/orders
-    namespace: retail-app
+    namespace: {{ .Values.namespace }}
     labels:
       tier: orders
     needs:
-      - secrets
+      - {{ .Values.subEnv }}-secrets
     values:
-      # - ./charts/orders/values.yaml
       - secret:
           name: {{ .Values.secretBaseName }}
 
   # 4. Deploy the other Microservices
-  - name: carts
+  - name: {{ .Values.subEnv }}-carts
     chart: ./charts/carts
-    namespace: retail-app
+    namespace: {{ .Values.namespace }}
     labels:
       tier: carts
 
-  - name: catalog
+  - name: {{ .Values.subEnv }}-catalog
     chart: ./charts/catalog
-    namespace: retail-app
+    namespace: {{ .Values.namespace }}
     labels:
       tier: catalog
 
-  - name: checkout
+  - name: {{ .Values.subEnv }}-checkout
     chart: ./charts/checkout
-    namespace: retail-app
+    namespace: {{ .Values.namespace }}
     labels:
       tier: checkout
 
-  - name: ui
+  - name: {{ .Values.subEnv }}-ui
     chart: ./charts/ui
-    namespace: retail-app
+    namespace: {{ .Values.namespace }}
     labels:
       tier: ui
     needs:
-      - secrets
-      - orders
-      - carts
-      - catalog
-      - checkout
+      - {{ .Values.subEnv }}-secrets
+      - {{ .Values.subEnv }}-orders
+      - {{ .Values.subEnv }}-carts
+      - {{ .Values.subEnv }}-catalog
+      - {{ .Values.subEnv }}-checkout
+    values:
+      - ep:
+          carts: {{ .Values.subEnv }}-carts
+          catalog: {{ .Values.subEnv }}-catalog
+          checkout: {{ .Values.subEnv }}-checkout
+          orders: {{ .Values.subEnv }}-orders
