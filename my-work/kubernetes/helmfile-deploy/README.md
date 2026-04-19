@@ -64,32 +64,36 @@ repo*
 
 - *Designed and created dedicated Helm charts for each microservice (carts, catalog, checkout, orders, UI).*
 
-    ![alt text](screenshots/screenshot11.png)
+    ![alt text](screenshots/screenshot08.png)
 
 - *Implemented consistent and meaningful naming conventions*
 
-    ![alt text](screenshots/screenshot12.png)
+    ![alt text](screenshots/screenshot09.png)
 
 - ***`Built a smart auto-generated password mechanism`** for the catalog service to avoid hardcoded credentials.*
 
-    ![alt text](screenshots/screenshot13.png)
+    ![alt text](screenshots/screenshot10.png)
 
 - ***`Developed a custom secret-configs Helm chart from scratch`** to manage centralized secret definitions*
 
-    ![alt text](screenshots/screenshot14.png)
+    ![alt text](screenshots/screenshot11.png)
 
 ### 🛡️ AWS IMDSv2 for DynamoDB access
 
-*To provide the Carts Service with secure, credential-less access to DynamoDB, I leveraged **`AWS Instance Metadata Service v2 (IMDSv2)`**. This approach eliminates the need for hardcoded AWS_ACCESS_KEY_ID or long-lived secrets, significantly reducing the attack surface.*
+*To provide the Carts Service with secure, credential-less access to DynamoDB, I leveraged **`AWS Instance Metadata Service v2 (IMDSv2)`**. This approach eliminates the need for hardcoded **`AWS_ACCESS_KEY_ID`** or long-lived secrets, significantly reducing the attack surface.*
 
 - **`Identity-Based Access:`**\
     *The EC2 Node is assigned an IAM Role with a scoped policy allowing dynamodb:GetItem and dynamodb:Query on the Items table.*
+
+    ![alt text](screenshots/screenshot30.png)
 
 - **`The Challenge:`**\
     *By default, IMDSv2 responses have a Time-to-Live (TTL/Hop Limit) of 2. In a containerized environment, the packet must travel from the Node to the Docker Bridge and finally to the Pod.*
 
 - **`The Solution:`**\
     *I tuned the http-put-response-hop-limit to 3. This ensures the metadata response can successfully traverse the virtual bridge to reach the application container while maintaining the security boundary.*
+
+    ![alt text](screenshots/screenshot32.png)
 
 **Impact:**
 
@@ -101,23 +105,25 @@ repo*
 
 - ***`Integrated AWS Secrets Manager`** for external secret storage*
 
-    ![alt text](screenshots/screenshot07.png)
+    ![alt text](screenshots/screenshot04.png)
 
 - ***`Used External Secrets Operator (ESO)`** to sync secrets into Kubernetes*
 
-    ![alt text](screenshots/screenshot15.png)
+    ![alt text](screenshots/screenshot12.png)
 
 - *Ensured secrets were dynamically injected into pods without hardcoding*
 
-    ![alt text](screenshots/screenshot04.png)
+    ![alt text](screenshots/screenshot03.png)
 
 ### 🧪 Incremental Validation Strategy
 
-- ***`Performed isolated, service-by-service validation`** of each Helm chart before full system deployment*
-
 - ***`Followed a tiered testing approach`** to ensure each component was functional and stable independently*
 
-    ![alt text](screenshots/screenshot03.png)
+    ![alt text](screenshots/screenshot02.png)
+
+- ***`Performed isolated, service-by-service validation`** of each Helm chart before full system deployment*
+
+    ![alt text](screenshots/screenshot27.png)
 
 - *This helped in:*
     - **`Identifying and debugging issues at the service level`**
@@ -142,15 +148,15 @@ repo*
 
 - *helm chart used identical names across Services, Deployments, and ConfigMaps, which caused ambiguity and debugging difficulty*
 
-    ![alt text](screenshots/screenshot16.png)
+    ![alt text](screenshots/screenshot13.png)
 
 - ***`Faced issues identifying correct service endpoints, especially for database connectivity`***
 
-    ![alt text](screenshots/screenshot08.png)
+    ![alt text](screenshots/screenshot05.png)
 
 - ***`Refactored all resource names using meaningful, context-aware conventions`***
 
-    ![alt text](screenshots/screenshot17.png)
+    ![alt text](screenshots/screenshot14.png)
 
 **✅ Result:**
 
@@ -161,7 +167,7 @@ repo*
 
 - *Navigating between values.yaml → templates → configs → _helpers.tpl across multiple charts became difficult*
 
-    ![alt text](screenshots/screenshot10.png)
+    ![alt text](screenshots/screenshot07.png)
 
 - *Understanding value flow and template rendering required careful tracing*
 
@@ -174,18 +180,23 @@ repo*
 
 - Initially used kubectl apply for installing ESO-CRDs, which caused inconsistent and failed deployments
 
+    ![alt text](screenshots/screenshot19.png)
+
 **👉 Why it failed:**
 
 - *apply expects an existing resource state to patch/update*
 - *CRDs (especially from operators) often require clean, first-time creation*
-- *Applying CRDs multiple times can lead to schema conflicts or partial updates*
+- *CRDs are huge and K8s, kubectl apply stores the entire configuration in an annotation, and **`CRDs often exceed the 262KB limit for annotations`**, hence they fail*
 
 **✅ Fix:**
 
 - ***`Switched to kubectl create for CRD installation`** before deploying dependent resources*
 
+    ![alt text](screenshots/screenshot20.png)
+
 **👉 Why create worked:**
 
+- ***`kubectl create or kubectl apply --server-side bypasses limit of 262KB limit for annotations`***
 - *kubectl create ensures a fresh, atomic creation of CRDs*
 - *CRDs are meant to be installed once and managed by the operator afterward*
 
@@ -229,6 +240,22 @@ repo*
 
 - ***`YAML`** is highly sensitive to formatting — template control must be used carefully*
 
+### 🛡️ DynamoDB Fine-Grained Permissions (PoLP)
+
+- *Implementing the Principle of Least Privilege (PoLP), initially granting broad access which compromised security best practices*
+
+- *Faced repeated **`"AccessDeniedException"`** errors despite having Query and Scan permissions enabled*
+
+    ![alt text](screenshots/screenshot36.png)
+
+- *Discovered that DynamoDB Global Secondary Indexes (GSIs) are treated as distinct resources and **`require explicit ARN definitions`***
+
+    ![alt text](screenshots/screenshot37.png)
+
+**✅ Fix:**
+
+- *Refined the IAM policy to target specific Table and Index ARNs rather than using wildcards on all resources*
+
 ------------------------------------------------------------------------
 
 ## 📚 What I Learned
@@ -247,6 +274,9 @@ repo*
 
 **Secrets management in production:**
 - integrating AWS Secrets Manager with ESO eliminates hardcoded secrets and improves security posture
+
+**Principle of Least Privilege (PoLP) in action:**
+- PoLP is iterative — it often requires debugging specific resource paths that aren't immediately obvious, like sub-resource ARNs for indexes
 
 **Kubernetes debugging skills:**
 - identifying issues across services, init containers, and configurations through systematic troubleshooting
@@ -298,16 +328,34 @@ repo*
 **Infra**
 1. ***`EC2 instance`** (minimum t2.midium)*
 2. ***`EBS volume`** attached to EC2 and mounted for orders service*
+
+    ![alt text](screenshots/screenshot17.png)
+
 3. ***`Dynamodb`** for carts service with:*
+
+    ![alt text](screenshots/screenshot33.png)
+
     ```
     table: Item   |  index: idx_global_cutomerId
        id: id     |    key: customerId
     ```
+
 4. ***`AWS Sercrets Manager`** with secrets:*
+
+    ![alt text](screenshots/screenshot04.png)
+
 5. ***`IAM role for EC2`** with permissions:*
+
+    ![alt text](screenshots/screenshot30.png)
+
     - dynamodb read and write access
     - secrets manager read access
-6. ***`Metadata hop`** for EC2 set to: `3`*
+
+    ![alt text](screenshots/screenshot37.png)
+
+6. ***`Metadata response hop limit`** for EC2 set to: `3`*
+
+    ![alt text](screenshots/screenshot32.png)
 
 **Tools**
 1. Docker installed and running
@@ -318,11 +366,56 @@ repo*
 
 **Steps**
 1. Create KinD Cluster with these configs
-2. Set context of kind cluster
-3. Install eso-crd.yaml
-4. Run helmfile
-5. Port-forward to aacess UI
+
+    ```bash
+    kind create cluster --name retail --config kind-config.yml
+    ```
+
+    ![alt text](screenshots/screenshot38.png)
+
+2. Install eso-crd.yaml (**`kubectl create`**)
+
+    ```bash
+    kubectl create -f eso-crd.yaml
+    ```
+
+    ![alt text](screenshots/screenshot20.png)
+
+3. Run helmfile
+
+    ```
+    helmfile -e kind apply
+    ```
+
+    ![alt text](screenshots/screenshot21.png)
+
+    - ***`wait for 2-3 mins`** to create all the releases*
+
+4. Port-forward to access UI
+
+    ```
+    kubectl port-forward svc/test-ui-service -n retail-app 8080:8080 --address=0.0.0.0
+    ```
+5. Open the port 8080 on EC2 instance
 6. View the app
+
+    ```
+    <public-ip>:<8080>
+    ```
+    ![alt text](screenshots/screenshot23.png)
+
+7. Check the serviceability of all micro-services in "/topology"
+
+    ![alt text](screenshots/screenshot25.png)
+
+8. Complete a buying process
+
+    ![alt text](screenshots/screenshot24.png)
+
+9. Add item to cart, and check at AWS console for persistence of items
+
+    ![alt text](screenshots/screenshot39.png)
+    
 
 ------------------------------------------------------------------------
 
