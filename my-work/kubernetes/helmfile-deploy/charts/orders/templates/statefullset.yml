@@ -39,7 +39,8 @@ spec:
             secretKeyRef:
               # name: {{ .Values.secret.name }}-secret
               # name: {{ include "orders.secretName" . }}
-              name: {{ required "A secret name is required! Please set .Values.secret.name" .Values.secret.name }}-secret
+              name: {{ include "orders.fullname" . }}-secret
+              # name: {{ required "A secret name is required! Please set .Values.secret.name" .Values.secret.name }}-secret
               key: RETAIL_ORDERS_PERSISTENCE_PASSWORD
               
         ports:
@@ -54,6 +55,7 @@ spec:
           mountPath: {{ .Values.volume.path | quote }}
         # subPath: not req because we are using PGDATA env var
         # subPath: postgres-db  # Keeps data in a subfolder on the disk
+        # subPath: pgdata-{{ .Values.subEnv }}
   
   volumeClaimTemplates:
   - metadata:

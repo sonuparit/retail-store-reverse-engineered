@@ -1,0 +1,93 @@
+environments:
+  kind:
+    values:
+      - values/kind-ec2.yml
+      - secretBaseName: "retail"
+      - namespace: "retail-app"
+      - subEnv: "test"
+  prod:
+    values:
+      - values/eks-prod.yml
+      - secretBaseName: "retail"
+      - namespace: "retail-app"
+      - subEnv: "prod"
+
+---
+
+helmDefaults:
+  createNamespace: true
+  wait: true
+
+releases:
+  # 1. Install the Operator FIRST
+  - name: {{ .Values.subEnv }}-eso
+    chart: external-secrets/external-secrets
+    namespace: {{ .Values.namespace }}
+    labels:
+      tier: secrets
+    values:
+      - installCRDs: false
+  
+  # 2. Then deploy your custom configs
+  - name: {{ .Values.subEnv }}-secrets
+    chart: ./charts/secret-configs
+    namespace: {{ .Values.namespace }}
+    values:
+      - secret:
+          name: {{ .Values.secretBaseName }}
+    labels:
+      tier: secrets
+    needs:
+      - {{ .Values.subEnv }}-eso
+
+  # 3. Deploy the Database/StatefulSet app
+  - name: {{ .Values.subEnv }}-orders
+    chart: ./charts/orders
+    namespace: {{ .Values.namespace }}
+    labels:
+      tier: orders
+    needs:
+      - {{ .Values.subEnv }}-secrets
+    values:
+      - secret:
+          name: {{ .Values.secretBaseName }}
+      - env:
+          postgres:
+            pgdata: {{ printf "/var/lib/postgresql/data/pgdata-%s" .Values.subEnv | quote }}
+
+  # 4. Deploy the other Microservices
+  - name: {{ .Values.subEnv }}-carts
+    chart: ./charts/carts
+    namespace: {{ .Values.namespace }}
+    labels:
+      tier: carts
+
+  - name: {{ .Values.subEnv }}-catalog
+    chart: ./charts/catalog
+    namespace: {{ .Values.namespace }}
+    labels:
+      tier: catalog
+
+  - name: {{ .Values.subEnv }}-checkout
+    chart: ./charts/checkout
+    namespace: {{ .Values.namespace }}
+    labels:
+      tier: checkout
+
+  - name: {{ .Values.subEnv }}-ui
+    chart: ./charts/ui
+    namespace: {{ .Values.namespace }}
+    labels:
+      tier: ui
+    needs:
+      - {{ .Values.subEnv }}-secrets
+      - {{ .Values.subEnv }}-orders
+      - {{ .Values.subEnv }}-carts
+      - {{ .Values.subEnv }}-catalog
+      - {{ .Values.subEnv }}-checkout
+    values:
+      - ep:
+          carts: {{ .Values.subEnv }}-carts
+          catalog: {{ .Values.subEnv }}-catalog
+          checkout: {{ .Values.subEnv }}-checkout
+          orders: {{ .Values.subEnv }}-orders

@@ -50,10 +50,10 @@ repo*
 
 ## 🎯 What This Project Demonstrates
 
--   *Transition from raw YAML → **`Helm-based deployments`***
+-   *Transition from raw YAML → **`Helm-based muti env deployments`***
 -   *Multi-service orchestration using Helmfile*
 -   ***`Dependency-aware deployments`***
--   ***`Secure secret management using AWS Secrets Manager + Kubernetes`***
+-   ***`Secure secret management using AWS Secrets Manager + IMDSv2 + Kubernetes`***
 -   *Real-world DevOps workflow simulation*
 
 ------------------------------------------------------------------------
@@ -77,6 +77,8 @@ repo*
 - ***`Developed a custom secret-configs Helm chart from scratch`** to manage centralized secret definitions*
 
     ![alt text](screenshots/screenshot11.png)
+
+- ***`Designed a full dynamic charts naming system`** to implement env specific multi deployments, removing any naming collisions*
 
 ### 🛡️ AWS IMDSv2 for DynamoDB access
 
@@ -326,7 +328,7 @@ repo*
 ### Prerequisites
 
 **Infra**
-1. ***`EC2 instance`** (minimum t2.midium)*
+1. ***`EC2 instance`** (recommended t2.large)*
 2. ***`EBS volume`** attached to EC2 and mounted for orders service*
 
     ![alt text](screenshots/screenshot17.png)
@@ -340,7 +342,7 @@ repo*
        id: id     |    key: customerId
     ```
 
-4. ***`AWS Sercrets Manager`** with secrets:*
+4. ***`AWS Sercrets Manager`** with secrets configured:*
 
     ![alt text](screenshots/screenshot04.png)
 
@@ -365,7 +367,14 @@ repo*
 5. Kind
 
 **Steps**
-1. Create KinD Cluster with these configs
+
+1. Clone the repo and get into `helmfile-deploy`
+    ```
+    git clone https://github.com/sonuparit/retail-store-reverse-engineered.git
+
+    cd /retail-store-reverse-engineered/my-work/kubernetes/helmfile-deploy/
+    ```
+2. Create KinD Cluster with these configs
 
     ```bash
     kind create cluster --name retail --config kind-config.yml
@@ -373,7 +382,7 @@ repo*
 
     ![alt text](screenshots/screenshot38.png)
 
-2. Install eso-crd.yaml (**`kubectl create`**)
+3. Create CRD eso-crd.yaml
 
     ```bash
     kubectl create -f eso-crd.yaml
@@ -381,7 +390,7 @@ repo*
 
     ![alt text](screenshots/screenshot20.png)
 
-3. Run helmfile
+4. Run helmfile
 
     ```
     helmfile -e kind apply
@@ -391,28 +400,33 @@ repo*
 
     - ***`wait for 2-3 mins`** to create all the releases*
 
-4. Port-forward to access UI
+5. Get the name of ui-service
+    ```
+    kubectl get svc -n retail-app
+    ```
+
+6. forward the port of ui-service to acces the app
 
     ```
     kubectl port-forward svc/test-ui-service -n retail-app 8080:8080 --address=0.0.0.0
     ```
-5. Open the port 8080 on EC2 instance
-6. View the app
+7. Open the port 8080 on EC2 instance
+8. View the app
 
     ```
     <public-ip>:<8080>
     ```
     ![alt text](screenshots/screenshot23.png)
 
-7. Check the serviceability of all micro-services in "/topology"
+9. Check the serviceability of all micro-services in "/topology"
 
     ![alt text](screenshots/screenshot25.png)
 
-8. Complete a buying process
+10. Complete a buying process to confirm operational validation
 
     ![alt text](screenshots/screenshot24.png)
 
-9. Add item to cart, and check at AWS console for persistence of items
+11. Add item to cart, and check at DynamoDB AWS console for persistence of items
 
     ![alt text](screenshots/screenshot39.png)
     
