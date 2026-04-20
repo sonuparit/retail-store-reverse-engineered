@@ -52,8 +52,8 @@ spec:
            # - secretRef:
            #     name: {{ include "orders.secretName" . }}
             - secretRef:
-                name: {{ include "orders.fullname" . }}-secret
-                # name: {{ required "A secret name is required! Please set .Values.secret.name" .Values.secret.name }}-secret
+                # name: {{ include "orders.fullname" . }}-secret
+                name: {{ required "A secret name is required! Please set .Values.secret.name" .Values.secret.name }}-secret
                 # name: {{ .Values.secret.name }}-secret
           {{- with .Values.securityContext }}
           securityContext:
