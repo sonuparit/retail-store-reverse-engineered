@@ -53,7 +53,7 @@ repo*
 -   *Transition from raw YAML → **`Helm-based muti env deployments`***
 -   *Multi-service orchestration using Helmfile*
 -   ***`Dependency-aware deployments`***
--   ***`Secure secret management using AWS Secrets Manager + IMDSv2 + Kubernetes`***
+-   ***`Secure secret management using AWS Secrets Manager + IMDSv2 on Kubernetes`***
 -   *Real-world DevOps workflow simulation*
 
 ------------------------------------------------------------------------
@@ -70,15 +70,9 @@ repo*
 
     ![alt text](screenshots/screenshot09.png)
 
-- ***`Built a smart auto-generated password mechanism`** for the catalog service to avoid hardcoded credentials.*
-
-    ![alt text](screenshots/screenshot10.png)
-
 - ***`Developed a custom secret-configs Helm chart from scratch`** to manage centralized secret definitions*
 
     ![alt text](screenshots/screenshot11.png)
-
-- ***`Designed a full dynamic charts naming system`** to implement env specific multi deployments, removing any naming collisions*
 
 ### 🛡️ AWS IMDSv2 for DynamoDB access
 
@@ -182,7 +176,7 @@ repo*
 
 - Initially used kubectl apply for installing ESO-CRDs, which caused inconsistent and failed deployments
 
-    ![alt text](screenshots/screenshot19.png)
+    ![alt text](screenshots/screenshot20.png)
 
 **👉 Why it failed:**
 
@@ -194,7 +188,7 @@ repo*
 
 - ***`Switched to kubectl create for CRD installation`** before deploying dependent resources*
 
-    ![alt text](screenshots/screenshot20.png)
+    ![alt text](screenshots/screenshot19.png)
 
 **👉 Why create worked:**
 
@@ -210,7 +204,7 @@ repo*
 
 - Root cause: used application service port instead of database service port in readiness check
 
-    ![alt text](screenshots/screenshot19.png)
+    ![alt text](screenshots/screenshot15.png)
 
 
 **✅ Fix:**
@@ -224,15 +218,15 @@ repo*
 ### 🧬 Go Template Whitespace Issue
 - *Misuse of **"`-`"** (whitespace trimming) in Helm templates caused invalid YAML rendering*
 
-    ![alt text](screenshots/screenshot20.png)
+    ![alt text](screenshots/screenshot16.png)
 
 - *This resulted in deployment failures*
-
-    ![alt text](screenshots/screenshot01.png)
 
 **👉 Example problem:**
 
 - **{{`-` ... }}** *removes spaces, which can break YAML structure*
+
+    ![alt text](screenshots/screenshot01.png)
 
 **✅ Fix:**
 
@@ -248,11 +242,11 @@ repo*
 
 - *Faced repeated **`"AccessDeniedException"`** errors despite having Query and Scan permissions enabled*
 
-    ![alt text](screenshots/screenshot36.png)
+    ![alt text](screenshots/screenshot35.png)
 
 - *Discovered that DynamoDB Global Secondary Indexes (GSIs) are treated as distinct resources and **`require explicit ARN definitions`***
 
-    ![alt text](screenshots/screenshot37.png)
+    ![alt text](screenshots/screenshot36.png)
 
 **✅ Fix:**
 
@@ -328,19 +322,22 @@ repo*
 ### Prerequisites
 
 **Infra**
-1. ***`EC2 instance`** (recommended t2.large)*
+1. ***`EC2 instance`** (recommended flixi.large)*
+
+    ![alt text](screenshots/screenshot50.png)
+
 2. ***`EBS volume`** attached to EC2 and mounted for orders service*
 
     ![alt text](screenshots/screenshot17.png)
 
 3. ***`Dynamodb`** for carts service with:*
 
-    ![alt text](screenshots/screenshot33.png)
-
     ```
     table: Item   |  index: idx_global_cutomerId
        id: id     |    key: customerId
     ```
+
+    ![alt text](screenshots/screenshot33.png)
 
 4. ***`AWS Sercrets Manager`** with secrets configured:*
 
@@ -353,7 +350,7 @@ repo*
     - dynamodb read and write access
     - secrets manager read access
 
-    ![alt text](screenshots/screenshot37.png)
+    ![alt text](screenshots/screenshot36.png)
 
 6. ***`Metadata response hop limit`** for EC2 set to: `3`*
 
@@ -374,13 +371,15 @@ repo*
 
     cd /retail-store-reverse-engineered/my-work/kubernetes/helmfile-deploy/
     ```
+    ![alt text](screenshots/screenshot52.png)
+
 2. Create KinD Cluster with these configs
 
     ```bash
     kind create cluster --name retail --config kind-config.yml
     ```
 
-    ![alt text](screenshots/screenshot38.png)
+    ![alt text](screenshots/screenshot37.png)
 
 3. Create CRD eso-crd.yaml
 
@@ -388,7 +387,7 @@ repo*
     kubectl create -f eso-crd.yaml
     ```
 
-    ![alt text](screenshots/screenshot20.png)
+    ![alt text](screenshots/screenshot41.png)
 
 4. Run helmfile
 
@@ -400,36 +399,46 @@ repo*
 
     - ***`wait for 2-3 mins`** to create all the releases*
 
-5. Get the name of ui-service
+    ![alt text](screenshots/screenshot43.png)
+
+5. Get the name of ui-service and forward it's port
     ```
     kubectl get svc -n retail-app
     ```
-
-6. forward the port of ui-service to acces the app
+    ![alt text](screenshots/screenshot45.png)
 
     ```
     kubectl port-forward svc/test-ui-service -n retail-app 8080:8080 --address=0.0.0.0
     ```
-7. Open the port 8080 on EC2 instance
-8. View the app
+
+    ![alt text](screenshots/screenshot46.png)
+
+6. Open the port 8080 on EC2 instance
+
+    ![alt text](screenshots/screenshot53.png)
+
+7. View the app
 
     ```
-    <public-ip>:<8080>
+    <ec2-public-ip>:8080
     ```
     ![alt text](screenshots/screenshot23.png)
 
-9. Check the serviceability of all micro-services in "/topology"
+8. Check the serviceability of all micro-services in "/topology"
 
     ![alt text](screenshots/screenshot25.png)
 
-10. Complete a buying process to confirm operational validation
+9. Complete a buying process to confirm operational validation
 
     ![alt text](screenshots/screenshot24.png)
 
-11. Add item to cart, and check at DynamoDB AWS console for persistence of items
+10. Add item to cart, and check at DynamoDB AWS console for persistence of items
 
-    ![alt text](screenshots/screenshot39.png)
-    
+    ![alt text](screenshots/screenshot38.png)
+
+11. Check the PostgeSQL data on external EBS volume
+
+    ![alt text](screenshots/screenshot40.png)
 
 ------------------------------------------------------------------------
 
