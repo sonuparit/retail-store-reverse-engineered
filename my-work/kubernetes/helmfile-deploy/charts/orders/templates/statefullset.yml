@@ -39,8 +39,8 @@ spec:
             secretKeyRef:
               # name: {{ .Values.secret.name }}-secret
               # name: {{ include "orders.secretName" . }}
-              name: {{ include "orders.fullname" . }}-secret
-              # name: {{ required "A secret name is required! Please set .Values.secret.name" .Values.secret.name }}-secret
+              # name: {{ include "orders.fullname" . }}-secret
+              name: {{ required "A secret name is required! Please set .Values.secret.name" .Values.secret.name }}-secret
               key: RETAIL_ORDERS_PERSISTENCE_PASSWORD
               
         ports:
