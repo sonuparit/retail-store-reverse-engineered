@@ -13,12 +13,14 @@
 ## 📑 Table of Contents
 
 - **[Objectives and Sub-goals](#-objectives-and-sub-goals)**
-- **[Vision](#-vision)**
+- **[What This Project Demonstrates](#-what-this-project-demonstrates)**
 - **[Why I Chose This Project](#-why-i-chose-this-project)**
-- **[My Key Learnings & Implementation](#-my-key-learnings--implementation)**
-
+- **[Key Improvements Over Original System](#-key-improvements-over-original-system)**
+- **[Current Status](#-current-status)**
+- **[Key Engineering Work](#️-key-engineering-work)**
 
 ## 🎯 Objectives and Sub-goals
+
 1. **📚 To understand the application architecture:**  
 *Analyze and reverse-engineer the microservices architecture to gain a deep understanding of how the system works.*
 
@@ -36,7 +38,7 @@
     - ***`Jenkins approach`** (traditional pipeline)*
 
 5. **📧 Notification System:**  
-*Integrate **`email notifications`** for pipeline events and alerts.*
+*Integrate **`email and Slack notifications`** for pipeline events and alerts.*
 
 6. **🏗️ Infrastructure as Code (IaC):**  
 *Provision infrastructure using **`Terraform`** for automated and consistent environments.*
@@ -52,15 +54,18 @@
     ```yml
     terraform apply
     ```
-## 💡 Vision
 
-🌄 *The vision of this project is to **`go beyond the basics`** by simulating a production-grade environment that builds a strong, **`hands-on`** understanding of how real-world DevOps systems are designed, deployed, and operated at scale.*
+## 🧠 What This Project Demonstrates
 
-🎯 *The focus is on **`mastering end-to-end system design, automation, and observability`**, while developing the mindset required to design, build, and operate reliable, cloud-native systems. Rather than just learning tools, the goal is to understand the **"`Why?`"** behind each decision—covering architecture, automation, deployment strategies, and observability within a production-like environment.*
+- **Designed and deployed** a production-like microservices system on Kubernetes
+- Implemented secure, **cloud-native integrations** (DynamoDB, EBS, IAM)
+- Applied **real-world DevOps** practices: containerization, orchestration, IaC, and GitOps
+- Built systems with **security-first, scalability-aware, and failure-resilient design**
+- **Debugged and stabilized** distributed systems across infra, networking, and application layers
 
-## 📌 Why I Chose This Project
+## 🕵 Why I Chose This Project
 
-### 🔗 This project is intentionally outside my comfort zone.
+### 🧗‍♂️ This project is intentionally outside my comfort zone
 
 *I am primarily proficient in **`Python`** and **`JavaScript`**, and deploying applications using these technologies is something I can do with confidence. However, I wanted to challenge myself with something more complex and unfamiliar.*
 
@@ -68,7 +73,7 @@
 
 ---
 
-### 📌 At the time of starting this project:
+### 📌 At the time of starting this project
 
 - *I had **`no prior experience with Java`***
 - *The system consists of **`5 independent microservices`***
@@ -78,42 +83,86 @@
 
 ---
 
-### 🧠 This project represents my ability to:
+## 💥 Key Improvements Over Original System
 
-- ***`Learn unfamiliar technologies quickly`***  
-- *Understand and work with complex distributed systems*
-- *Step out of my **`comfort zone`** and take on real-world challenges*
+- Introduced **persistent storage** (DynamoDB + EBS)
+- Eliminated **hardcoded secrets** using IAM + Secrets Manager + IMDSv2
+- Removed unnecessary dependencies (**Redis, MariaDB**)
+- Optimized container images (**−190MB**)
 
-**🌱 For me, this is not just about building a project — it’s about building the mindset required for production-grade DevOps engineering.**
+## 📊 Current Status
 
-## 🧠 My Key Learnings & Implementation
+- ✅ Microservices containerized and orchestrated (**Docker → Kubernetes**)
+- ✅ **Stateful + stateless** services implemented with production patterns
+- ✅ Secure **cloud integrations** (IAM, Secrets Manager, IMDSv2, DynamoDB, EBS)
+- 🚧 GitOps (**ArgoCD**) in progress...
+
+## ⚙️ Key Engineering Work
 
 ### 1. 🏗️ App Architecture [(read here)](./my-work/architecture/)
 
+- **Reverse-engineered** 5-service microservices architecture
+- Mapped **service communication, dependencies, and API flows**
+- Analyzed stateless, Kubernetes-oriented design (**tmpfs-based**)
+
 ### 2. 📦 Containerzation with Docker [(read here)](./my-work/docker/)
+
+- **Reverse-engineered Dockerfiles** across all services
+- Optimized base image (**AL2023-minimal, −190MB**)
+- **Maintained compatibility** (dnf + glibc)
+- Enforced **non-root** container execution
 
 ### 3. 🐳 Running app with docker-compose [(read here)](./my-work/docker-compose/)
 
+- Reverse-engineered multi-service **Compose** setup
+- Mapped **env variables** and **service** dependencies
+- Built **unified setup** with shared network
+- Validated system via **health checks & E2E testing**
+
 ### 4. ☸️ Kubernetes Deployment (in parts ↴) [(read more)](./my-work/kubernetes/)
 
-1. **Individual micro service deployment on K8s for operational validation** [(read here)](./my-work/kubernetes/ind-svc-test/)
+#### 4.1 - Individual Microservice-level operational validation & enhancements [(read here)](./my-work/kubernetes/ind-svc-test/)
 
-    - ⚡ Persistent DynamoDB integration for carts service *`(to retain data after cluster disposal)`*\
-    [(read here)](./my-work/kubernetes/ind-svc-test/cart-dynamodb-test/)
+- **Carts service** [(read here)](./my-work/kubernetes/ind-svc-test/cart-dynamodb-test/)
 
-    - 🐘 PV and PVC for PostgreSQL Orders service *`(to retain data after cluster disposal)`*\
-    [(read here)](./my-work/kubernetes/ind-svc-test/orders-postgreSQL-test/)
+  - Integrated **AWS DynamoDB** (replaced in-memory storage)
+  - Enforced **production-safe design** (disabled auto table creation)
+  - Applied **least-privilege** access (IAM + K8s secrets)
+  - Eliminated **race conditions & infra drift**
 
-    - Testing Catalog service\
-    [(read here)](./my-work/kubernetes/ind-svc-test/catalog-test/)
+- **Orders service** [(read here)](./my-work/kubernetes/ind-svc-test/orders-postgreSQL-test/)
 
-    - Testing Checkout service\
-    [(read here)](./my-work/kubernetes/ind-svc-test/checkout-test/)
+  - Implemented **persistent PostgreSQL** (PV/PVC on AWS EBS)
+  - Designed **stateful** workload (StatefulSet + storage)
+  - Secured volume access (**fsGroup**, non-root)
+  - Ensured **data durability** across restarts
 
-    - Testing UI service\
-    [(read here)](./my-work/kubernetes/ind-svc-test/ui-test/)
+- **Catalog service** [(read here)](./my-work/kubernetes/ind-svc-test/catalog-test/)
 
-2. **Full app deployment on Kubernetes**
+  - Removed **MariaDB** dependency (in-memory design)
+  - Simplified service architecture
+  - Decoupled DB from service via **source code analysis**
 
-    - via helmfile [(read here)](./my-work/kubernetes/helmfile-deploy/)
-    - via ArgoCD [(under progress....)](./my-work/kubernetes/argocd-deploy/)
+- **Checkout service** [(read here)](./my-work/kubernetes/ind-svc-test/checkout-test/)
+
+  - Removed **Redis** dependency (stateless workflow)
+  - **Simplified** service architecture
+  - Derived minimal runtime config via **source code analysis**
+
+- **UI service** [(read here)](./my-work/kubernetes/ind-svc-test/ui-test/)
+
+  - Made service **environment-agnostic**
+  - Decoupled **observability** from application logic
+
+#### 4.2 - Full app deployment on Kubernetes
+
+- **helmfile deployment** [(read here)](./my-work/kubernetes/helmfile-deploy/)
+
+  - Designed modular **Helm charts with environment-based configs**
+  - Implemented secure secrets flow (**AWS Secrets Manager + ESO**)
+  - Enabled **credential-less** AWS access via IMDSv2 (IAM roles, no static keys)
+  - Orchestrated **dependency-aware** deployments with Helmfile
+  - Validated full-stack deployment via **service-level testing**
+  - Debugged complex issues (**CRDs, IAM policies, init containers, templating**)
+
+- **ArgoCD deployment** [(in progress....)](./my-work/kubernetes/argocd-deploy/)

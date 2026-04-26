@@ -1,15 +1,15 @@
 # 🚀 Retail Store Containerization
 
-A hands-on reverse-engineered microservices project to better understand containerization using Docker.
+A hands-on reverse-engineered microservices project focused on understanding production-grade container design decisions, not just building containers.
 
 ## 📑 Table of Contents
 
 1. **[Overview](#-overview)**
-2. **[What I Learned](#-what-i-learned)**
-3. **[Architecture](#️-architecture)**
-4. **[Dockerfile Breakdown](#-dockerfile-breakdown-key-insights)**
-5. **[What I choose](#-what-i-chose-for-my-project)**
-6. **[My Contribution](#-my-contribution)**
+2. **[Architecture](#️-architecture)**
+3. **[Dockerfile Breakdown](#-dockerfile-breakdown-key-insights)**
+4. **[What I choose](#-what-i-chose-for-my-project)**
+5. **[My Contribution](#-my-contribution)**
+6. **[What I Learned](#-what-i-learned)**
 7. **[Why This Project Matters](#-why-this-project-matters)**
 8. **[Next Improvements](#-next-improvements)**
 9. **[Screenshots](#-screenshots)**
@@ -19,28 +19,21 @@ A hands-on reverse-engineered microservices project to better understand contain
 
 **This project represents a retail store application composed of multiple microservices. I used existing Dockerfile as a starting point and reverse-engineered the system to gain a deep understanding of:**
 
--   *Microservices architecture*
--   *Containerization workflow*
--   *Base image selection criteria*
+- *Microservices architecture*
+- *Containerization workflow*
+- *Base image selection criteria*
 
 **This project focuses on understanding real-world trade-offs in containerization rather than just building from scratch.**
-
-## 🧠 What I Learned
-
--   *How independent microservices are structured so they can be containerized*
--   *A deep understanding of how Dockerfiles work and the reasoning behind their design*
--   *How to make informed decisions when choosing base images*
--   *Debugging container-related issues*
 
 ## 🏗️ Architecture
 
 **The application consists of 5 microservices:**
 
--   *Service 1 -- `UI` (**main Interface**)*
--   *Service 2 -- `Catalog` (**Content**)*
--   *Service 3 -- `Cart` (**Manages user session state**)*
--   *Service 4 -- `Checkout` (**Handles order processing workflow**)*
--   *Service 5 -- `Orders` (**Stores finalized transactions**)*
+- *Service 1 -- `UI` (**main Interface**)*
+- *Service 2 -- `Catalog` (**Content**)*
+- *Service 3 -- `Cart` (**Manages user session state**)*
+- *Service 4 -- `Checkout` (**Handles order processing workflow**)*
+- *Service 5 -- `Orders` (**Stores finalized transactions**)*
 
 **Each service runs in its own container and communicates over a Docker network.**
 
@@ -73,11 +66,9 @@ A hands-on reverse-engineered microservices project to better understand contain
 
     **Amazon docs:**
     ![alt text](screenshots/screenshot22.png)
-    
 
 - **👉 Insight:**
 *The current base image choice prioritizes compatibility and stability over minimal size, which is often a practical decision in real-world production systems.*
-
 
 ### 🔐 Security Considerations
 
@@ -92,24 +83,31 @@ A hands-on reverse-engineered microservices project to better understand contain
 This Dockerfile reflects practical, production-oriented decisions where compatibility, stability, and security are prioritized over aggressive size optimization. While lightweight alternatives were explored, system-level constraints (package manager behavior and libc differences) justify the current approach, demonstrating the importance of balancing optimization with real-world reliability.
 ```
 
-## 🧪 What I Chose for My Project:
+## 🧪 What I Chose for My Project
 
 - *I chose a **`minimal base image`** to intentionally explore its limitations and identify potential compatibility issues, even though the original image works reliably.*
 
 ## 🔍 My Contribution
 
--   *Reverse engineered an existing Dockerfile.*
--   *Analyzed and documented the design decisions behind the Dockerfile.*
--   *Implemented a smaller image (**`AL2023-minimal`**), reducing size by up to 190MB.*
--   *Improved my real-world Docker Image understanding.*
+- *Reverse engineered an existing Dockerfile.*
+- *Analyzed and documented the design decisions behind the Dockerfile.*
+- *Implemented a smaller image (**`AL2023-minimal`**), reducing size by up to 190MB.*
+- *Improved my real-world Docker Image understanding.*
+
+## 🧠 What I Learned
+
+- *How independent microservices are structured so they can be containerized*
+- *A deep understanding of how Dockerfiles work and the reasoning behind their design*
+- *How to make informed decisions when choosing base images*
+- *Debugging container-related issues*
 
 ## 💡 Why This Project Matters
 
 **This project demonstrates my ability to:**
 
--   *Learn from existing systems*
--   *Break down complex architectures*
--   *Take initiative and independently develop a deep understanding of complex systems*
+- *Learn from existing systems*
+- *Break down complex architectures*
+- *Take initiative and independently develop a deep understanding of complex systems*
 
 ## 📈 Next Improvements
 
