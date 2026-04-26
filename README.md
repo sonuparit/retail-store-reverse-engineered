@@ -4,9 +4,9 @@
 
 - **Containerization**
 - **Kubernetes Orchestration**
-- **Infrastructure as Code (IaC)**
 - **CI/CD Pipelines**
 - **Real-Time Alerts**
+- **Infrastructure as Code (IaC)**
 - **Monitoring**
 - **Automation**
 
@@ -30,16 +30,16 @@
 3. **☸️ Kubernetes Deployment:**  
 *Deploy and manage the application in a **`Kubernetes cluster.`***
 
-4. **🏗️ Infrastructure as Code (IaC):**  
-*Provision infrastructure using **`Terraform`** for automated and consistent environments.*
-
-5. **ↈ CI/CD Implementation:**  
+4. **ↈ CI/CD Implementation:**  
 *Build complete **`CI/CD`** pipelines using:*
     - ***`GitOps`** approach **`(ArgoCD)`***
     - ***`Jenkins approach`** (traditional pipeline)*
 
-6. **📧 Notification System:**  
+5. **📧 Notification System:**  
 *Integrate **`email notifications`** for pipeline events and alerts.*
+
+6. **🏗️ Infrastructure as Code (IaC):**  
+*Provision infrastructure using **`Terraform`** for automated and consistent environments.*
 
 7. **📊 Observability:**  
 *Implement monitoring and visualization using:*
@@ -56,7 +56,7 @@
 
 🌄 *The vision of this project is to **`go beyond the basics`** by simulating a production-grade environment that builds a strong, **`hands-on`** understanding of how real-world DevOps systems are designed, deployed, and operated at scale.*
 
-🎯 *The focus is on mastering end-to-end system design, automation, and observability, while developing the mindset required to design, build, and operate reliable, cloud-native systems. Rather than just learning tools, the goal is to understand the **"`Why?`"** behind each decision—covering architecture, automation, deployment strategies, and observability within a production-like environment.*
+🎯 *The focus is on **`mastering end-to-end system design, automation, and observability`**, while developing the mindset required to design, build, and operate reliable, cloud-native systems. Rather than just learning tools, the goal is to understand the **"`Why?`"** behind each decision—covering architecture, automation, deployment strategies, and observability within a production-like environment.*
 
 ## 📌 Why I Chose This Project
 
@@ -70,8 +70,8 @@
 
 ### 📌 At the time of starting this project:
 
-- *I had no prior experience with Java*
-- *The system consists of 5 independent microservices*
+- *I had **`no prior experience with Java`***
+- *The system consists of **`5 independent microservices`***
 - *The architecture is significantly more complex than typical projects*
 
 **🧩 Instead of avoiding this gap, I decided to use it as an opportunity to grow.**
@@ -80,9 +80,9 @@
 
 ### 🧠 This project represents my ability to:
 
-- *Learn unfamiliar technologies quickly*  
+- ***`Learn unfamiliar technologies quickly`***  
 - *Understand and work with complex distributed systems*
-- *Step out of my comfort zone and take on real-world challenges*
+- *Step out of my **`comfort zone`** and take on real-world challenges*
 
 **🌱 For me, this is not just about building a project — it’s about building the mindset required for production-grade DevOps engineering.**
 
@@ -113,6 +113,7 @@
     - Testing UI service\
     [(read here)](./my-work/kubernetes/ind-svc-test/ui-test/)
 
-2. **Full app deployment on K8s via Helm** [(read here)](./my-work/kubernetes/final-app/)
+2. **Full app deployment on Kubernetes**
 
-    - In progress...
+    - via helmfile [(read here)](./my-work/kubernetes/helmfile-deploy/)
+    - via ArgoCD [(under progress....)](./my-work/kubernetes/argocd-deploy/)

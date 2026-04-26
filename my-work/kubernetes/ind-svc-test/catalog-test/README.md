@@ -4,10 +4,10 @@
 ## 📑 Table of Contents
 
 - **[Overview](#-overview)**
+- **[Architectural Decision Record (ADR)](#️-architectural-decision-record--adr)**
 - **[Key Implementations](#-key-implementations)**
 - **[Challenges & Solutions](#️-challenges--solutions)**
 - **[Outcome](#-outcome)**
-- **[Architectural Decision Record (ADR)](#️-architectural-decision-record--adr)**
 - **[Key Learnings](#-key-learnings)**
 - **[Next Steps](#-next-steps)**
 - **[Extra Screenshots](#-extra-screenshots)**
@@ -22,6 +22,26 @@
 *This approach helped me stay focused on orchestration, system behavior, and production-relevant trade-offs **`rather than repeating similar integrations`**.*
 
 ------------------------------------------------------------------------
+
+## 🏛️ Architectural Decision Record 📝 (ADR)
+
+***Context:***
+
+*The Catalog service originally relied on MariaDB for item storage. However, the project scope did not involve dynamic catalog management, and **`similar persistence patterns were already explored in other services`**.*
+
+***Rationale:***
+
+- *No requirement to actively manage or mutate catalog data*
+- *Persistence patterns already implemented using DynamoDB (Cart) and PostgreSQL (Orders)*
+- *Avoided duplicating the same database integration pattern*
+- *Reduced unnecessary operational overhead*
+- *Kept focus on Kubernetes orchestration and infrastructure automation*
+
+### The Decision:
+***`Removed MariaDB`** integration from the Catalog service.*
+
+------------------------------------------------------------------------
+
 
 ## 🔧 Key Implementations
 
@@ -79,42 +99,23 @@
 
 ------------------------------------------------------------------------
 
-## 🏛️ Architectural Decision Record 📝 (ADR)
-
-***Context:***
-
-*The Catalog service originally relied on MariaDB for item storage. However, the project scope did not involve dynamic catalog management, and **`similar persistence patterns were already explored in other services`**.*
-
-***Rationale:***
-
-- *No requirement to actively manage or mutate catalog data*
-- *Persistence patterns already implemented using DynamoDB (Cart) and PostgreSQL (Orders)*
-- *Avoided duplicating the same database integration pattern*
-- *Reduced unnecessary operational overhead*
-- *Kept focus on Kubernetes orchestration and infrastructure automation*
-
-### The Decision:
-***`Removed MariaDB`** integration from the Catalog service.*
-
-------------------------------------------------------------------------
-
 ## 💡 Key Learnings
 
 - *Learned to **`validate systems incrementally`** — testing services in isolation before full orchestration improved reliability and debugging clarity*
 
-- *Gianed hands-on experience in reverse engineering systems — **`an invaluable skill for translating legacy applications into scalable microservices architectures`**.*
+- *Gianed **`hands-on experience in reverse engineering systems`** — an invaluable skill for translating legacy applications into scalable microservices architectures.*
 
 - *Built practical experience in **`choosing the right persistence layer based on use case`**, instead of applying everything to everywhere*
 
-- ***`Realized the importance of intentional architecture decisions`** — removing components that add complexity without adding learning or value.*
+- *Realized the **`importance of intentional architecture decisions`** — removing components that add complexity without adding learning or value.*
 
-- *Strengthened my ability to think in terms of system design trade-offs, not just implementation*
+- *Strengthened my ability to **`think in terms of system design trade-offs`**, not just implementation*
 
 ------------------------------------------------------------------------
 
 ## 🚀 Next Steps
 
-1. *Full app deployment on **`Kubernetes`***
+1. *Full app deployment on **`Kubernetes`**[(read here)](../../)*
 2. *IaC Provisioning via **`Terraform`***
 3. *Implement **`CI/CD`** pipeline*
 4. *Add **`email notification`** system*

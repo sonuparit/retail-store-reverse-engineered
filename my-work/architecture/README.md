@@ -90,4 +90,5 @@ This app is not my work - I'm just reverse engineering it to better understand m
 
 ---
 
-![Note] This is not my original application. I reverse-engineered it to build a deeper understanding of microservices, Kubernetes, and cloud-native architectures.
+> [!NOTE]  
+> This is not my original application. I reverse-engineered it to build a deeper understanding of microservices, Kubernetes, and cloud-native architectures.

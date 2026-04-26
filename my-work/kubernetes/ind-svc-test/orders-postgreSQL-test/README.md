@@ -3,10 +3,10 @@
 ## 📑 Table of Contents
 
 - **[Overview](#-overview)**
+- **[Architectural Decision Record (ADR)](#️-architectural-decision-record--adr)**
 - **[Key Implementations](#-key-implementations)**
 - **[Challenges & Solutions](#️-challenges--solutions)**
 - **[Outcome](#-outcome)**
-- **[Architectural Decision Record (ADR)](#️-architectural-decision-record--adr)**
 - **[Key Learnings](#-key-learnings)**
 - **[Next Steps](#-next-steps)**
 - **[Extra Screenshots](#-extra-screenshots)**
@@ -16,6 +16,26 @@
 *This section of project demonstrates the **`transition from in-memory mock storage to a real persistent PostgreSQL Database`** within a microservices-based retail application.*
 
 *The **`goal is to move closer to a production-ready architecture`** by replacing simulated components with actual cloud services, however I **`got several errors`** in the process, but finally I **`fixed them all`**.*
+
+------------------------------------------------------------------------
+
+## 🏛️ Architectural Decision Record 📝 (ADR)
+
+### Rabbitmq:
+
+- *From the very start of this project. My focus was to achieve deep proficiency in **`Docker`**, **`IaC (Terraform)`**, **`Kubernetes orchestration`**, **`CI/CD pipeline`**, **`Monitoring`** and **`Automation`**. By removing the message broker, I reduced unnecessary stateful complexity, allowing me to focus entirely on my initial goal*.
+
+### The Decision:
+
+- *I chose to keep the application logic synchronous to my **`GOAL`** to ensure the **`"one click - full automation"`** remains the star of the show.*
+
+### PostgreSQL (PV & PVC):
+
+- *Order data requires persistence, instead of losing records when the cluster is destroyed, I **`implemented PV and PVC backed by external EBS`** for durable storage.*
+
+### The Decision:
+
+- *Adopted **`persistent PostgreSQL`** storage for the orders service.*
 
 ------------------------------------------------------------------------
 
@@ -37,11 +57,11 @@
 
     ![alt text](screenshots/screenshot14.png)
 
--   *Implemented correct **`fsgroup`** permission for **`PostgreSQL container`**) to have read / write access to EBS volume*
+-   *Implemented correct **`fsgroup`** permission for **`PostgreSQL container`** to have read / write access to EBS volume*
 
     ![alt text](screenshots/screenshot19.png)
 
--   *Implemented **`PGDATA`** env variable variable to mitigate **`PostgreSQL initdb error`**)*
+-   *Implemented **`PGDATA`** env variable variable to mitigate **`drive not empty`**) error*
 
 ------------------------------------------------------------------------
 
@@ -94,17 +114,17 @@ initdb: error: directory "/var/lib/postgresql/data" exists but is not empty (los
 
     ![alt text](screenshots/screenshot04.png)
 
-    ***This instructs Kubernetes to recursively change the ownership of the EBS volume to the postgres group ID upon attachment, ensuring the database process has the necessary read/write privileges without manual intervention.***
+    *This instructs Kubernetes to recursively change the ownership of the EBS volume to the postgres group ID upon attachment, ensuring the database process has the necessary read/write privileges without manual intervention.*
 
 ------------------------------------------------------------------------
 
 ## ✅ Outcome
 
 ***`Zero-Touch Persistence`**:*\
-*Successfully integrated AWS EBS with a StatefulSet, ensuring database records survive Pod restarts or node failures without manual data recovery.*
+*Successfully **`integrated AWS EBS`** with a StatefulSet, ensuring database records survive Pod restarts or node failures without manual data recovery.*
 
 ***`Resolved Storage Collisions`**:*\
-*Automated the bypass of the lost+found block storage error by reconfiguring the PGDATA path, allowing for seamless automated database initialization.*
+*Automated the bypass of the lost+found block storage error by reconfiguring the **`PGDATA path`**, allowing for seamless automated database initialization.*
 
 ***`Infrastructure-as-Code Security`**:*\
 *Implemented Pod-level Security Contexts (fsGroup), enforcing the **`Principle of Least Privilege`** by ensuring the container only accesses necessary storage volumes without requiring root permissions.*
@@ -116,23 +136,12 @@ initdb: error: directory "/var/lib/postgresql/data" exists but is not empty (los
 
 ------------------------------------------------------------------------
 
-## 🏛️ Architectural Decision Record 📝 (ADR)
-
-### Rabbitmq:
-
-*From the very start of this project. My focus was to achieve deep proficiency in **`Docker`**, **`IaC (Terraform)`**, **`Kubernetes orchestration`**, **`CI/CD pipeline`**, **`Monitoring`** and **`Automation`**. By removing the message broker, I reduced unnecessary stateful complexity, allowing me to focus entirely on my initial goal*.
-
-### The Decicision:
-*I chose to keep the application logic synchronous to my **`GOAL`** to ensure the **`"one click - full automation"`** remains the star of the show.*
-
-------------------------------------------------------------------------
-
 ## 💡 Key Learnings
 
 *Moving from a stateless mock environment to a persistent production-grade architecture taught me that the **`"devil is in the details"`** of the infrastructure handshake. Here are my core takeaways:*
 
 **1. Decoupling Storage from Logic**
-- *I learned that managing state in Kubernetes isn't just about attaching a disk.Iit’s about managing the lifecycle of data. **`Implementing PVs and PVCs taught me how to abstract physical storage (AWS EBS) from the application pods`**, ensuring data outlives the compute.*
+- *I learned that managing state in Kubernetes isn't just about attaching a disk.Iit’s about managing the lifecycle of data. **`Implementing PVs and PVCs`** taught me how to abstract physical storage (AWS EBS) from the application pods, ensuring data outlives the compute.*
 
 **2. Navigating the "Impedance Mismatch" of Cloud Storage:**
 - *The **`lost+found error`** was a masterclass in how Linux filesystems and database engines interact. I learned that production-ready configurations require a deep understanding of how tools like **`initdb`** behave, leading me to use **`PGDATA`** sub-directories as a standard practice for clean initializations.*
@@ -144,7 +153,7 @@ initdb: error: directory "/var/lib/postgresql/data" exists but is not empty (los
 - *Working with PostgreSQL in K8s highlighted **`why StatefulSets are preferred over Deployments for databases`**. I gained a better grasp of stable network identifiers and the necessity of ordered, graceful deployments when dealing with persistent data.*
 
 **6. Production-Oriented Thinking over Local Success**
-- *Transitioned from **“it works locally”** to **`“it survives restarts, failures, and redeployments,”`** focusing on durability, reproducibility, and zero-touch recovery.*
+- *Transitioned from **“it work`**s locally”** to **`“it survives restarts, failures, and redeployments,”`** focusing on durability, reproducibility, and zero-touch recovery.*
 
 ![alt text](screenshots/screenshot28.png)
 
@@ -152,7 +161,7 @@ initdb: error: directory "/var/lib/postgresql/data" exists but is not empty (los
 
 ## 🚀 Next Steps
 
-1. *Full app deployment on **`Kubernetes`***
+1. *Full app deployment on **`Kubernetes`** [(know here)](../../)*
 2. *IaC Provisioning via **`Terraform`***
 3. *Implement **`CI/CD`** pipeline*
 4. *Add **`email notification`** system*

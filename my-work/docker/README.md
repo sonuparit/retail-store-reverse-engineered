@@ -58,7 +58,7 @@ A hands-on reverse-engineered microservices project to better understand contain
 
 3. *Based on these constraints, I focused on finding a smaller image that still supports the dnf package manager.*
 
-4. *I tested with **`Amazon Linux 2023 (AL2023-minimal)`**, which uses the **`microdnf`** package manager. The build was successful, resulting i*n a significant reduction in the final image size.*
+4. *I tested with **`Amazon Linux 2023 (AL2023-minimal)`**, which uses the **`microdnf`** package manager. The build was successful, resulting in a significant reduction in the final image size.*
 
     - ***`190MB`** reduction in total file size:*
     ![alt text](screenshots/screenshot21.png)
@@ -100,6 +100,7 @@ This Dockerfile reflects practical, production-oriented decisions where compatib
 
 -   *Reverse engineered an existing Dockerfile.*
 -   *Analyzed and documented the design decisions behind the Dockerfile.*
+-   *Implemented a smaller image (**`AL2023-minimal`**), reducing size by up to 190MB.*
 -   *Improved my real-world Docker Image understanding.*
 
 ## 💡 Why This Project Matters

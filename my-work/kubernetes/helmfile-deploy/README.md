@@ -257,31 +257,31 @@ repo*
 ## 📚 What I Learned
 
 **Helm beyond basics:**
-- *designing reusable charts, managing naming conventions, and understanding template flow across values.yaml, templates, and _helpers.tpl*
+- *designing **`reusable charts`**, managing naming conventions, and understanding template flow across values.yaml, templates, and _helpers.tpl*
 
 **Deployment vs runtime dependencies:**
 - Helmfile handles ordering, but service communication issues must be solved at runtime
 
 **Incremental validation mindset:**
-- testing services in isolation significantly reduces debugging complexity in distributed systems
+- **`testing services in isolation`** significantly reduces debugging complexity in distributed systems
 
 **Cloud Security & Container Networking:**
-- Leveraging IMDSv2 with IAM Roles, I learned that in containerized environments like KinD, tuning network hop limits is critical to ensuring metadata can successfully traverse the virtual bridge to reach the Pod.
+- Leveraging **`IMDSv2 with IAM Roles`**, I learned that in containerized environments like KinD, tuning network **`hop limits`** is critical to ensuring metadata can successfully traverse the virtual bridge to reach the Pod.
 
 **Secrets management in production:**
-- integrating AWS Secrets Manager with ESO eliminates hardcoded secrets and improves security posture
+- integrating **`AWS Secrets Manager with ESO`** eliminates hardcoded secrets and improves security posture
 
 **Principle of Least Privilege (PoLP) in action:**
-- PoLP is iterative — it often requires debugging specific resource paths that aren't immediately obvious, like sub-resource ARNs for indexes
+- **`PoLP is iterative`** — it often requires debugging specific resource paths that aren't immediately obvious, like sub-resource ARNs for indexes
 
 **Kubernetes debugging skills:**
-- identifying issues across services, init containers, and configurations through systematic troubleshooting
+- **`identifying issues`** across services, init containers, and configurations through systematic troubleshooting
 
 **CRD lifecycle awareness:**
-- knowing when to use kubectl create vs apply for reliable operator-based resource installation
+- knowing when to use **`kubectl create vs apply`** for reliable operator-based resource installation
 
 **Attention to detail matters:**
-- small mistakes (ports, naming, whitespace in templates) can break entire deployments
+- **`small mistakes`** (ports, naming, whitespace in templates) can break entire deployments
 
 ------------------------------------------------------------------------
 
@@ -292,28 +292,28 @@ repo*
 - ***`Requires manual execution`** (`helmfile sync`) to apply changes*
 
 **Limited Drift Detection**
-- *Cannot automatically detect or correct configuration drift in the cluster*
-- *Changes made outside Helmfile (manual edits) can go unnoticed*
+- ***`Cannot automatically detect`** or correct configuration drift in the cluster*
+- ***`Changes made outside Helmfile`** (manual edits) can go unnoticed*
 
 **Operational, Not Declarative**
-- *Focuses on executing deployments rather than maintaining a desired state*
-- *Lacks self-healing capabilities compared to GitOps tools like Argo CD*
+- *Focuses on **`executing deployments`** rather than maintaining a **`desired state`***
+- ***`Lacks self-healing capabilities`** compared to GitOps tools like **`Argo CD`***
 
 **Dependency Handling is Deployment-Time Only**
 - ***`needs`** manages ordering during deployment*
 - ***`Does not handle runtime service dependencies or failures`***
 
 **Scalability Challenges in Larger Systems**
-- *Managing multiple environments and complex configurations can become difficult*
+- *Managing **`multiple environments`** and complex configurations can become difficult*
 - *Requires additional structure and discipline to stay maintainable*
 
 **No Native UI or Observability**
-- *No built-in dashboard to visualize application state or deployment status*
+- *No built-in **`dashboard`** to visualize application state or deployment status*
 - ***`Debugging relies heavily on CLI and logs`***
 
 ### 💡 Key Takeaway
 
-- *Helmfile is powerful for structured multi-service deployments, but for production-grade, continuously reconciled systems, a **`GitOps approach (e.g., Argo CD) is more suitable`**.*
+- *Helmfile is powerful for structured multi-service deployments (same as **docker-compose**), but for production-grade, continuously reconciled systems, a **`GitOps approach (e.g., Argo CD) is more suitable`**.*
 
 ------------------------------------------------------------------------
 
@@ -322,7 +322,7 @@ repo*
 ### Prerequisites
 
 **Infra**
-1. ***`EC2 instance`** (recommended flixi.large)*
+1. ***`EC2 instance`** (recommended flex.large)*
 
     ![alt text](screenshots/screenshot50.png)
 
@@ -349,8 +349,6 @@ repo*
 
     - dynamodb read and write access
     - secrets manager read access
-
-    ![alt text](screenshots/screenshot36.png)
 
 6. ***`Metadata response hop limit`** for EC2 set to: `3`*
 
@@ -389,7 +387,7 @@ repo*
 
     ![alt text](screenshots/screenshot41.png)
 
-4. Run helmfile
+4. Run helmfile with `kind environment`
 
     ```
     helmfile -e kind apply
@@ -446,7 +444,7 @@ repo*
 
 Moving forward, this setup will be transitioned to ArgoCD:
 
-1. *Add **`deployment via ArgoCD`** [(read here)](../kubernetes/)*
+1. *Add **`deployment via ArgoCD`** [(read here)](../argocd-deploy/)*
 2. *Implement **`CI/CD`** pipeline*
 3. *Add **`email notification`** system*
 4. *IaC using **`Terraform`***

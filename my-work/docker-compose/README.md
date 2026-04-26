@@ -13,7 +13,7 @@
 
 ## 📌 Overview
 
-*This project demonstrates a structured and analytical approach to containerizing a multi-service retail application using Docker Compose. Instead of building from scratch, the focus was on reverse engineering and deeply understanding an existing production-like setup.*
+*This project demonstrates a **structured and analytical approach to containerizing** a multi-service retail application using Docker Compose. Instead of building from scratch, the focus was on reverse engineering and deeply understanding an existing production-like setup.*
 
 *The application consists of **5 microservices**, each independently containerized and orchestrated using Docker Compose.*
 
@@ -55,8 +55,10 @@
 - *Mapping configuration usage across services*  
 - *Ensuring correct runtime injection*  
 
+### 4. Created a unified setup to run the entire system
+- *Implemented a modular Compose setup via **`include`**, and defined a shared **`bridge network (main-app-net)`** to ensure unified networking across services.*
+
 ## ▶️ How to Run 
-Created a unified override setup to run the entire system:
 
 - Clone the repo:
 
@@ -67,7 +69,7 @@ https://github.com/sonuparit/retail-store-reverse-engineered.git
 - Move into app-wrapper
 
 ```yml
-cd retail-store-reverse-engineered/app-wrapper/
+cd retail-store-reverse-engineered/my-work/docker-compose/app-wrapper/
 ```
 - Run the command
 
@@ -120,25 +122,22 @@ docker ps
 ## 🚀 What I learned
 
 **1. Deep understanding of containerized microservices behavior**
-- *Gained clarity on how independently deployed services interact, communicate, and maintain stability within a shared runtime environment.*
+- *Gained clarity on how independently deployed services **interact, communicate, and maintain stability** within a shared runtime environment.*
 
 **2. Practical orchestration with Docker Compose**
-- *Moved beyond basic usage by analyzing multi-service orchestration patterns, including dependency management, startup sequencing, and failure recovery strategies.*
+- *Moved beyond basic usage by analyzing **multi-service orchestration patterns**, including **dependency management and startup sequencing.**
 
 **3. Configuration-driven architecture**
-- *Developed the ability to trace and validate environment variables across services, ensuring consistent and reliable runtime behavior.*
+- *Developed the ability to **trace and validate environment variables across services**, ensuring consistent and reliable runtime behavior.*
 
 **4. Service communication and networking**
-- *Understood internal networking, service discovery, and how containers communicate securely within an isolated network.*
+- *Understood **internal networking**, service discovery, and how containers communicate securely within an isolated network.*
 
 **5. Production-aware debugging mindset**
-- *Learned to diagnose issues by inspecting logs, container states, health checks, and service dependencies rather than relying on trial-and-error fixes.*
+- *Learned to diagnose issues by inspecting **logs, container states, health checks, and service dependencies** rather than relying on trial-and-error fixes.*
 
-**6. Security and isolation principles**
-- *Observed how container-level isolation, controlled exposure of ports, and environment handling contribute to a more secure system design.*
-
-**7. Reading and understanding real-world setups**
-- *Strengthened the ability to reverse-engineer existing systems — a critical skill for working with legacy or production codebases in real teams.*
+**6. Reading and understanding real-world setups**
+- *Strengthened the ability to **reverse-engineer existing systems** — a critical skill for working with legacy or production codebases in real teams.*
 
 ---
 

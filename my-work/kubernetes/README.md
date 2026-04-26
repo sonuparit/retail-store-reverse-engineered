@@ -1,4 +1,5 @@
-# 🚀 Kuberenetes Deployment
+# 🚀 Microservices Individual Testing
+
 *After **`Docker Compose`**, I didn’t directly jump to Kubernetes.*
 
 *Instead, I **`isolated each microservice and tested them individually using custom-written Kubernetes YAML manifests`**.*
@@ -7,34 +8,45 @@
 
 Once confident, I moved toward full Kubernetes deployment.
 
-## 🧠 What I Did
+## 🔗 Individual service deployment
 
-### 1. 🔗 Individual service testing [(read here)](./ind-svc-test/):
+*Individual service **`testing and configs`** are linked below:*
 
-- ### I. Carts Service *[(know more)](./ind-svc-test/cart-dynamodb-test/)*
+- ### 1. Carts Service *[(know more)](./ind-svc-test/cart-dynamodb-test/)*
 
     - *Integrated **`persistent DynamoDB`** integration for Carts service*
 
-
-- ### II. Catalog Service *[(know more)](./ind-svc-test/catalog-test/)*
+- ### 2. Catalog Service *[(know more)](./ind-svc-test/catalog-test/)*
 
     - *Used **`in-memory storage`** for Catalog service*
 
-
-- ### III. Checkout Service *[(know more)](./ind-svc-test/checkout-test/)*
+- ### 3. Checkout Service *[(know more)](./ind-svc-test/checkout-test/)*
 
     - *Used **`in-memory storage`** for Checkout service*
 
+- ### 4. Orders Service *[(know more)](./ind-svc-test/orders-postgreSQL-test/)*
 
-- ### IV. Orders Service *[(know more)](./ind-svc-test/orders-postgreSQL-test/)*
-
-    - *Implemeted **`persistent PostgreSQL DB`** integration for Orders service*
+    - *Implemeted **`persistent PostgreSQL DB integration for Orders service by using external EBS volume`**, to sustain data after cluster disposal*
 
     - *Deferred **`RabbitMQ`** integration to **`focus on Kubernetes orchestration and Terraform-driven automation`***
 
-
-- ### V. UI Service *[(know more)](./ind-svc-test/ui-test/d)*
+- ### 5. UI Service *[(know more)](./ind-svc-test/ui-test/)*
 
     - *Removed **`Kubernetes-specific environment flags`** to keep the application agnostic of its runtime environment*
 
-### 2. ☸️ Final Kubernetes Deployment [(know more)](./final-app/)
+## ☸️ Final Kubernetes Deployment
+
+### 1. helmfile deployment *[(read more)](./helmfile-deploy/)*
+
+- ***`Integrated two distinct approaches`** to handle application secrets securely without relying on hardcoded credentials*
+
+    1. **Carts Service:**\
+        ***`Implemented AWS Instance Metadata Service (IMDSv2) to securely manage dynamodb credentials`**, removing any hard coded secrets*
+
+    2.  **Orders service:**\
+        ***`Added External Secrets Operator (ESO) - Custom Resource Definition (CRD) to pull secrets from AWS secrets manager`**, removing any hard coded secrets from code*
+
+- **Created env specific dynamic chart naming to avoid naming colision for multi deployments**
+
+### 2. Argo deployment *[(read more)](./argocd-deploy/)*
+- Currently under progress...

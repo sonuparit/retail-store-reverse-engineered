@@ -4,10 +4,10 @@
 ## 📑 Table of Contents
 
 - **[Overview](#-overview)**
+- **[Architectural Decision Record (ADR)](#️-architectural-decision-record--adr)**
 - **[Key Implementations](#-key-implementations)**
 - **[Challenges & Solutions](#️-challenges--solutions)**
 - **[Outcome](#-outcome)**
-- **[Architectural Decision Record (ADR)](#️-architectural-decision-record--adr)**
 - **[Key Learnings](#-key-learnings)**
 - **[Next Steps](#-next-steps)**
 - **[Extra Screenshots](#-extra-screenshots)**
@@ -15,11 +15,30 @@
 
 ## 📌 Overview
 
-*While reverse engineering this retail microservices app, I **`focused on understanding service interactions, persistence strategies, and deployment across Docker and Kubernetes`**.*
+*While reverse engineering this retail microservices app, I focused on understanding **`service interactions, persistence strategies, and deployment`** across Docker and Kubernetes.*
 
 *Instead of replicating everything blindly, I made **`selective architectural decisions`**—keeping implementations that added real learning value (**`DynamoDB for Cart, PostgreSQL for Orders`**) and removing redundant ones.*
 
 *This approach helped me stay **`focused on orchestration, system behavior, and production-relevant trade-offs`**.*
+
+------------------------------------------------------------------------
+
+## 🏛️ Architectural Decision Record 📝 (ADR)
+
+***Context:***
+
+*The UI service relied on environment-based auto-detection using runtime variables to identify its execution environment. While functional, **`this mixed observability concerns with the application code`**, which I prefer to keep separate*
+
+***Rationale:***
+
+- *Application should not be **`aware of its execution environment`***
+- *Mixing application logic with observability increases unnecessary complexity and state management.*
+- ***`Results in mixed logs that don’t directly relate to each other`**.*
+- *Better to use tools like **`Prometheus`** to maintain separation of concerns*
+- *Can be good for local development.*
+
+### The Decision:
+*Removed the internal metadata provider to later implement **`Prometheus-based service discovery`**, offloading observability to the infrastructure layer where it belongs.*
 
 ------------------------------------------------------------------------
 
@@ -53,44 +72,25 @@
 
 ## ✅ Outcome
 
-*As a result, I developed a clear understanding of the system’s architecture, execution flow, and underlying abstractions, enabling me to **`make informed design decisions`**.*
-
-------------------------------------------------------------------------
-
-## 🏛️ Architectural Decision Record 📝 (ADR)
-
-***Context:***
-
-*The UI service relied on environment-based auto-detection using runtime variables to identify its execution environment. While functional, **`this mixed observability concerns with the application code`**, which I prefer to keep separate*
-
-***Rationale:***
-
-- *Application should not be aware of its execution environment*
-- *Mixing application logic with observability increases unnecessary complexity and state management.*
-- ***`Results in mixed logs that don’t directly relate to each other`**.*
-- *Better to use tools like Prometheus to maintain separation of concerns*
-- *Can be good for local development.*
-
-### The Decision:
-*Removed the internal metadata provider to **`later implement Prometheus-based service discovery`**, offloading observability to the infrastructure layer where it belongs.*
+*As a result, I developed a clear understanding of the **`system’s architecture, execution flow, and underlying abstractions`**, enabling me to make informed design decisions.*
 
 ------------------------------------------------------------------------
 
 ## 💡 Key Learnings
 
-- *Learned to enforce clear separation of concerns by **`decoupling observability from application logic`**, improving system clarity and maintainability.*
+- *Learned to enforce **`clear separation of concerns`** by decoupling observability from application logic, improving system clarity and maintainability.*
 
-- ***`Recognized that applications should remain environment-agnostic`**, avoiding implicit dependencies on runtime context.*
+- *Recognized that applications should remain **`environment-agnostic`**, avoiding implicit dependencies on runtime context.*
 
 - *Learned to **`validate systems incrementally`** — testing services in isolation before full orchestration improved reliability and debugging clarity.*
 
-- *Gianed hands-on experience in reverse engineering systems — **`an invaluable skill for translating legacy applications into scalable microservices architectures`**.*
+- *Gianed **`hands-on experience in reverse engineering systems`** — an invaluable skill for translating legacy applications into scalable microservices architectures.*
 
 ------------------------------------------------------------------------
 
 ## 🚀 Next Steps
 
-1. *Full app deployment on **`Kubernetes`***
+1. *Full app deployment on **`Kubernetes`** [(know here)](../../)*
 2. *IaC Provisioning via **`Terraform`***
 3. *Implement **`CI/CD`** pipeline*
 4. *Add **`email notification`** system*
