@@ -1,7 +1,9 @@
-# 🚀 Project Goal
+# ⚙️ Productionizing a Microservices Application (Reverse-Engineered) | In Progress..
 
 > [!NOTE]
 > This project is based on an existing application that I reverse-engineered and enhanced — [original repo](https://github.com/aws-containers/retail-store-sample-app)
+
+## 🚀 Project Goal
 
 *The goal of this project is not just deployment, but to build a production-like DevOps ecosystem independently that showcases a strong understanding of real-world DevOps practices, including:*
 
