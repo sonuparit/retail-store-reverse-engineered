@@ -1,5 +1,8 @@
 # 🚀 Project Goal
 
+> [!NOTE]
+> This project is based on an existing application that I reverse-engineered and enhanced — [original repo](https://github.com/aws-containers/retail-store-sample-app)
+
 *The goal of this project is not just deployment, but to build a production-like DevOps ecosystem independently that showcases a strong understanding of real-world DevOps practices, including:*
 
 - **Containerization**
@@ -70,8 +73,6 @@
 *I am primarily proficient in **`Python`** and **`JavaScript`**, and deploying applications using these technologies is something I can do with confidence. However, I wanted to challenge myself with something more complex and unfamiliar.*
 
 **💡 That’s why I chose a different technology with microservices architecture.**
-
----
 
 ### 📌 At the time of starting this project
 

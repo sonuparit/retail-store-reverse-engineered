@@ -14,24 +14,24 @@ Once confident, I moved toward full Kubernetes deployment.
 
 - ### 1. Carts Service *[(know more)](./cart-dynamodb-test/)*
 
-    - *Integrated **`persistent DynamoDB`** integration for Carts service*
+  - ***`persistent DynamoDB`** integration for Carts service*
 
 - ### 2. Catalog Service *[(know more)](./catalog-test/)*
 
-    - *Used **`in-memory storage`** for Catalog service*
+  - *Used **`in-memory storage`** for Catalog service*
 
 - ### 3. Checkout Service *[(know more)](./checkout-test/)*
 
-    - *Used **`in-memory storage`** for Checkout service*
+  - *Used **`in-memory storage`** for Checkout service*
 
 - ### 4. Orders Service *[(know more)](./orders-postgreSQL-test/)*
 
-    - *Implemeted **`persistent PostgreSQL DB integration for Orders service by using external EBS volume`**, to sustain data after cluster disposal*
+  - *Implemeted **`persistent PostgreSQL DB integration for Orders service by using external EBS volume`**, to sustain data after cluster disposal*
 
-    - *Deferred **`RabbitMQ`** integration to **`focus on Kubernetes orchestration and Terraform-driven automation`***
+  - *Deferred **`RabbitMQ`** integration to **`focus on Kubernetes orchestration and Terraform-driven automation`***
 
 - ### 5. UI Service *[(know more)](./ui-test/)*
 
-    - *Removed **`Kubernetes-specific environment flags`** to keep the application agnostic of its runtime environment*
+  - *Removed **`Kubernetes-specific environment flags`** to keep the application agnostic of its runtime environment*
 
 ## ☸️ Final Kubernetes Deployment *[(read more)](../)*

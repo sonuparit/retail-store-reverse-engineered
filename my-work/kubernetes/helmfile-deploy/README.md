@@ -29,7 +29,8 @@ scalable, and production-like deployment approach`**.*
 - *kind config for **`KinD cluster`***
 - *Individual **`Helm charts`** for each microservice*
 - *Environment specific deployment with **`values`***
-```
+
+```bash
 repo*
 ├── eso-crd.yaml
 ├── helmfile.yaml.gotmpl
@@ -50,17 +51,17 @@ repo*
 
 ## 🎯 What This Project Demonstrates
 
--   *Transition from raw YAML → **`Helm-based muti env deployments`***
--   *Multi-service orchestration using Helmfile*
--   ***`Dependency-aware deployments`***
--   ***`Secure secret management using AWS Secrets Manager + IMDSv2 on Kubernetes`***
--   *Real-world DevOps workflow simulation*
+- *Transition from raw YAML → **`Helm-based muti env deployments`***
+- *Multi-service orchestration using Helmfile*
+- ***`Dependency-aware deployments`***
+- ***`Secure secret management using AWS Secrets Manager + IMDSv2 on Kubernetes`***
+- *Real-world DevOps workflow simulation*
 
 ------------------------------------------------------------------------
 
 ## ⚙️ My Implementations
 
-### ⚓ Helm Chart Design for Each Service:
+### ⚓ Helm Chart Design for Each Service
 
 - *Designed and created dedicated Helm charts for each microservice (carts, catalog, checkout, orders, UI).*
 
@@ -122,11 +123,11 @@ repo*
     ![alt text](screenshots/screenshot27.png)
 
 - *This helped in:*
-    - **`Identifying and debugging issues at the service level`**
-    - ***`Avoiding compounded errors`** during full-stack deployment*
-    - ***`Improving deployment confidence and reliability`***
+  - **`Identifying and debugging issues at the service level`**
+  - ***`Avoiding compounded errors`** during full-stack deployment*
+  - ***`Improving deployment confidence and reliability`***
 
-### ✅ Result:
+### ✅ Result
 
 - ***`Eliminated risk of secret exposure in codebase`** and moving to identity-based and externalized secret management.*
 
@@ -196,8 +197,8 @@ repo*
 - *kubectl create ensures a fresh, atomic creation of CRDs*
 - *CRDs are meant to be installed once and managed by the operator afterward*
 
-
 ### 🚧 Init Container Blocking Orders Service
+
 - Orders service failed to start due to init container never completing
 
     ![alt text](screenshots/screenshot09.png)
@@ -205,7 +206,6 @@ repo*
 - Root cause: used application service port instead of database service port in readiness check
 
     ![alt text](screenshots/screenshot15.png)
-
 
 **✅ Fix:**
 
@@ -216,6 +216,7 @@ repo*
 - *Small configuration mistakes in dependencies can block entire service startup*
 
 ### 🧬 Go Template Whitespace Issue
+
 - *Misuse of **"`-`"** (whitespace trimming) in Helm templates caused invalid YAML rendering*
 
     ![alt text](screenshots/screenshot16.png)
@@ -257,30 +258,39 @@ repo*
 ## 📚 What I Learned
 
 **Helm beyond basics:**
+
 - *designing **`reusable charts`**, managing naming conventions, and understanding template flow across values.yaml, templates, and _helpers.tpl*
 
 **Deployment vs runtime dependencies:**
+
 - Helmfile handles ordering, but service communication issues must be solved at runtime
 
 **Incremental validation mindset:**
+
 - **`testing services in isolation`** significantly reduces debugging complexity in distributed systems
 
 **Cloud Security & Container Networking:**
+
 - Leveraging **`IMDSv2 with IAM Roles`**, I learned that in containerized environments like KinD, tuning network **`hop limits`** is critical to ensuring metadata can successfully traverse the virtual bridge to reach the Pod.
 
 **Secrets management in production:**
+
 - integrating **`AWS Secrets Manager with ESO`** eliminates hardcoded secrets and improves security posture
 
 **Principle of Least Privilege (PoLP) in action:**
+
 - **`PoLP is iterative`** — it often requires debugging specific resource paths that aren't immediately obvious, like sub-resource ARNs for indexes
 
 **Kubernetes debugging skills:**
+
 - **`identifying issues`** across services, init containers, and configurations through systematic troubleshooting
 
 **CRD lifecycle awareness:**
+
 - knowing when to use **`kubectl create vs apply`** for reliable operator-based resource installation
 
 **Attention to detail matters:**
+
 - **`small mistakes`** (ports, naming, whitespace in templates) can break entire deployments
 
 ------------------------------------------------------------------------
@@ -288,26 +298,32 @@ repo*
 ## ⚠️ Limitations of Helmfile
 
 **No Continuous Reconciliation**
+
 - *Helmfile is not a true GitOps tool — **`it does not continuously monitor and enforce cluster state`***
 - ***`Requires manual execution`** (`helmfile sync`) to apply changes*
 
 **Limited Drift Detection**
-- ***`Cannot automatically detect`** or correct configuration drift in the cluster*
+
+- ***`Cannot automatically detect`** or correct configurati---on drift in the cluster*
 - ***`Changes made outside Helmfile`** (manual edits) can go unnoticed*
 
 **Operational, Not Declarative**
+
 - *Focuses on **`executing deployments`** rather than maintaining a **`desired state`***
 - ***`Lacks self-healing capabilities`** compared to GitOps tools like **`Argo CD`***
 
 **Dependency Handling is Deployment-Time Only**
+
 - ***`needs`** manages ordering during deployment*
 - ***`Does not handle runtime service dependencies or failures`***
 
 **Scalability Challenges in Larger Systems**
+
 - *Managing **`multiple environments`** and complex configurations can become difficult*
 - *Requires additional structure and discipline to stay maintainable*
 
 **No Native UI or Observability**
+
 - *No built-in **`dashboard`** to visualize application state or deployment status*
 - ***`Debugging relies heavily on CLI and logs`***
 
@@ -322,6 +338,7 @@ repo*
 ### Prerequisites
 
 **Infra**
+
 1. ***`EC2 instance`** (recommended flex.large)*
 
     ![alt text](screenshots/screenshot50.png)
@@ -355,6 +372,7 @@ repo*
     ![alt text](screenshots/screenshot32.png)
 
 **Tools**
+
 1. Docker installed and running
 2. kubectl
 3. helm
@@ -364,11 +382,13 @@ repo*
 **Steps**
 
 1. Clone the repo and get into `helmfile-deploy`
+
     ```
     git clone https://github.com/sonuparit/retail-store-reverse-engineered.git
 
     cd /retail-store-reverse-engineered/my-work/kubernetes/helmfile-deploy/
     ```
+
     ![alt text](screenshots/screenshot52.png)
 
 2. Create KinD Cluster with these configs
@@ -400,9 +420,11 @@ repo*
     ![alt text](screenshots/screenshot43.png)
 
 5. Get the name of ui-service and forward it's port
+
     ```
     kubectl get svc -n retail-app
     ```
+
     ![alt text](screenshots/screenshot45.png)
 
     ```
@@ -420,6 +442,7 @@ repo*
     ```
     <ec2-public-ip>:8080
     ```
+
     ![alt text](screenshots/screenshot23.png)
 
 8. Check the serviceability of all micro-services in "/topology"
