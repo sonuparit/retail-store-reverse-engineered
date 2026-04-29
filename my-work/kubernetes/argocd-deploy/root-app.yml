@@ -7,9 +7,9 @@ spec:
   project: default
 
   source:
-    repoURL: https://github.com/<your-username>/<repo>
-    targetRevision: HEAD
-    path: platform
+    repoURL: https://github.com/sonuparit/retail-store-reverse-engineered.git
+    targetRevision: main
+    path: my-work/kubernetes/argocd-deploy/platform/
 
   destination:
     server: https://kubernetes.default.svc
