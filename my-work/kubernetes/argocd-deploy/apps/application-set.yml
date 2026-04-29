@@ -1,0 +1,82 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: retail-matrix
+  namespace: argocd
+
+spec:
+  generators:
+    - matrix:
+        generators:
+
+          # 🔹 Services
+          - list:
+              elements:
+                - name: secrets
+                  chartPath: charts/secrets-congigs
+                  wave: "0"
+
+                - name: carts
+                  chartPath: charts/carts
+                  wave: "1"
+
+                - name: catalog
+                  chartPath: charts/catalog
+                  wave: "1"
+
+                - name: checkout
+                  chartPath: charts/checkout
+                  wave: "1"
+
+                - name: orders
+                  chartPath: charts/orders
+                  wave: "1"
+
+                - name: ui
+                  chartPath: charts/ui
+                  wave: "2"
+
+          # 🔹 Environments
+          - list:
+              elements:
+                - env: dev
+                  namespace: dev
+                - env: stage
+                  namespace: stage
+                - env: prod
+                  namespace: prod
+
+  template:
+    metadata:
+      name: '{{name}}-{{env}}'
+      labels:
+        app.kubernetes.io/name: '{{name}}'
+        env: '{{env}}'
+      annotations:
+        argocd.argoproj.io/sync-wave: '{{wave}}'
+
+    spec:
+      project: retail-app
+
+      source:
+        repoURL: https://github.com/sonuparit
+        targetRevision: main
+        path: '{{ retail-store-reverse-engineered/tree/main/my-work/kubernetes/argocd-deploy/charts }}'
+
+        helm:
+          valueFiles:
+            - ../envs/{{ env }}/{{ name }}.yaml
+
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{ namespace }}'
+
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        retry:
+          limit: 3
+
+        syncOptions:
+          - CreateNamespace=true

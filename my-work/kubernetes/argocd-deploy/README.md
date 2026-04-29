@@ -17,3 +17,8 @@ work under progress...
 ## 📖 Overview
 
 work under progress...
+
+
+My implementation:
+
+I separated platform and application layers and enforced deployment order using sync waves to ensure CRDs and secret providers are available before application sync.

@@ -1,0 +1,30 @@
+repo/
+├── root-app.yaml                   # 👈 entry point (apply this once)
+│
+│
+├── platform/
+│   ├── kustomization.yaml          # 👈 ensures order (ESO → store → creds)
+│   ├── external-secrets-app.yaml   # installs ESO via Helm (Argo CD Application)
+│   ├── cluster-secret-store.yaml   # ClusterSecretStore (global)
+│   └── aws-creds.yaml              # demo creds (later replace with IRSA)
+│
+└── apps/
+    ├── microservices-appset.yaml   # matrix generator (env dependent deployment of apps)
+    │   
+    │
+    ├── charts/
+    │   ├── secrets-configs/        # ExternalSecrets live here
+    │   ├── carts/
+    │   ├── catalog/
+    │   ├── checkout/
+    │   ├── orders/
+    │   └── ui/
+    │
+    └── envs/
+        ├── dev/
+        │   ├── secrets.yaml
+        │   ├── carts.yaml
+        │   ├── catalog.yaml
+        │   └── ...
+        ├── staging/
+        └── prod/
