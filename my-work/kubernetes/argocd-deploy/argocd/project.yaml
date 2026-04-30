@@ -1,0 +1,40 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: retail-app
+  namespace: argocd
+
+spec:
+  description: Retail App GitOps Project
+
+  sourceRepos:
+    - '*'
+
+  destinations:
+    - namespace: '*'
+      server: https://kubernetes.default.svc
+
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+      
+      
+      
+# apiVersion: argoproj.io/v1alpha1
+# kind: AppProject
+# metadata:
+#   name: retail-app
+#   namespace: argocd
+# spec:
+#   description: Project for Retail Store secrets and platform tools
+#   sourceRepos:
+#     - 'https://github.com/sonuparit/retail-store-reverse-engineered.git'
+#     - 'https://charts.external-secrets.io'
+#   destinations:
+#     - server: https://kubernetes.default.svc
+#       namespace: argocd
+#     - server: https://kubernetes.default.svc
+#       namespace: external-secrets
+#   clusterResourceWhitelist:
+#     - group: '*'
+#       kind: '*' # Required for ClusterSecretStore
