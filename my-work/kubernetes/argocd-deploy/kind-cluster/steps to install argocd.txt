@@ -5,3 +5,6 @@ helm upgrade --install argocd argo/argo-cd -n argocd -f argocd-install-values.ya
 
 get ArgoCD password:
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+
+run port forward:
+kubectl port-forward svc/argocd-server -n argocd 8080:80 --address=0.0.0.0
