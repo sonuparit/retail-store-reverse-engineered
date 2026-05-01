@@ -13,7 +13,7 @@ spec:
           - list:
               elements:
                 - name: secrets
-                  chartPath: charts/secret-configs
+                  chartPath: "charts/secret-configs"
                   wave: "2"
                 # - name: carts
                 #   chartPath: charts/carts
@@ -60,11 +60,11 @@ spec:
       source:
         repoURL: https://github.com/sonuparit/retail-store-reverse-engineered.git
         targetRevision: main
-        path: "{{my-work/kubernetes/argocd-deploy/apps}}"
+        path: my-work/kubernetes/argocd-deploy/apps/{{chartPath}}
 
         helm:
           valueFiles:
-            - ../envs/{{env}}/{{name}}.yaml
+            - ../../../envs/{{env}}/{{name}}.yaml
 
       destination:
         server: https://kubernetes.default.svc
