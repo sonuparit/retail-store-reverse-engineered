@@ -30,3 +30,192 @@ Solved three major hurdles that often trip up platform engineers:
 2. The Race Condition: By using Sync Waves (assigning -1 to the ESO Application and 5 to the ClusterSecretStore), you ensured the controller and its webhooks were ready before the store tried to validate itself.
 
 3. The Validation Loop: By adding SkipDryRunOnMissingResource=true to your Root App, you allowed the parent to ignore the "Unknown Resource" errors during the initial sync of the ClusterSecretStore.  
+
+## 🚧 Challenges and Solutions
+
+### 1. ArgoCD Not Detecting Helm Chart (`Chart.yaml` not found)
+
+**Problem:**
+ArgoCD failed with an error indicating that `Chart.yaml` was missing, even though charts existed inside a subdirectory.
+
+**Root Cause:**
+ArgoCD does **not search recursively** for Helm charts. It expects `Chart.yaml` to be present **exactly at the path defined in `spec.source.path`**.
+
+**Solution:**
+Instead of pointing to a parent directory, dynamically point to each chart using the `chartPath` variable.
+
+```yaml
+path: my-work/kubernetes/argocd-deploy/apps/{{chartPath}}
+```
+
+**Key Learning:**
+
+> ArgoCD behaves like: `cd <path> && helm template .` — the chart must exist exactly at that location.
+
+---
+
+### 2. Incorrect Relative Path for Helm `valueFiles`
+
+**Problem:**
+Helm values file was not found during ArgoCD sync.
+
+**Root Cause:**
+`valueFiles` paths are resolved **relative to the chart directory**, not the repo root.
+
+**Solution:**
+Adjusted the relative path based on directory depth:
+
+```yaml
+helm:
+  valueFiles:
+    - ../../../envs/{{env}}/{{name}}.yaml
+```
+
+**Key Learning:**
+
+> Always calculate paths from the chart directory, not from the repository root.
+
+---
+
+### 3. Helm Processing `.bak` Files in `templates/`
+
+**Problem:**
+A backup file (`hook-job.yaml.bak`) inside the `templates/` directory was still being applied.
+
+**Root Cause:**
+Helm processes **all files inside `templates/`**, regardless of file extension.
+
+**Solution:**
+Move unused or backup files outside the `templates/` directory or prefix with `_`:
+
+```plaintext
+templates/
+  external-secret.yaml
+
+_disabled/
+  hook-job.yaml.bak
+```
+
+**Key Learning:**
+
+> Helm ignores location, not file extensions — everything inside `templates/` is rendered.
+
+---
+
+### 4. Helm Template Code Executed Inside YAML Comments
+
+**Problem:**
+A commented line still caused a Helm template error:
+
+```yaml
+# name: {{ include "orders.secretName" . }}
+```
+
+**Error:**
+
+```
+no template "orders.secretName" associated with template "gotpl"
+```
+
+**Root Cause:**
+Helm processes `{{ }}` expressions **before YAML parsing**, so YAML comments do not prevent execution.
+
+**Solution:**
+Use Helm-style comments:
+
+```yaml
+{{/* name: {{ include "orders.secretName" . }} */}}
+```
+
+**Key Learning:**
+
+> YAML comments (`#`) do not disable Helm templates — use `{{/* */}}` instead.
+
+---
+
+### 5. Namespace Confusion in ArgoCD
+
+**Problem:**
+Confusion between multiple `namespace` fields in the ApplicationSet.
+
+**Root Cause:**
+Two different namespaces serve different purposes:
+
+* `metadata.namespace` → where ArgoCD stores the Application
+* `spec.destination.namespace` → where Kubernetes deploys the app
+
+**Solution:**
+Ensure all deployments use:
+
+```yaml
+destination:
+  namespace: '{{namespace}}'
+```
+
+**Key Learning:**
+
+> ArgoCD’s namespace ≠ Application namespace.
+
+---
+
+### 6. External Secrets Not Ready Before App Deployment
+
+**Problem:**
+Applications failed because Kubernetes Secrets were not yet created by External Secrets Operator.
+
+**Root Cause:**
+ArgoCD sync waves ensure **order**, but not **readiness**.
+
+**Solution:**
+Implemented a Helm hook Job to wait until the `ExternalSecret` becomes ready:
+
+```yaml
+until kubectl get externalsecret {{ .Values.externalSecret.name }} \
+  -n {{ .Release.Namespace }} \
+  -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}' \
+  | grep True; do
+  sleep 5
+done
+```
+
+**Key Learning:**
+
+> Sync order ≠ resource readiness — always handle async dependencies explicitly.
+
+---
+
+### 7. Verifying Secrets Correctly (Beyond Existence)
+
+**Problem:**
+Needed to confirm secrets were correctly fetched from AWS Secrets Manager.
+
+**Solution:**
+Validated at multiple levels:
+
+* Check ExternalSecret status:
+
+  ```bash
+  kubectl get externalsecret -n <namespace>
+  ```
+* Decode secret values:
+
+  ```bash
+  kubectl get secret <name> -o jsonpath='{.data.key}' | base64 -d
+  ```
+* Test inside a running Pod using `envFrom`
+
+**Key Learning:**
+
+> Always verify secrets end-to-end — creation alone is not enough.
+
+---
+
+## 🧠 Overall Takeaways
+
+* ArgoCD enforces **desired state**, not execution logic
+* Helm rendering happens **before YAML parsing**
+* File placement and path resolution are **critical in GitOps**
+* External systems (like AWS Secrets Manager) introduce **asynchronous behavior**
+* Proper debugging requires validating **each layer independently**
+
+---
