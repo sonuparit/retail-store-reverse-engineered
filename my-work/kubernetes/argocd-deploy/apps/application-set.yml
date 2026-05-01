@@ -13,30 +13,29 @@ spec:
           - list:
               elements:
                 - name: secrets
-                  chartPath: charts/secrets-congigs
-                  wave: "0"
-
-                - name: carts
-                  chartPath: charts/carts
-                  wave: "1"
-
-                - name: catalog
-                  chartPath: charts/catalog
-                  wave: "1"
-
-                - name: checkout
-                  chartPath: charts/checkout
-                  wave: "1"
-
-                - name: orders
-                  chartPath: charts/orders
-                  wave: "1"
-
-                - name: ui
-                  chartPath: charts/ui
+                  chartPath: charts/secret-configs
                   wave: "2"
+                # - name: carts
+                #   chartPath: charts/carts
+                #   wave: "3"
 
-          # 🔹 Environments
+                # - name: catalog
+                #   chartPath: charts/catalog
+                #   wave: "3"
+
+                # - name: checkout
+                #   chartPath: charts/checkout
+                #   wave: "3"
+
+                # - name: orders
+                #   chartPath: charts/orders
+                #   wave: "3"
+
+                # - name: ui
+                #   chartPath: charts/ui
+                #   wave: "4"
+
+                # 🔹 Environments
           - list:
               elements:
                 - env: dev
@@ -48,28 +47,28 @@ spec:
 
   template:
     metadata:
-      name: '{{name}}-{{env}}'
+      name: "{{name}}-{{env}}"
       labels:
-        app.kubernetes.io/name: '{{name}}'
-        env: '{{env}}'
+        app.kubernetes.io/name: "{{name}}"
+        env: "{{env}}"
       annotations:
-        argocd.argoproj.io/sync-wave: '{{wave}}'
+        argocd.argoproj.io/sync-wave: "{{wave}}"
 
     spec:
       project: retail-app
 
       source:
-        repoURL: https://github.com/sonuparit
+        repoURL: https://github.com/sonuparit/retail-store-reverse-engineered.git
         targetRevision: main
-        path: '{{ retail-store-reverse-engineered/tree/main/my-work/kubernetes/argocd-deploy/charts }}'
+        path: "{{my-work/kubernetes/argocd-deploy/apps}}"
 
         helm:
           valueFiles:
-            - ../envs/{{ env }}/{{ name }}.yaml
+            - ../envs/{{env}}/{{name}}.yaml
 
       destination:
         server: https://kubernetes.default.svc
-        namespace: '{{ namespace }}'
+        namespace: "{{namespace}}"
 
       syncPolicy:
         automated:
@@ -77,6 +76,10 @@ spec:
           selfHeal: true
         retry:
           limit: 3
+          backoff:
+            duration: 20s
+            factor: 2
+            maxDuration: 2m
 
         syncOptions:
           - CreateNamespace=true

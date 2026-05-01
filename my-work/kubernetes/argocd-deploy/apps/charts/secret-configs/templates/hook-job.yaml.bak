@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: wait-for-secrets
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "5"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: wait
+          image: bitnami/kubectl
+          command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Waiting for ExternalSecret to be Ready..."
+
+              until kubectl get externalsecret {{ .Values.externalSecret.name }} \
+                -n {{ .Release.Namespace }} \
+                -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}' \
+                | grep True; do
+
+                echo "Still waiting..."
+                sleep 5
+              done
+
+              echo "ExternalSecret is ready!"

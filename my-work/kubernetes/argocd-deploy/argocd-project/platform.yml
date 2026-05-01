@@ -4,7 +4,7 @@ metadata:
   name: root-app
   namespace: argocd
 spec:
-  project: default
+  project: retail-app
 
   source:
     repoURL: https://github.com/sonuparit/retail-store-reverse-engineered.git
