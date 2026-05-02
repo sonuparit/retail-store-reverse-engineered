@@ -260,3 +260,88 @@ If you want a clean UI, go ArgoCD Health Checks.
 If you want a robust, portable app, go Init Containers.
 If you want to keep it simple, embrace the CrashLoop.
 If you want a strong dependency go with helm hook job - but be careful
+
+
+Deployed **multi-environment Kubernetes (dev + stage)** on a single kind cluster… with persistent storage that actually survives cluster recreation 🚀
+
+Most tutorials stop at “it works”.
+I wanted to understand what happens when the cluster dies.
+
+So I built this 👇
+
+---
+
+🔹 **Setup**
+
+* kind cluster running on EC2
+* External EBS volume mounted on the host
+* Mounted inside kind nodes using `extraMounts`
+* StatefulSet (PostgreSQL) with PVC
+* Custom “dynamic provisioning” using hostPath
+
+---
+
+🔹 **Key challenge**
+
+Running multiple environments with persistence:
+
+* dev
+* stage
+* prod
+
+All on the **same cluster**, same disk.
+
+---
+
+🔹 **Solution**
+
+Instead of relying only on defaults, I designed **per-environment volume isolation**:
+
+```
+/mnt/postgre-data/
+  ├── orders-dev
+  ├── orders-stage
+  └── orders-prod
+```
+
+Each environment:
+
+* Own PV
+* Own PVC
+* Own directory on EBS
+
+---
+
+🔹 **Important lessons**
+
+👉 Storage isolation must happen at **volume level**, not inside the app (PGDATA)
+👉 Kubernetes doesn’t manage your data — it only mounts it
+👉 Cluster lifecycle ≠ data lifecycle
+
+---
+
+🔹 **Result**
+
+* Multiple environments running simultaneously ✅
+* No storage conflicts ✅
+* Data persists even after cluster teardown ✅
+
+---
+
+🔹 **Why this matters**
+
+This setup helped me truly understand how persistence works before moving to cloud-native setups like EKS + EBS CSI.
+
+It’s basically:
+
+👉 Manual dynamic provisioning → stepping stone to real cloud storage
+
+---
+
+Curious how others handle multi-env persistence in local clusters?
+
+Do you simulate cloud behavior locally, or jump straight to managed services?
+
+Let’s discuss 👇
+
+#Kubernetes #DevOps #GitOps #StatefulSets #CloudNative #ArgoCD #AWS #LearningInPublic
