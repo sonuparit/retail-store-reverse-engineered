@@ -19,31 +19,31 @@ spec:
                   chartPath: charts/carts
                   wave: "3"
 
-                # - name: catalog
-                #   chartPath: charts/catalog
-                #   wave: "3"
+                - name: catalog
+                  chartPath: charts/catalog
+                  wave: "3"
 
-                # - name: checkout
-                #   chartPath: charts/checkout
-                #   wave: "3"
+                - name: checkout
+                  chartPath: charts/checkout
+                  wave: "3"
 
-                # - name: orders
-                #   chartPath: charts/orders
-                #   wave: "3"
+                - name: orders
+                  chartPath: charts/orders
+                  wave: "3"
 
-                # - name: ui
-                #   chartPath: charts/ui
-                #   wave: "4"
+                - name: ui
+                  chartPath: charts/ui
+                  wave: "4"
 
-                # 🔹 Environments
+          # 🔹 Environments
           - list:
               elements:
                 - env: dev
                   namespace: dev
-                - env: stage
-                  namespace: stage
-                - env: prod
-                  namespace: prod
+#                - env: stage
+#                  namespace: stage
+#                - env: prod
+#                  namespace: prod
 
   template:
     metadata:

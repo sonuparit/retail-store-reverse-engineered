@@ -10,14 +10,20 @@ metadata:
 spec:
   template:
     spec:
+      serviceAccountName: hook-sa
       restartPolicy: Never
       containers:
         - name: wait
           image: bitnami/kubectl
+          
+          {{/* Needs ServiceAccount + ClusterRole + ClusterRoleBinding 
+          Wait for K8s reconcile feature, don't increase extra complexities*/}}
+          
           command:
             - /bin/sh
             - -c
             - |
+                            
               echo "Waiting for ExternalSecret to be Ready..."  
   
               until kubectl get clustersecretstore aws-secretsmanager \
@@ -29,4 +35,5 @@ spec:
               done
 
               echo "ClusterSecretStore is ready 🚀"
+
 {{- end }}
