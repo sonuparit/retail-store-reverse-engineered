@@ -1,4 +1,4 @@
-# ⚙️ Productionizing a Microservices Application (Reverse-Engineered) | In Progress..
+# ⚙️ Productionizing a Microservices Application (Reverse-Engineered) | In Progress
 
 > [!NOTE]
 > This project is based on an existing application that I reverse-engineered and enhanced — [original repo](https://github.com/aws-containers/retail-store-sample-app)
@@ -168,4 +168,11 @@
   - Validated full-stack deployment via **service-level testing**
   - Debugged complex issues (**CRDs, IAM policies, init containers, templating**)
 
-- **ArgoCD deployment** [(in progress....)](./my-work/kubernetes/argocd-deploy/)
+- **ArgoCD deployment** [(read here)](./my-work/kubernetes/argocd-deploy/)
+
+  - Extended the Kubernetes deployment into a full **GitOps-based continuous delivery workflow**
+  - Built **multi-environment deployments** (`dev`, `stage`, `prod`) using ArgoCD ApplicationSets
+  - Separated **platform and application layers** for cleaner orchestration and scalability
+  - Managed deployment ordering with **Sync Waves, Kustomize, and reconciliation-aware design**
+  - Implemented **persistent multi-environment PostgreSQL storage** on external EBS-backed volumes
+  - Solved complex operational issues involving **CRDs, Helm rendering, secret readiness, and storage isolation**
