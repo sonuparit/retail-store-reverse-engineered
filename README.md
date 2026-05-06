@@ -54,11 +54,7 @@
     - ***`Grafana`** (dashboard visualization)*
 
 8. **⚡ Finally Full Automation:**  
-*Enable complete infrastructure and application setup with a single command:*
-
-    ```yml
-    terraform apply
-    ```
+*Automate complete infrastructure and application setup with `terraform apply`*
 
 ## 🧠 What This Project Demonstrates
 
