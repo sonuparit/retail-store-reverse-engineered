@@ -1,15 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
+
 metadata:
   name: root-app
   namespace: argocd
+
 spec:
   project: retail-app
 
   source:
     repoURL: https://github.com/sonuparit/retail-store-reverse-engineered.git
     targetRevision: main
-    path: my-work/kubernetes/argocd-deploy/platform/
+    path: my-work/kubernetes/argocd-deploy/root-app
 
   destination:
     server: https://kubernetes.default.svc
@@ -19,6 +21,3 @@ spec:
     automated:
       prune: true
       selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-      - SkipDryRunOnMissingResource=true # 👈 Critical for CRD-dependent resources
