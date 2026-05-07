@@ -35,6 +35,16 @@ PROJECT_FILE="argocd-project.yaml"
 
 ROOT_APP_FILE="root-app.yaml"
 
+ARGOCD_LOCAL_PORT="8080"
+
+APP_NAMESPACE="dev"
+
+APP_SERVICE="ui-dev-service"
+
+APP_LOCAL_PORT="8888"
+
+APP_TARGET_PORT="8080"
+
 MONITORING_NAMESPACE="monitoring"
 
 EBS_DEVICE="/dev/xvdf"
@@ -221,6 +231,119 @@ apply_root_app() {
 }
 
 # =========================================================
+# FETCH ARGOCD PASSWORD
+# =========================================================
+
+fetch_argocd_password() {
+
+    info "Fetching ArgoCD admin password..."
+
+    ARGO_PASSWORD=$(kubectl -n "$ARGO_NAMESPACE" get secret argocd-initial-admin-secret \
+      -o jsonpath="{.data.password}" | base64 -d)
+
+    echo ""
+    echo "========================================="
+    echo " ArgoCD Login"
+    echo "-----------------------------------------"
+    echo " URL:      http://localhost:$ARGOCD_LOCAL_PORT"
+    echo " Username: admin"
+    echo " Password: $ARGO_PASSWORD"
+    echo "========================================="
+    echo ""
+}
+
+# =========================================================
+# WAIT FOR APP
+# =========================================================
+
+wait_for_app() {
+
+    info "Waiting for application to become ready..."
+
+    SERVICE_NAME="orders-dev-service"
+    NAMESPACE="dev"
+
+    TIMEOUT=300
+    INTERVAL=10
+    ELAPSED=0
+
+    while true
+    do
+
+        if kubectl get svc "$SERVICE_NAME" -n "$NAMESPACE" > /dev/null 2>&1
+        then
+            info "Service '$SERVICE_NAME' detected."
+
+            ENDPOINTS=$(kubectl get endpoints "$SERVICE_NAME" \
+                -n "$NAMESPACE" \
+                -o jsonpath='{.subsets[*].addresses[*].ip}')
+
+            if [ ! -z "$ENDPOINTS" ]
+            then
+                info "Application is ready."
+                break
+            fi
+        fi
+
+        if [ "$ELAPSED" -ge "$TIMEOUT" ]
+        then
+            error "Timed out waiting for application readiness."
+            exit 1
+        fi
+
+        echo "Waiting... (${ELAPSED}s/${TIMEOUT}s)"
+
+        sleep "$INTERVAL"
+
+        ELAPSED=$((ELAPSED + INTERVAL))
+
+    done
+}
+
+# =========================================================
+# PORT FORWARD ARGOCD
+# =========================================================
+
+port_forward_argocd() {
+
+    info "Starting ArgoCD port-forward..."
+
+    kubectl port-forward svc/argocd-server \
+      -n "$ARGO_NAMESPACE" \
+      ${ARGOCD_LOCAL_PORT}:80 \
+      > /dev/null 2>&1 &
+
+    sleep 3
+
+    echo ""
+    echo "================================================="
+    info "ArgoCD available at: http://localhost:$ARGOCD_LOCAL_PORT"
+    info "To stop port forwarding:"
+    echo "pkill -f 'kubectl port-forward'"
+    echo "Kills all port forwarding"
+    echo "================================================="
+    echo ""
+}
+
+# =========================================================
+# PORT FORWARD APPLICATION
+# =========================================================
+
+port_forward_app() {
+
+    info "Starting application port-forward..."
+
+    kubectl port-forward svc/${APP_SERVICE} \
+      -n "$APP_NAMESPACE" \
+      ${APP_LOCAL_PORT}:${APP_TARGET_PORT} \
+      > /dev/null 2>&1 &
+
+    sleep 3
+
+    info "Application available at http://localhost:$APP_LOCAL_PORT"
+}
+
+# =========================================================
 # SHOW STATUS
 # =========================================================
 
@@ -264,6 +387,14 @@ main() {
     apply_project
 
     apply_root_app
+    
+    port_forward_argocd
+
+    fetch_argocd_password
+    
+    wait_for_app
+
+    port_forward_app
 
     # show_status
 
