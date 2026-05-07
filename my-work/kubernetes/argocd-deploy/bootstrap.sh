@@ -64,15 +64,15 @@ NC='\033[0m'
 # LOGGING HELPERS
 # -----------------------------
 
-info() {
+log_info() {
     echo -e "${GREEN}[INFO]${NC} $1"
 }
 
-warn() {
+log_warn() {
     echo -e "${YELLOW}[WARN]${NC} $1"
 }
 
-error() {
+log_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
@@ -82,7 +82,7 @@ error() {
 
 check_dependencies() {
 
-    info "Checking required tools..."
+    log_info "Checking required tools..."
 
     tools=("docker" "kubectl" "helm" "kind")
 
@@ -90,12 +90,12 @@ check_dependencies() {
     do
         if ! command -v $tool &> /dev/null
         then
-            error "$tool is not installed."
+            log_error "$tool is not installed."
             exit 1
         fi
     done
 
-    info "All dependencies found."
+    log_info "All dependencies found."
 }
 
 # =========================================================
@@ -104,15 +104,15 @@ check_dependencies() {
 
 check_docker() {
 
-    info "Checking Docker daemon..."
+    log_info "Checking Docker daemon..."
 
-    if ! docker info > /dev/null 2>&1
+    if ! docker log_info > /dev/null 2>&1
     then
-        error "Docker is not running."
+        log_error "Docker is not running."
         exit 1
     fi
 
-    info "Docker is running."
+    log_info "Docker is running."
 }
 
 # =========================================================
@@ -121,18 +121,18 @@ check_docker() {
 
 mount_ebs() {
 
-    info "Checking EBS mount..."
+    log_info "Checking EBS mount..."
 
     if mountpoint -q "$EBS_MOUNT_PATH"
     then
-        warn "EBS already mounted at $EBS_MOUNT_PATH"
+        log_warn "EBS already mounted at $EBS_MOUNT_PATH"
     else
 
         sudo mkdir -p "$EBS_MOUNT_PATH"
 
         sudo mount "$EBS_DEVICE" "$EBS_MOUNT_PATH"
 
-        info "EBS mounted successfully."
+        log_info "EBS mounted successfully."
     fi
 }
 
@@ -142,20 +142,20 @@ mount_ebs() {
 
 create_kind_cluster() {
 
-    info "Checking if kind cluster exists..."
+    log_info "Checking if kind cluster exists..."
 
     if kind get clusters | grep -q "$CLUSTER_NAME"
     then
-        warn "Kind cluster already exists."
+        log_warn "Kind cluster already exists."
     else
 
-        info "Creating kind cluster..."
+        log_info "Creating kind cluster..."
 
         kind create cluster \
             --name "$CLUSTER_NAME" \
             --config "$KIND_CONFIG"
 
-        info "Kind cluster created."
+        log_info "Kind cluster created."
         
         # no need to set context for kubectl
     fi
@@ -167,24 +167,24 @@ create_kind_cluster() {
 
 install_argocd() {
 
-#    info "Checking ArgoCD namespace..."
+#    log_info "Checking ArgoCD namespace..."
 #
 #    kubectl create namespace "$ARGO_NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
 #
-#    info "Adding ArgoCD Helm repo..."
+#    log_info "Adding ArgoCD Helm repo..."
 #
 #    helm repo add argo "$ARGO_HELM_REPO" || true
 #
 #    helm repo update
 
-    info "Installing ArgoCD..."
+    log_info "Installing ArgoCD..."
 
     helm install "$ARGO_RELEASE_NAME" argo/argo-cd \
         -n "$ARGO_NAMESPACE" \
         -f "$ARGO_VALUES_FILE" \
         --create-namespace
 
-    info "ArgoCD installation completed."
+    log_info "ArgoCD installation completed."
 }
 
 # =========================================================
@@ -193,7 +193,7 @@ install_argocd() {
 
 wait_for_argocd() {
 
-    info "Waiting for ArgoCD server..."
+    log_info "Waiting for ArgoCD server..."
 
     kubectl wait \
         --for=condition=available \
@@ -201,7 +201,7 @@ wait_for_argocd() {
         -n "$ARGO_NAMESPACE" \
         --timeout=300s
 
-    info "ArgoCD is ready."
+    log_info "ArgoCD is ready."
 }
 
 # =========================================================
@@ -210,11 +210,11 @@ wait_for_argocd() {
 
 apply_project() {
 
-    info "Applying project to ArgoCD..."
+    log_info "Applying project to ArgoCD..."
 
     kubectl apply -f "$PROJECT_FILE" -n "$ARGO_NAMESPACE"
 
-    info "Project applied."
+    log_info "Project applied."
 }
 
 # =========================================================
@@ -223,11 +223,11 @@ apply_project() {
 
 apply_root_app() {
 
-    info "Applying root ArgoCD application..."
+    log_info "Applying root ArgoCD application..."
 
     kubectl apply -f "$ROOT_APP_FILE" -n "$ARGO_NAMESPACE"
 
-    info "Root application applied."
+    log_info "Root application applied."
 }
 
 # =========================================================
@@ -236,7 +236,7 @@ apply_root_app() {
 
 fetch_argocd_password() {
 
-    info "Fetching ArgoCD admin password..."
+    log_info "Fetching ArgoCD admin password..."
 
     ARGO_PASSWORD=$(kubectl -n "$ARGO_NAMESPACE" get secret argocd-initial-admin-secret \
       -o jsonpath="{.data.password}" | base64 -d)
@@ -258,7 +258,7 @@ fetch_argocd_password() {
 
 wait_for_app() {
 
-    info "Waiting for application to become ready..."
+    log_info "Waiting for application to become ready..."
 
     SERVICE_NAME="orders-dev-service"
     NAMESPACE="dev"
@@ -270,24 +270,21 @@ wait_for_app() {
     while true
     do
 
-        if kubectl get svc "$SERVICE_NAME" -n "$NAMESPACE" > /dev/null 2>&1
+        ENDPOINTS=$(kubectl get endpointslice \
+            -n "$NAMESPACE" \
+            -l kubernetes.io/service-name="$SERVICE_NAME" \
+            -o jsonpath='{.items[*].endpoints[*].addresses[*]}' \
+            2>/dev/null)
+
+        if [ ! -z "$ENDPOINTS" ]
         then
-            info "Service '$SERVICE_NAME' detected."
-
-            ENDPOINTS=$(kubectl get endpoints "$SERVICE_NAME" \
-                -n "$NAMESPACE" \
-                -o jsonpath='{.subsets[*].addresses[*].ip}')
-
-            if [ ! -z "$ENDPOINTS" ]
-            then
-                info "Application is ready."
-                break
-            fi
+            log_info "Application is ready."
+            break
         fi
 
         if [ "$ELAPSED" -ge "$TIMEOUT" ]
         then
-            error "Timed out waiting for application readiness."
+            log_error "Timed out waiting for application readiness."
             exit 1
         fi
 
@@ -306,7 +303,7 @@ wait_for_app() {
 
 port_forward_argocd() {
 
-    info "Starting ArgoCD port-forward..."
+    log_info "Starting ArgoCD port-forward..."
 
     kubectl port-forward svc/argocd-server \
       -n "$ARGO_NAMESPACE" \
@@ -317,8 +314,8 @@ port_forward_argocd() {
 
     echo ""
     echo "================================================="
-    info "ArgoCD available at: http://localhost:$ARGOCD_LOCAL_PORT"
-    info "To stop port forwarding:"
+    log_info "ArgoCD available at: http://localhost:$ARGOCD_LOCAL_PORT"
+    log_info "To stop port forwarding:"
     echo "pkill -f 'kubectl port-forward'"
     echo "Kills all port forwarding"
     echo "================================================="
@@ -331,7 +328,7 @@ port_forward_argocd() {
 
 port_forward_app() {
 
-    info "Starting application port-forward..."
+    log_info "Starting application port-forward..."
 
     kubectl port-forward svc/${APP_SERVICE} \
       -n "$APP_NAMESPACE" \
@@ -340,7 +337,7 @@ port_forward_app() {
 
     sleep 3
 
-    info "Application available at http://localhost:$APP_LOCAL_PORT"
+    log_info "Application available at http://localhost:$APP_LOCAL_PORT"
 }
 
 # =========================================================
@@ -349,19 +346,19 @@ port_forward_app() {
 
 show_status() {
 
-    info "Cluster status:"
+    log_info "Cluster status:"
 
     kubectl get nodes
 
     echo ""
 
-    info "ArgoCD pods:"
+    log_info "ArgoCD pods:"
 
     kubectl get pods -n "$ARGO_NAMESPACE"
 
     echo ""
 
-    info "Applications:"
+    log_info "Applications:"
 
     kubectl get applications -n "$ARGO_NAMESPACE" || true
 }
@@ -398,7 +395,7 @@ main() {
 
     # show_status
 
-    info "Bootstrap completed successfully 🚀"
+    log_info "Bootstrap completed successfully 🚀"
 }
 
 main
