@@ -289,6 +289,8 @@ wait_for_app() {
 
   log_info "Waiting for Application..."
   
+  sleep 30
+  
   kubectl wait \
     --for=condition=Available \
     deployment/orders-dev-dep \
