@@ -2,76 +2,183 @@
 
 set -e
 
+PUBLIC_IP=$(curl -s ifconfig.me)
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 NAMESPACE="monitoring"
 
-echo "========================================="
-echo " Creating monitoring namespace"
-echo "========================================="
+create_namespace() {
 
-kubectl apply -f monitoring/namespace.yaml
+  echo "========================================="
+  echo " CREATING NAMESPACE"
+  echo "========================================="
 
-echo ""
-echo "========================================="
-echo " Adding Helm repositories"
-echo "========================================="
+  kubectl apply -f "${SCRIPT_DIR}/monitoring/namespace.yaml"
 
-helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
+  sleep 3
+  
+  echo "========================================="
+  echo " NAMESPACE: ${NAMESPACE} CREATED"
+  echo "========================================="
 
-helm repo update
+}
 
-echo ""
-echo "========================================="
-echo " Installing Metrics Server"
-echo "========================================="
+add_helm_repos() {
 
-helm install metrics-server metrics-server/metrics-server \
-  -n kube-system \
-  -f monitoring/metrics-server.yaml
+  helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+  helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
 
-echo ""
-echo "========================================="
-echo " Installing kube-prometheus-stack"
-echo "========================================="
+  helm repo update
+  
+}
 
-helm upgrade --install kube-prom-stack prometheus-community/kube-prometheus-stack \
-  -n ${NAMESPACE} \
-  -f monitoring/values-monitoring.yaml
+install_metrics_server() {
 
-echo ""
-echo "========================================="
-echo " Waiting for monitoring stack pods"
-echo "========================================="
+  echo ""
+  echo "========================================="
+  echo "INSTALLING METRICS SERVER"
+  echo "========================================="
 
-kubectl wait --for=condition=Ready pod \
-  --all \
-  -n ${NAMESPACE} \
-  --timeout=300s
+  helm upgrade --install metrics-server metrics-server/metrics-server \
+    -n kube-system \
+    -f "${SCRIPT_DIR}/monitoring/metrics-server.yaml"
+    
+  sleep 3
+  
+  echo ""
+  echo "========================================="
+  echo "METRICS SERVER INSTALLED"
+  echo "========================================="
 
-echo ""
-echo "========================================="
-echo " Applying ServiceMonitors"
-echo "========================================="
+}
 
-kubectl apply -f service-monitors/argocd.yaml \
-  -n ${NAMESPACE}
+install_kube_prom() {
 
-echo ""
-echo "========================================="
-echo " Monitoring stack installed successfully"
-echo "========================================="
+  echo ""
+  echo "========================================="
+  echo " INSTALLING kube-prometheus-stack"
+  echo "========================================="
 
-echo ""
-echo "Useful commands:"
-echo ""
-echo "Check ServiceMonitors:"
-echo "kubectl get servicemonitors -n ${NAMESPACE}"
-echo ""
-echo "Check Prometheus targets:"
-echo "kubectl port-forward svc/kube-prom-stack-kube-prome-prometheus 9090:9090 -n ${NAMESPACE}"
-echo ""
-echo "Open Grafana:"
-echo "kubectl port-forward svc/kube-prom-stack-grafana 3000:80 -n ${NAMESPACE}"
-echo ""
-echo "Get Grafana password:"
-echo "kubectl get secret -n ${NAMESPACE} kube-prom-stack-grafana -o jsonpath='{.data.admin-password}' | base64 -d && echo"
+  helm upgrade --install kube-prom-stack prometheus-community/kube-prometheus-stack \
+    -n "${NAMESPACE}" \
+    -f "${SCRIPT_DIR}/monitoring/values-monitoring.yaml"
+    
+  sleep 3
+
+  echo ""
+  echo "========================================="
+  echo " kube-prometheus-stack INSTALLED"
+  echo "========================================="
+
+}
+
+wait_for_stack() {
+
+  echo ""
+  echo "========================================="
+  echo " WAITING FOR MONITORING STACK PODS 5 mins"
+  echo "========================================="
+
+  kubectl wait --for=condition=Ready pod \
+    --all \
+    -n "${NAMESPACE}" \
+    --timeout=300s
+  
+}
+
+install_service_monitor() {
+
+  echo ""
+  echo "========================================="
+  echo " APPLYING SERVICE-MONITORS"
+  echo "========================================="
+
+  kubectl apply -f "${SCRIPT_DIR}/service-monitors/argocd.yaml"
+  #  -n "${NAMESPACE}" not required already present in yaml file
+    
+  echo ""
+  echo "========================================="
+  echo " SERVICE-MONITORS INSTALLED"
+  echo "========================================="
+
+}
+
+prom_port_fwd() {
+
+  echo ""
+  echo "========================================="
+  echo " RUNNING PROMETHEUS PORT-FWD"
+  echo "========================================="
+  
+  kubectl port-forward svc/kube-prom-stack-kube-prome-prometheus \
+    9090:9090 -n "${NAMESPACE}" \
+    --address=0.0.0.0 \
+    > /tmp/prometheus-portforward.log 2>&1 &
+  
+  echo ""
+  echo "access prometheus at: "
+  echo -n "http://${PUBLIC_IP}:9090"
+
+}
+
+grafana_port_fwd() {
+
+  echo ""
+  echo "========================================="
+  echo " RUNNING GRAFANA PORT-FWD"
+  echo "========================================="
+  
+  kubectl port-forward svc/kube-prom-stack-grafana \
+    3000:80 -n "${NAMESPACE}" \
+    --address=0.0.0.0 \
+    > /tmp/grafana-portforward.log 2>&1 &
+    
+    # > /dev/null 2>&1 &
+
+  echo ""
+  echo "access grafana at: "
+  echo -n "http://${PUBLIC_IP}:3000"
+
+}
+
+grafana_passwd() {
+
+  GRAFANA_PASS=$(kubectl get secret -n "${NAMESPACE}" \
+    kube-prom-stack-grafana -o \
+    jsonpath='{.data.admin-password}' \
+    | base64 -d && echo)
+
+  echo ""
+  echo "grafana password: $GRAFANA_PASS"
+
+}
+
+monitoring() {
+
+  create_namespace
+  
+  add_helm_repos
+  
+  install_metrics_server
+  
+  install_kube_prom
+  
+  wait_for_stack
+  
+  install_service_monitor
+  
+  prom_port_fwd
+  
+  grafana_port_fwd
+  
+  grafana_passwd
+  
+  echo ""
+  echo "========================================="
+  echo " Monitoring stack installed successfully"
+  echo "========================================="
+
+}
+
+monitoring
