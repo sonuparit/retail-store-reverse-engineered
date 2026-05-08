@@ -1,0 +1,38 @@
+prometheus:
+  prometheusSpec:
+    retention: 7d
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi
+
+    serviceMonitorSelectorNilUsesHelmValues: false
+
+
+grafana:
+  adminPassword: admin123
+
+  persistence:
+    enabled: true
+    size: 5Gi
+
+  service:
+    type: ClusterIP
+
+  defaultDashboardsEnabled: true
+
+
+alertmanager:
+  enabled: true
+
+
+nodeExporter:
+  enabled: true
+
+
+kubeStateMetrics:
+  enabled: true
+
