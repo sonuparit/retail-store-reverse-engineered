@@ -71,6 +71,9 @@ spec:
         namespace: "{{namespace}}"
 
       syncPolicy:
+#        managedNamespaceMetadata:
+#          labels:
+#            monitoring: enabled   {{/* for ServiceMonitor */}}
         automated:
           prune: true
           selfHeal: true

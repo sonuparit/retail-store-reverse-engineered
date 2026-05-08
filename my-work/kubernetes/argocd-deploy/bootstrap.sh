@@ -416,6 +416,12 @@ main() {
     # show_status
 
     log_info "Bootstrap completed successfully 🚀"
+    echo ""
 }
 
 main
+
+echo "Running monitoring setup..."
+echo ""
+
+bash ../../prom-grafana/monitoring.sh

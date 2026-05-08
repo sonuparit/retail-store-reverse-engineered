@@ -12,6 +12,7 @@ spec:
     metadata:
       labels:
         app: {{ include "orders.fullname" . }}-db
+        metrics: postgres-exporter
     spec:
       # --- THE PERMISSION FIX ---
       {{- with .Values.stsSecurityContext }}
