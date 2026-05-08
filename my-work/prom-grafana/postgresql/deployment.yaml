@@ -1,0 +1,69 @@
+# deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: postgres-exporter
+  namespace: dev
+  labels:
+    app: postgres-exporter
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: postgres-exporter
+
+  template:
+    metadata:
+      labels:
+        app: postgres-exporter
+
+    spec:
+      containers:
+      - name: postgres-exporter
+
+        image: quay.io/prometheuscommunity/postgres-exporter:v0.15.0
+
+        ports:
+        - containerPort: 9187
+          name: metrics
+
+        envFrom:
+        - secretRef:
+            name: postgres-exporter-secret
+
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+
+          limits:
+            cpu: 200m
+            memory: 256Mi
+
+        readinessProbe:
+          httpGet:
+            path: /metrics
+            port: 9187
+            scheme: HTTP
+
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+
+
+        livenessProbe:
+          httpGet:
+            path: /metrics
+            port: 9187
+            scheme: HTTP
+
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3

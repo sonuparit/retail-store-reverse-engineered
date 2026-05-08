@@ -2,6 +2,10 @@ prometheus:
   enabled: true
   prometheusSpec:
     retention: 7d
+    additionalScrapeConfigsSecret:
+      enabled: true
+      name: additional-scrape-configs
+      key: ../postgresql/additional-scrape-configs.yaml
     storageSpec:
       volumeClaimTemplate:
         spec:
