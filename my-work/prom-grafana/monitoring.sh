@@ -75,17 +75,17 @@ wait_for_stack() {
   
 }
 
-install_service_monitor() {
-
-  echo ""
-  echo "========================================="
-  echo " APPLYING SERVICE-MONITORS"
-  echo "========================================="
-
-  kubectl apply -f "${SCRIPT_DIR}/service-monitors/argocd.yaml"
-  #  -n "${NAMESPACE}" not required already present in yaml file
-
-}
+#install_service_monitor() {
+#
+#  echo ""
+#  echo "========================================="
+#  echo " APPLYING SERVICE-MONITORS"
+#  echo "========================================="#
+#
+#  kubectl apply -f "${SCRIPT_DIR}/service-monitors/argocd.yaml"
+#  #  -n "${NAMESPACE}" not required already present in yaml file#
+#
+#}
 
 prom_port_fwd() {
 
@@ -133,6 +133,17 @@ grafana_passwd() {
 
 }
 
+install_postgre_exporter() {
+
+  echo ""
+  echo "========================================="
+  echo " CREATING POSTGRESQL EXPORTER"
+  echo "========================================="
+  
+  kubectl apply -f "${SCRIPT_DIR}/postgresql/"
+
+}
+
 monitoring() {
 
   create_namespace
@@ -145,13 +156,15 @@ monitoring() {
   
   wait_for_stack
   
-  install_service_monitor
+#  install_service_monitor
   
   prom_port_fwd
   
   grafana_port_fwd
   
   grafana_passwd
+  
+  install_postgre_exporter
   
   echo ""
   echo "========================================="

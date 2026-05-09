@@ -3,11 +3,15 @@ server:
     type: ClusterIP   # we will expose later via ingress
   metrics:
     enabled: true
+    service:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8083"
+        prometheus.io/path: "/metrics"
 
 configs:
   params:
     server.insecure: true   # easier for local / kind
-
   cm:
     application.instanceLabelKey: argocd.argoproj.io/instance
 
@@ -15,13 +19,28 @@ controller:
   replicas: 1
   metrics:
     enabled: true
+    service:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8082"
+        prometheus.io/path: "/metrics"
 
 repoServer:
   autoscaling:
     enabled: false
   metrics:
     enabled: true
+    service:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8084"
+        prometheus.io/path: "/metrics"
     
 applicationSet:
   metrics:
     enabled: true  
+    service:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
