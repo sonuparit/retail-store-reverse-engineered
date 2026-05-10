@@ -23,6 +23,16 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 {{- end }}
 
+{{/* podAnnotations */}}
+{{- define "carts.podAnnotations" -}}
+{{- if or .Values.metrics.enabled .Values.podAnnotations }}
+{{- $podAnnotations := .Values.podAnnotations}}
+{{- $metricsAnnotations := .Values.metrics.podAnnotations}}
+{{- $allAnnotations := merge $podAnnotations $metricsAnnotations}}
+{{- toYaml $allAnnotations }}
+{{- end }}
+{{- end -}}
+
 {{/*
 Create chart name and version as used by the chart label.
 */}}

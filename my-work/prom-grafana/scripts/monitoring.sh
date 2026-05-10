@@ -14,9 +14,7 @@ create_namespace() {
   echo " CREATING NAMESPACE"
   echo "========================================="
 
-  kubectl apply -f "${SCRIPT_DIR}/monitoring/namespace.yaml"
-
-  sleep 3
+  kubectl apply -f "${SCRIPT_DIR}/../monitoring/namespace.yaml"
 
   echo ""
 }
@@ -40,9 +38,7 @@ install_metrics_server() {
 
   helm upgrade --install metrics-server metrics-server/metrics-server \
     -n kube-system \
-    -f "${SCRIPT_DIR}/monitoring/metrics-server.yaml"
-    
-  sleep 3
+    -f "${SCRIPT_DIR}/../monitoring/metrics-server.yaml"
   
 }
 
@@ -55,9 +51,7 @@ install_kube_prom() {
 
   helm upgrade --install kube-prom-stack prometheus-community/kube-prometheus-stack \
     -n "${NAMESPACE}" \
-    -f "${SCRIPT_DIR}/monitoring/values-monitoring.yaml"
-    
-  sleep 3
+    -f "${SCRIPT_DIR}/../monitoring/values-monitoring.yaml"
 
 }
 
@@ -65,7 +59,7 @@ wait_for_stack() {
 
   echo ""
   echo "========================================="
-  echo " WAITING FOR MONITORING STACK PODS max 5 mins"
+  echo " WAITING FOR MONITORING STACK PODS"
   echo "========================================="
 
   kubectl wait --for=condition=Ready pod \
@@ -75,19 +69,10 @@ wait_for_stack() {
   
 }
 
-#install_service_monitor() {
-#
-#  echo ""
-#  echo "========================================="
-#  echo " APPLYING SERVICE-MONITORS"
-#  echo "========================================="#
-#
-#  kubectl apply -f "${SCRIPT_DIR}/service-monitors/argocd.yaml"
-#  #  -n "${NAMESPACE}" not required already present in yaml file#
-#
-#}
-
 prom_port_fwd() {
+
+  echo ""
+  log_info "don't forget to open the ports"
 
   echo ""
   echo "========================================="
@@ -100,7 +85,7 @@ prom_port_fwd() {
     > /tmp/prometheus-portforward.log 2>&1 &
   
 
-  echo "access prometheus at: http://${PUBLIC_IP}:9090"
+  log_info "access prometheus at: http://${PUBLIC_IP}:9090"
 
 }
 
@@ -117,8 +102,8 @@ grafana_port_fwd() {
     > /tmp/grafana-portforward.log 2>&1 &
     
     # > /dev/null 2>&1 &
-
-  echo "access grafana at: http://${PUBLIC_IP}:3000"
+    
+  log_info "access grafana at: http://${PUBLIC_IP}:3000"
 
 }
 
@@ -129,18 +114,7 @@ grafana_passwd() {
     jsonpath='{.data.admin-password}' \
     | base64 -d && echo)
   
-  echo "grafana password: $GRAFANA_PASS"
-
-}
-
-install_postgre_exporter() {
-
-  echo ""
-  echo "========================================="
-  echo " CREATING POSTGRESQL EXPORTER"
-  echo "========================================="
-  
-  kubectl apply -f "${SCRIPT_DIR}/postgresql/"
+  log_info "grafana password: $GRAFANA_PASS"
 
 }
 
@@ -156,15 +130,11 @@ monitoring() {
   
   wait_for_stack
   
-#  install_service_monitor
-  
   prom_port_fwd
   
   grafana_port_fwd
   
   grafana_passwd
-  
-#  install_postgre_exporter
   
   echo ""
   echo "========================================="

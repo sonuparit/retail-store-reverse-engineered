@@ -15,6 +15,7 @@ spec:
                 - name: secrets
                   chartPath: "charts/secret-configs"
                   wave: "2"
+                  
                 - name: carts
                   chartPath: charts/carts
                   wave: "3"
@@ -40,8 +41,8 @@ spec:
               elements:
                 - env: dev
                   namespace: dev
-#                - env: stage
-#                  namespace: stage
+                - env: stage
+                  namespace: stage
 #                - env: prod
 #                  namespace: prod
 

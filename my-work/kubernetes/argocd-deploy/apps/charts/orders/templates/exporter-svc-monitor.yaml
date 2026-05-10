@@ -1,0 +1,27 @@
+# service-monitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+
+metadata:
+  name: {{ include "orders.fullname" . }}-svc-mon
+
+  labels:
+    release: kube-prometheus-stack
+
+spec:
+  namespaceSelector:
+    matchNames:
+    - {{ .Release.Namespace }}
+
+  selector:
+    matchLabels:
+      app: {{ include "orders.fullname" . }}-exp-svc
+
+  endpoints:
+  - port: metrics
+    path: /metrics
+    interval: 15s
+    
+    relabelings:
+    - targetLabel: env
+      replacement: {{ .Release.Namespace }}

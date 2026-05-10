@@ -1,0 +1,19 @@
+# service.yaml
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: {{ include "orders.fullname" . }}-exp-svc
+  labels:
+    app: {{ include "orders.fullname" . }}-exp-svc
+
+spec:
+  type: ClusterIP
+
+  selector:
+    app: {{ include "orders.fullname" . }}-exp
+
+  ports:
+  - name: metrics
+    port: 9187
+    targetPort: metrics

@@ -1,4 +1,12 @@
 replicaCount: 1
+exporterReplica: 1
+
+metrics:
+  enabled: true
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8080"
+    prometheus.io/path: "/actuator/prometheus"
 
 image:
   repository: sonuparit/retail-app

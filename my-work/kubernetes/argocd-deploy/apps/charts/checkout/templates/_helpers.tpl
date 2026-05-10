@@ -50,6 +50,18 @@ app.kubernetes.io/name: {{ include "checkout.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
+
+{{/* podAnnotations */}}
+{{- define "checkout.podAnnotations" -}}
+{{- if or .Values.metrics.enabled .Values.podAnnotations }}
+{{- $podAnnotations := .Values.podAnnotations}}
+{{- $metricsAnnotations := .Values.metrics.podAnnotations}}
+{{- $allAnnotations := merge $podAnnotations $metricsAnnotations }}
+{{- toYaml $allAnnotations }}
+{{- end }}
+{{- end -}}
+
+
 {{/*
 Create the name of the service account to use
 */}}
