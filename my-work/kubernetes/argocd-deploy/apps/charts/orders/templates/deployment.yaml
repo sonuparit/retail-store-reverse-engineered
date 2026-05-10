@@ -13,9 +13,9 @@ spec:
       {{- include "orders.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- if or .Values.podAnnotations .Values.metrics.enabled }}
+      {{- if .Values.podAnnotations }}
       annotations:
-        {{- include "orders.podAnnotations" . | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
         {{- include "orders.labels" . | nindent 8 }}
