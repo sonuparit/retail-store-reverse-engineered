@@ -140,6 +140,8 @@ install_apps() {
 
 main() {
 
+  pkill -f "kubectl port-forward" || true
+
   # check_dependencies
 
   # check_docker

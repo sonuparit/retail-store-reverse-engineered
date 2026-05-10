@@ -144,4 +144,18 @@ apply_project() {
     echo ""
 }
 
-install_argocd
+argocd() {
+  
+  install_argocd
+  
+  wait_for_argocd
+  
+  port_forward_argocd
+  
+  fetch_argocd_password
+  
+  apply_project
+
+}
+
+argocd

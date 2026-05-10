@@ -186,8 +186,6 @@ port_forward_app() {
 
 install_apps() {
 
-  pkill -f "kubectl port-forward" || true
-
   apply_root_app
   
   detect_namespaces
