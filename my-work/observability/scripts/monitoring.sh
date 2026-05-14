@@ -172,10 +172,11 @@ install_loki() {
 increase_inotify_limit() {
 
   echo ""
-  log_info "INCREASING INOTIFY LIMIT TO 10000"
+  log_info "INCREASING INOTIFY LIMIT TO 10240"
   
-  fs.inotify.max_user_instances=10000
-  fs.inotify.max_user_watches=1048576
+  # Setting limits to higher values
+  sudo sysctl -w fs.inotify.max_user_instances=10240
+  sudo sysctl -w fs.inotify.max_user_watches=1048576
 
 }
 
