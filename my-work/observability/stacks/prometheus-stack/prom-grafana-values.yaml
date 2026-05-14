@@ -10,7 +10,7 @@ prometheus:
       volumeClaimTemplate:
         spec:
           storageClassName: standard
-          accessModes: ["ReadWriteOnce"]
+          accessModes: [ "ReadWriteOnce" ]
           resources:
             requests:
               storage: 2Gi
@@ -28,12 +28,12 @@ grafana:
   persistence:
     enabled: true
     size: 5Gi
-    
+
   ingress:
     enabled: false
 
   defaultDashboardsEnabled: true
-  
+
   resources:
     requests:
       memory: 256Mi
@@ -46,34 +46,50 @@ grafana:
 alertmanager:
   enabled: true
 
+  alertmanagerSpec:
+    replicas: 1
+
   config:
     global:
       resolve_timeout: 5m
 
     route:
-      receiver: default-receiver
-
-      group_by:
-        - alertname
-        - namespace
-
-      group_wait: 30s
-      group_interval: 5m
-      repeat_interval: 3h
+      receiver: "default-receiver"
 
     receivers:
-      - name: default-receiver
+      - name: "default-receiver"
 
-  alertmanagerSpec:
-    replicas: 1
-    storage:
-      volumeClaimTemplate:
-        spec:
-          accessModes: ["ReadWriteOnce"]
+# alertmanager:
+#   enabled: true
 
-          resources:
-            requests:
-              storage: 1Gi 
+#   config:
+#     global:
+#       resolve_timeout: 5m
+
+#     route:
+#       receiver: default-receiver
+
+#       group_by:
+#         - alertname
+#         - namespace
+
+#       group_wait: 30s
+#       group_interval: 5m
+#       repeat_interval: 3h
+
+#     receivers:
+#       - name: default-receiver
+
+#   alertmanagerSpec:
+#     replicas: 1
+#     storage:
+#       volumeClaimTemplate:
+#         spec:
+#           accessModes: ["ReadWriteOnce"]
+
+#           resources:
+#             requests:
+#               storage: 1Gi 
 
 kubeStateMetrics:
   enabled: true
@@ -83,4 +99,3 @@ nodeExporter:
 
 prometheusOperator:
   enabled: true
-
