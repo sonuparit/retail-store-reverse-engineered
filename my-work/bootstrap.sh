@@ -118,7 +118,7 @@ create_kind_cluster() {
 
 create_monitoring_stack() {
 
-  bash "${SCRIPT_DIR}/prom-grafana/scripts/monitoring.sh"
+  bash "${SCRIPT_DIR}/observability/scripts/monitoring.sh"
 
 }
 
