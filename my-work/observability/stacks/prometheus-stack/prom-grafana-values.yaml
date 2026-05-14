@@ -1,11 +1,7 @@
 prometheus:
   enabled: true
   prometheusSpec:
-    retention: 5d
-    #    additionalScrapeConfigsSecret:
-    # enabled: true
-    # name: additional-scrape-configs
-    # key: ../postgresql/additional-scrape-configs.yaml
+    retention: 7d
     storageSpec:
       volumeClaimTemplate:
         spec:
@@ -25,9 +21,6 @@ grafana:
     enabled: true
     storageClassName: standard
     size: 1Gi
-  ingress:
-    enabled: false
-  defaultDashboardsEnabled: true
   resources:
     requests:
       memory: 256Mi
@@ -42,15 +35,20 @@ alertmanager:
     global:
       resolve_timeout: 5m
     route:
-      receiver: default-receiver
-      group_by: [ alertname, namespace ]
+      receiver: 'null' # Use 'null' as a placeholder or your default receiver
+      group_by: [alertname, namespace]
       group_wait: 30s
       group_interval: 5m
       repeat_interval: 3h
     receivers:
-      - name: default-receiver
+      - name: 'null'
+        # Adding a placeholder webhook ensures the config is valid
+        webhook_configs:
+          - url: "http://localhost:8080" 
+
   alertmanagerSpec:
     replicas: 1
+    # Ensure this matches the storage block structure the operator expects
     storage:
       volumeClaimTemplate:
         spec:
