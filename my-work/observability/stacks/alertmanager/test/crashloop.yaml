@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: crash-test
+default
+spec:
+  containers:
+    - name: crash-test
+      image: busybox
+      command: ["sh", "-c", "exit 1"]
