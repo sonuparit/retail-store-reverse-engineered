@@ -514,6 +514,12 @@ Initially, application pods exposed Prometheus annotations like:
   - reusable deployment patterns
   - scalable monitoring architecture
   - cleaner GitOps workflows
+  
+### 6. Containers restarting again and again
+
+  Linveness probe was too agressive
+
+  Increased liveness probe delay time 
 
 ## What I Learned
 
