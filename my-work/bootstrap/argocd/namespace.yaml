@@ -13,6 +13,18 @@ metadata:
 apiVersion: v1
 kind: Namespace
 metadata:
+  name: platform
+
+  labels:
+    name: platform
+    app.kubernetes.io/name: platform
+    app.kubernetes.io/part-of: platform-layer
+    
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
   name: argocd
 
   labels:
