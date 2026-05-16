@@ -28,3 +28,5 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+      - SkipDryRunOnMissingResource=true # 👈 This allows the parent to ignore the "Unknown Resource" error
+      - ServerSideApply=true # 👈 This fixes the "apply" errors for large CRDs
