@@ -49,7 +49,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
   name: retail-app
-  namespace: Application
+  namespace: argocd
   
 spec:
   description: Project for Retail Store (Application) deployment
@@ -59,7 +59,7 @@ spec:
     - 'https://charts.external-secrets.io'
     
   destinations:
-    - namespace: argocd
+    - namespace: retail-app
       server: https://kubernetes.default.svc
     - namespace: external-secrets
       server: https://kubernetes.default.svc

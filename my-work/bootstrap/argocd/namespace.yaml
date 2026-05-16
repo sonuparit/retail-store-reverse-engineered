@@ -6,7 +6,7 @@ metadata:
   labels:
     name: observability
     app.kubernetes.io/name: observability
-    app.kubernetes.io/part-of: observability
+    app.kubernetes.io/part-of: observability-layer
     
 ---
 
@@ -29,4 +29,17 @@ metadata:
   
   labels:
     name: external-secrets
-    app.kubernetes.io/part-of: platform-engine
+    app.kubernetes.io/name: external-secrets
+    app.kubernetes.io/part-of: platform-layer
+
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: retail-app
+  
+  labels:
+    name: retail-app
+    app.kubernetes.io/name: retail-app
+    app.kubernetes.io/part-of: application-layer
