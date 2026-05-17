@@ -22,7 +22,7 @@ data:
     local sync_status = (obj.status.sync and obj.status.sync.status) or "Unknown"
 
     -- 2. Prevent Premature Clearance: If the app says Healthy but is STILL Syncing manifests, LOCK IT.
-    if sync_status == "OutOfSync" or sync_status == "Unknown" then
+    if sync_status == "OutOfSync" or sync_status == "Syncing" or sync_status == "Unknown" then
       hs.status = "Progressing"
       hs.message = "Sync Lock: Controller is actively transmitting or reconciling manifests. Current Sync State: " .. sync_status
       return hs
