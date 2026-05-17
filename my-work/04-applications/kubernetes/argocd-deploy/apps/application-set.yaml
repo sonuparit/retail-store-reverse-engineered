@@ -81,7 +81,7 @@ spec:
       source:
         repoURL: https://github.com/sonuparit/retail-store-reverse-engineered.git
         targetRevision: main
-        path: 04-applications/kubernetes/argocd-deploy/apps/{{chartPath}}
+        path: my-work/04-applications/kubernetes/argocd-deploy/apps/{{chartPath}}
         helm:
           valueFiles:
             - ../../../envs/{{env}}/{{name}}.yaml
