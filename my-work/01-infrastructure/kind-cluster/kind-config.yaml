@@ -7,3 +7,7 @@ nodes:
   extraMounts:
   - hostPath: /mnt/postgre-data    # The path on my EC2
     containerPath: /var/local-path-provisioner # The path inside the Kind node
+- role: worker
+  extraMounts:
+  - hostPath: /mnt/postgre-data    # The path on my EC2
+    containerPath: /var/local-path-provisioner # The path inside the Kind node
