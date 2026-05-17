@@ -38,6 +38,8 @@ ARGO_HELM_REPO="https://argoproj.github.io/argo-helm"
 
 ARGO_VALUES_FILE="./argocd/argocd-install-values.yaml"
 
+LUA_SCRIPT="./argocd/argocd-configmap.yaml"
+
 PROJECT_FILE="./argocd/argocd-project.yaml"
 
 ROOT_APP="./argocd/root-app.yaml"
@@ -154,13 +156,24 @@ create_kind_cluster() {
   
 }
 
+increase_inotify_limit() {
+
+  echo ""
+  log_info "INCREASING INOTIFY LIMIT TO 10240"
+  
+  # Setting limits to higher values
+  sudo sysctl -w fs.inotify.max_user_instances=10240
+  sudo sysctl -w fs.inotify.max_user_watches=1048576
+
+}
+
 create_namespace() {
 
   echo ""
-  log_info "Creating Namespace..."
+  log_info "Creating Namespaces..."
   kubectl apply -f "${NAMESPACE_FILE}"
   
-  log_info "Namespace created."
+  log_info "Namespaces created."
 
 }
 
@@ -189,6 +202,51 @@ wait_for_argocd() {
       --timeout=300s
 
   log_info "ArgoCD is ready."
+  
+}
+
+create_project() {
+
+  echo ""
+  log_info "Creating ArgoCD project..."
+
+  kubectl apply -f "${PROJECT_FILE}" -n "${ARGO_NAMESPACE}"
+  
+}
+
+apply_lua_script() {
+
+  echo ""
+  log_info "Applying Lua Script..."
+  kubectl apply -f "${LUA_SCRIPT}" -n "$ARGO_NAMESPACE"
+  
+  log_info "Lua Script Applied."
+
+}
+
+restart_argo_controller() {
+
+  echo ""
+  log_info "Restarting controller..."
+  kubectl rollout restart statefulset argocd-application-controller -n "$ARGO_NAMESPACE"
+  kubectl rollout restart deployment argocd-repo-server -n "$ARGO_NAMESPACE"
+  
+  log_info "Restarted controller."
+  sleep 5
+
+}
+
+wait_for_argocd_pods() {
+
+  echo ""
+  echo "========================================="
+  echo " WAITING FOR MONITORING STACK PODS"
+  echo "========================================="
+
+  kubectl wait --for=condition=Ready pod \
+    --all \
+    -n "${ARGO_NAMESPACE}" \
+    --timeout=300s
   
 }
 
@@ -227,15 +285,6 @@ fetch_argocd_password() {
 
 }
 
-create_project() {
-
-  echo ""
-  log_info "Creating ArgoCD project..."
-
-  kubectl apply -f "${PROJECT_FILE}" -n "${ARGO_NAMESPACE}"
-  
-}
-
 install_root_app() {
 
   echo ""
@@ -265,17 +314,25 @@ main() {
 
   create_kind_cluster
   
-  # create_namespace
+  increase_inotify_limit
+  
+  create_namespace
 
   install_argocd
   
   wait_for_argocd
   
+  create_project
+  
+  apply_lua_script
+  
+  restart_argo_controller
+  
+  # wait_for_argocd_pods
+  
   port_forward_argocd
   
   fetch_argocd_password
-  
-  create_project
   
   install_root_app
 
