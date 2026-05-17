@@ -5,9 +5,6 @@ metadata:
   namespace: argocd
   
 spec:
-  dependsOn:
-    - name: platform-layer
-    
   project: observability
   sources:
     - repoURL: 'https://grafana.github.io/helm-charts'
