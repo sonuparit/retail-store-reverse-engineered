@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: retail-apps-deployment
+  name: application-layer
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "10" # Deployment Order #3
