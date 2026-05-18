@@ -146,7 +146,7 @@ app_port_fwd() {
   log_info " Starting app port-forward..."
   
   kubectl port-forward svc/ui-dev-service \
-    8080:8080 -n dev --address=0.0.0.0 \
+    8888:8080 -n dev --address=0.0.0.0 \
     > /tmp/app-portforward.log 2>&1 &
 
   log_info "access app at: http://${PUBLIC_IP}:8888"
