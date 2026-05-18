@@ -57,7 +57,7 @@ prom_port_fwd() {
   log_info " RUNNING PROMETHEUS PORT-FWD"
   echo "========================================="
   
-  kubectl port-forward svc/kube-prom-stack-kube-prome-prometheus \
+  kubectl port-forward svc/prometheus-stack-kube-prom-prometheus \
     9090:9090 -n "${NAMESPACE}" \
     --address=0.0.0.0 \
     > /tmp/prometheus-portforward.log 2>&1 &
@@ -73,7 +73,7 @@ grafana_port_fwd() {
   log_info " RUNNING GRAFANA PORT-FWD"
   echo "========================================="
   
-  kubectl port-forward svc/kube-prom-stack-grafana \
+  kubectl port-forward svc/prometheus-stack-grafana \
     3000:80 -n "${NAMESPACE}" \
     --address=0.0.0.0 \
     > /tmp/grafana-portforward.log 2>&1 &
@@ -106,7 +106,7 @@ alert_mngr_port_fwd() {
 
   kubectl port-forward \
     -n "${NAMESPACE}" \
-    svc/kube-prom-stack-alertmanager \
+    svc/prometheus-stack-kube-prom-alertmanager \
     9093:9093 --address=0.0.0.0 \
     > /tmp/alertmanager-portforward.log 2>&1 &
 
@@ -122,7 +122,7 @@ loki_port_fwd() {
 
   kubectl port-forward \
     -n "${NAMESPACE}" \
-    svc/loki 3100:3100 \
+    svc/loki-stack 3100:3100 \
     --address=0.0.0.0 \
     > /tmp/loki-portforward.log 2>&1 &
 
@@ -136,7 +136,7 @@ app_port_fwd() {
   log_info " RUNNING APP PORT-FWD"
   echo "========================================="
   
-  kubectl port-forward svc/kube-prom-stack-kube-prome-prometheus \
+  kubectl port-forward svc/ui-dev-service \
     8080:8080 -n dev \
     --address=0.0.0.0 \
     > /tmp/app-portforward.log 2>&1 &
