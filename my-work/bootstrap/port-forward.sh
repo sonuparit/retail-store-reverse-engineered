@@ -178,7 +178,7 @@ port_forwarding_main() {
   
   alert_mngr_port_fwd
   
-  app_port_fwd
+  # app_port_fwd
   
   echo ""
   echo "========================================="
