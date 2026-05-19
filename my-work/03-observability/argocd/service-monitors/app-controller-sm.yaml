@@ -17,6 +17,6 @@ spec:
       app: argocd-application-controller-metrics
       
   endpoints:
-    interval: 30s
+  - interval: 30s
     path: /metrics
     port: http-metrics
