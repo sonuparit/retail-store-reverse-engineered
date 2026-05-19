@@ -1,11 +1,15 @@
 defaultRules:
   # false - Disable all default rules
-  create: true
+  create: false
   rules:
     kubelet: false
     etcd: false
+    kubeProxy: false
+    kubeScheduler: false
+    kubeControllerManager: false
+
     # Disable the Watchdog alert:
-    # watchdog: false
+    watchdog: false
 
 prometheus:
   enabled: true
@@ -124,3 +128,12 @@ nodeExporter:
 
 prometheusOperator:
   enabled: true
+  
+kubeControllerManager:
+  enabled: false
+
+kubeScheduler:
+  enabled: false
+
+kubeProxy:
+  enabled: false
