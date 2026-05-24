@@ -4,13 +4,13 @@ Challenges and Solutions section only
 
 ## 📑 Table of Contents [(Read full contect here)](./README.md)
 
-- [Challenges & Solutions]()
-  - [PostgreSQL Exporter]()
-  - [Prometheus Metrics Collection]()
-  - [Loki Log Aggregation]()
-  - [Alerting Pipeline]()
-  - [Multi-Environment Monitoring]()
-  - [GitOps CD with ArgoCD]()
+- [Challenges & Solutions](#️-challenges--solutions)
+  - [PostgreSQL Exporter](#1-postgresql-exporter)
+  - [Prometheus Metrics Collection](#2-prometheus-metrics-collection)
+  - [Loki Log Aggregation](#3-loki-log-aggregation)
+  - [Alerting Pipeline](#4-alerting-pipeline)
+  - [Multi-Environment Monitoring](#5-multi-environment-monitoring)
+  - [GitOps CD with ArgoCD](#6-gitops-cd-with-argocd)
 
 ## ⚔️ Challenges & Solutions
 
@@ -29,6 +29,8 @@ This project involved building and operating a production-style Kubernetes obser
   - **🔍 Analysis:**\
     To understand the problem deeply, I created the Architecture diagram
 
+    ![alt text](./postgresql/screenshots/Arch.jpg)
+  
   - **🧠 Root Cause:**\
     Exporter communication flow contains two independent networking paths:
 
@@ -312,6 +314,8 @@ This project involved building and operating a production-style Kubernetes obser
     failed to make file target manager: too many open files
     ```
 
+    ![alt text](./screenshots/ss84.png)
+
   - **🔍 Analysis:**\
     Promtail dynamically watches Kubernetes container log files using Linux `inotify` watchers. As cluster-wide log discovery expanded across multiple namespaces and services, the number of filesystem watchers increased significantly, eventually exhausting the node's default kernel limits.
 
@@ -509,6 +513,8 @@ This project involved building and operating a production-style Kubernetes obser
     kubectl get alertmanager -n observability
     ```
 
+    ![alt text](./screenshots/ss56.png)
+
   - **🔍 Analysis:**\
     Initial troubleshooting included:
 
@@ -519,7 +525,7 @@ This project involved building and operating a production-style Kubernetes obser
 
     No pod failures, crash loops, or log errors were found. The Alertmanager UI was accessible, alerts were being routed correctly, and both email and Slack notifications were functioning as expected.
 
-  - **? Root Cause:**\
+  - **🧠 Root Cause:**\
     The blank `AVAILABLE` and `READY` columns were not caused by an Alertmanager failure.
 
     These columns are custom printer columns defined by the Prometheus Operator CRD, not native Kubernetes status fields. The values are derived from the `status:` section of the Alertmanager Custom Resource.
@@ -577,14 +583,10 @@ This project involved building and operating a production-style Kubernetes obser
     This enabled environment-aware queries such as:
 
     ```promql
-    {env="stage"}
+    {env="dev"}
     ```
 
-    and:
-
-    ```logql
-    {env="prod"}
-    ```
+    ![alt text](./screenshots/ss98.png)
 
     **This enabled:**
 
@@ -643,6 +645,8 @@ This project involved building and operating a production-style Kubernetes obser
     - **Platform Layer** → ESO and shared platform services
     - **Observability Layer** → Prometheus stack, exporters, logging
     - **Application Layer** → Business applications and services
+
+      ![alt text](./screenshots/arch.jpg)
 
     Implemented ArgoCD Projects with scoped permissions and controlled deployment boundaries.
 
