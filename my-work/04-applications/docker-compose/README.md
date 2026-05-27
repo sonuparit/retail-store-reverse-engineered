@@ -1,57 +1,88 @@
-# 🚀 Retail Store Microservices — Containerization Deep Dive
+# 🚀 Docker Compose Orchestration for Microservices
+
+A production-oriented Docker Compose orchestration setup focused on reverse engineering, understanding, and validating how independently containerized microservices communicate and operate within a unified runtime environment.
 
 ## 📑 Table of Contents
 
-1. **[Overview](#-overview)**
-2. **[What this Project Demonstrates](#-what-this-project-demonstrates)**
-3. **[Key Contribution](#-key-contributions)**
-4. **[How to Run](#️-how-to-run)**
-5. **[Tech Stack](#️-tech-stack)**
-6. **[What I Learned](#-what-i-learned)**
-7. **[What's Next](#-whats-next)**
-8. **[Final thoughts](#-final-thoughts)**
+1. [Implementation Roadmap](#️-implementation-roadmap)
+2. [Overview](#-overview)
+3. [What this Project Demonstrates](#-what-this-project-demonstrates)
+4. [Key Contribution](#-key-contributions)
+5. [How to Run](#️-how-to-run)
+6. [Tech Stack](#️-tech-stack)
+7. [Key Technical Learnings](#-key-technical-learnings)
+8. [Next Phase](#-next-phase)
+9. [Final thoughts](#-final-thoughts)
+
+## 🗺️ Implementation Roadmap
+
+<p align="left">
+  <img src="./4-compose.jpg" width="80%"/>
+</p>
+
+> [!TIP]
+> 📍 Current Focus: Docker Compose Orchestration
+
+### 🔗 Jump to Other Phases
+
+- [Source Code Understanding](../../../src-code/)
+- [Architectural Understanding](../architecture/)
+- [Containerization (Docker)](../docker/)
+- Docker Compose ← (📍 You are here )
+- [Kubernetes](../kubernetes/)
+  - [Individual Microservice Testing](../kubernetes/ind-svc-test/)
+  - [Helm Templating](../kubernetes/helm-template/)
+  - [Full App Deployment via Helmfile](../kubernetes/helmfile-deploy/)
+  - [Multi Env Deployment via ArgoCD](../kubernetes/argocd-deploy/)
+- [Monitoring & Observability](../../03-observability/)
+- [Production grade GitOps](../../)
 
 ## 📌 Overview
 
-*This project demonstrates a **structured and analytical approach to containerizing** a multi-service retail application using Docker Compose. Instead of building from scratch, the focus was on reverse engineering and deeply understanding an existing production-like setup.*
+> [!NOTE]
+> This phase intentionally uses local development environment variables and secrets.
+>
+> In later Kubernetes phases, secrets were migrated to **AWS Secrets Manager** for production-grade secret handling.
 
-*The application consists of **5 microservices**, each independently containerized and orchestrated using Docker Compose.*
+*This phase focused on reverse engineering and orchestrating a production-style multi-service retail application using Docker Compose.*
 
----
+*The objective was not only to run containers, but to understand how independently deployed microservices communicate, share configuration, manage dependencies, and operate within a unified runtime environment.*
 
 ## 🧠 What This Project Demonstrates
 
-**This work reflects my strong understanding of:**
+**This implementation demonstrates practical understanding of:**
 
-- *Microservices-based architecture*
-- *Container orchestration using Docker Compose*
-- *Service-to-service communication*
-- *Environment configuration and dependency mapping*
-- *Debugging and runtime validation*
-
----
+- *Multi-service orchestration using Docker Compose*
+- *Container networking and service discovery*
+- *Configuration-driven application architecture*
+- *Environment variable management*
+- *Service dependency coordination*
+- *Runtime validation and debugging workflows*
+- *Production-oriented microservices operation*
 
 ## 🔍 Key Contributions
 
-### 1. Compose File Analysis  
+### 1. Compose Configuration Analysis
 
-**Thoroughly analyzed all **`docker-compose`** configurations across services and understood:**
+**Analyzed service orchestration patterns across all Docker Compose configurations, including:**
 
 - *Service definitions*
-- *Security enforcement*
-- *Env mappings*
+- *Environment mappings*
 - *Dependency chains*
-- *DB connections*
+- *Database connectivity*
+- *Security-related configurations*
+- *Container startup coordination*
 
-### 2. Configuration Understanding  
+### 2. Configuration Behavior Analysis
 
-**Decoded the intent behind each directive:**
+**Validated the operational purpose behind key orchestration directives, including:**
 
-- *Why specific ports are exposed*
-- *How services communicate internally*
-- *The role of restart policies and build contexts*
-- *Health checks implementation based on container env*
-- *Strict security handling*
+- *Port exposure strategy*
+- *Internal service communication*
+- *Restart policy behavior*
+- *Build context separation*
+- *Health check implementation*
+- *Runtime environment isolation*
 
 ### 3. Environment Variable Discovery  
 
@@ -61,9 +92,9 @@
 - *Mapping configuration usage across services*  
 - *Ensuring correct runtime injection*  
 
-### 4. Created a unified setup to run the entire system
+### 4. Unified Multi-Service Orchestration
 
-- *Implemented a modular Compose setup via **`include`**, and defined a shared **`bridge network (main-app-net)`** to ensure unified networking across services.*
+*Designed a modular Compose-based orchestration workflow using shared configuration and a centralized bridge network (**`main-app-net`**) to enable seamless communication across independently managed services.*
 
 ## ▶️ How to Run
 
@@ -73,13 +104,13 @@
 https://github.com/sonuparit/retail-store-reverse-engineered.git
 ```
 
-- Move into app-wrapper
+- Navigate to Wrapper
 
 ```yml
 cd retail-store-reverse-engineered/my-work/docker-compose/app-wrapper/
 ```
 
-- Run the command
+- Start All Services
 
 ```yml
 docker compose up -d
@@ -103,9 +134,9 @@ docker ps
 
   - for EC2 development access at `<EC2 public IP>:8888`
 
-![alt text](./screenshots/Screenshot07.png)
+    ![alt text](./screenshots/Screenshot07.png)
 
-### 5. Runtime Validation  
+### 5. Operational Validation
 
 **Verified:**
 
@@ -129,45 +160,27 @@ docker ps
 - **Docker Compose**
 - **Microservices Architecture**
 
----
+## 🚀 Key Technical Learnings
 
-## 🚀 What I learned
+- *How independently deployed microservices communicate within shared container networks*
+- *Practical orchestration patterns using Docker Compose*
+- *Runtime dependency coordination and startup sequencing*
+- *Environment-driven configuration management*
+- *Container health validation and operational debugging*
+- *Reverse engineering and understanding production-style application setups*
 
-**1. Deep understanding of containerized microservices behavior**
+## 🔭 Next Phase
 
-- *Gained clarity on how independently deployed services **interact, communicate, and maintain stability** within a shared runtime environment.*
+The next implementation phase transitions this Compose-based orchestration workflow into Kubernetes-native deployments, including:
 
-**2. Practical orchestration with Docker Compose**
-
-- *Moved beyond basic usage by analyzing **multi-service orchestration patterns**, including **dependency management and startup sequencing.**
-
-**3. Configuration-driven architecture**
-
-- *Developed the ability to **trace and validate environment variables across services**, ensuring consistent and reliable runtime behavior.*
-
-**4. Service communication and networking**
-
-- *Understood **internal networking**, service discovery, and how containers communicate securely within an isolated network.*
-
-**5. Production-aware debugging mindset**
-
-- *Learned to diagnose issues by inspecting **logs, container states, health checks, and service dependencies** rather than relying on trial-and-error fixes.*
-
-**6. Reading and understanding real-world setups**
-
-- *Strengthened the ability to **reverse-engineer existing systems** — a critical skill for working with legacy or production codebases in real teams.*
-
-## 🔭 What’s Next
-
-Moving forward, this setup will be transitioned to Kubernetes:
-
-1. *Add **`Kubernetes deployment`** [(read here)](../kubernetes/)*
-2. *IaC Provisioning via **`Terraform`***
-3. *Implement **`CI/CD`** pipeline*
-4. *Add **`email notification`** system*
-5. *Add monitoring (**`Prometheus + Grafana`**)*
-6. *Full Automation via one command **`terraform apply`***
+- *Individual workload deployment testing [(read here)](../kubernetes/)*
+- *Helm templating*
+- *Helmfile-based orchestration*
+- *Multi-Environment GitOps workflows with ArgoCD*
+- *Monitoring and observability integration*
 
 ## 📌 Final Thoughts
 
-This project was not just about running containers — it was about breaking down a system, understanding every moving part, and rebuilding confidence in orchestrating complex applications.
+This phase was not only about orchestrating containers, but about understanding the operational behavior of distributed services within a shared runtime environment.
+
+The reverse-engineering process strengthened my ability to analyze existing systems, validate runtime behavior, and reason about production-oriented orchestration workflows.
