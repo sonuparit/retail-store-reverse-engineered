@@ -4,22 +4,44 @@ This project is a retail store application built using a microservices architect
 
 ## 📑 Table of contents
 
-1. **[Overview](#-overview)**
-2. **[App Architecture](#️-app-architecture-original)**
-3. **[What I Discovered](#-what-i-discovered)**
-4. **[Why this design?](#-why-this-design)**
-5. **[Why This Project Matters](#-why-this-project-matters)**
-6. **[Next Steps](#-next-steps)**
+1. [Implementation Roadmap](#️-implementation-roadmap)
+2. [Overview](#-overview)
+3. [App Architecture](#️-app-architecture-original)
+4. [What I Discovered](#-what-i-discovered)
+5. [Why this design?](#-why-this-design)
+6. [Why This Project Matters](#-why-this-project-matters)
+7. [Next Steps](#-next-steps)
+
+## 🗺️ Implementation Roadmap
+
+![alt text](./2-Arch.jpg)
+
+> [!TIP]
+> 📍 Current Focus: Architectural Understanding
+
+### 🔗 Jump to Other Phases
+
+- [Source Code Understanding](../../../src-code/)
+- Architectural Understanding ← (📍 You are here )
+- [Docker](../docker/)
+- [Docker Compose](../docker-compose/)
+- [Kubernetes](../kubernetes/)
+  - [Individual Microservice Testing](../kubernetes/ind-svc-test/)
+  - [Helm Templating](../kubernetes/helm-template/)
+  - [Full App Deployment via Helmfile](../kubernetes/helmfile-deploy/)
+  - [Multi Env Deployment via ArgoCD](../kubernetes/argocd-deploy/)
+- [Monitoring & Observability](../../03-observability/)
+- [Production grade GitOps](../../)
 
 ## 📌 Overview
 
 **Performed architectural analysis of the application by studying:**
 
-* *Application source code*
-* *Service dependencies*
-* *Environment variables and runtime configurations*
-* *API communication patterns*
-* *Containerization requirements*
+- *Application source code*
+- *Service dependencies*
+- *Environment variables and runtime configurations*
+- *API communication patterns*
+- *Containerization requirements*
 
 **This process helped map the end-to-end service flow and identify how microservices interact within a Kubernetes-oriented environment.**
 
@@ -39,35 +61,35 @@ This project is a retail store application built using a microservices architect
 
 **Architecture Insights:**
 
-* *Stateless microservices architecture*
-* *Cloud-native service design patterns*
-* *Container-oriented application structure*
-* *Internal API-based service communication*
-* *Kubernetes-friendly workload separation*
-* *Ephemeral workload design*
-* *Supports optional integration with external databases if needed*
+- *Stateless microservices architecture*
+- *Cloud-native service design patterns*
+- *Container-oriented application structure*
+- *Internal API-based service communication*
+- *Kubernetes-friendly workload separation*
+- *Ephemeral workload design*
+- *Supports optional integration with external databases if needed*
 
 ### 💡 Why this design?
 
 **This architecture appears intentionally optimized for:**
 
-* *State/Stateless workload orchestration*
-* *Production oriented workflows*
-* *Reduced infrastructure dependency management*
-* *Cloud-native deployment environments*
-* *Rapid experimentation in Kubernetes ecosystems*
-* *Service-level isolation and modularity*
+- *State/Stateless workload orchestration*
+- *Production oriented workflows*
+- *Reduced infrastructure dependency management*
+- *Cloud-native deployment environments*
+- *Rapid experimentation in Kubernetes ecosystems*
+- *Service-level isolation and modularity*
 
 ### 💡 Why This Project Matters
 
 **This reverse-engineering process strengthened my understanding of:**
 
-* *Distributed system architecture*
-* *Microservices communication patterns*
-* *Container-first application design*
-* *Kubernetes-oriented deployment models*
-* *Service dependency mapping*
-* *Operational considerations in cloud-native environments*
+- *Distributed system architecture*
+- *Microservices communication patterns*
+- *Container-first application design*
+- *Kubernetes-oriented deployment models*
+- *Service dependency mapping*
+- *Operational considerations in cloud-native environments*
 
 **It also established the architectural foundation required for later implementation phases involving containerization, orchestration, GitOps workflows, observability, and infrastructure automation.**
 
