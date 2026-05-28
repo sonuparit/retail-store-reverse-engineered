@@ -4,34 +4,48 @@ This project is a retail store application built using a microservices architect
 
 ## 📑 Table of contents
 
-1. [Implementation Roadmap](#️-implementation-roadmap)
-2. [Overview](#-overview)
-3. [App Architecture](#️-app-architecture-original)
-4. [What I Discovered](#-what-i-discovered)
-5. [Why this design?](#-why-this-design)
-6. [Why This Project Matters](#-why-this-project-matters)
-7. [Next Steps](#-next-steps)
+- [Implementation Roadmap](#️-implementation-roadmap)
+- [Project Navigation](#-project-navigation)
+- [Overview](#-overview)
+- [App Architecture](#️-app-architecture-original)
+- [What I Discovered](#-what-i-discovered)
+- [Why this design?](#-why-this-design)
+- [Why This Project Matters](#-why-this-project-matters)
+- [Next Phase](#-next-phase)
 
 ## 🗺️ Implementation Roadmap
 
-![alt text](./2-Arch.jpg)
+<p align="left">
+  <img src="./2-Arch.jpg" width="80%"/>
+</p>
 
-> [!TIP]
-> 📍 Current Focus: Architectural Understanding
+## 🔗 Project Navigation
 
-### 🔗 Jump to Other Phases
+- [Root Directory](https://github.com/sonuparit/retail-store-reverse-engineered)
 
-- [Source Code Understanding](../../../src-code/)
-- Architectural Understanding ← (📍 You are here )
-- [Docker](../docker/)
-- [Docker Compose](../docker-compose/)
-- [Kubernetes](../kubernetes/)
-  - [Individual Microservice Testing](../kubernetes/ind-svc-test/)
-  - [Helm Templating](../kubernetes/helm-template/)
-  - [Full App Deployment via Helmfile](../kubernetes/helmfile-deploy/)
-  - [Multi Env Deployment via ArgoCD](../kubernetes/argocd-deploy/)
-- [Monitoring & Observability](../../03-observability/)
-- [Production grade GitOps](../../)
+### 📖 Understanding Phase
+
+- [Source Code Understanding](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/src-code)
+- [Architecture Understanding](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/architecture) ← (📍 You are here )
+- [Containerization (Docker)](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/docker)
+- [Docker Compose Orchestration](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/docker-compose)
+
+### ☸️ Kubernetes Implementation Phase
+
+- [Individual Service Testing](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/ind-svc-test)
+  - [Carts](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/ind-svc-test/cart-dynamodb-test)
+  - [Catalog](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/ind-svc-test/catalog-test)
+  - [Checkout](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/ind-svc-test/checkout-test)
+  - [Orders](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/ind-svc-test/orders-postgreSQL-test)
+  - [UI](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/ind-svc-test/ui-test)
+- [Helm Templating](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/helm-template)
+- [Full App Deployment via Helmfile](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/helmfile-deploy)
+- [Multi-Environment GitOps via ArgoCD](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/argocd-deploy)
+
+### 📊 Production & Observability
+
+- [Monitoring & Observability](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/03-observability)
+- [Production-Grade GitOps Workflow](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work)
 
 ## 📌 Overview
 
@@ -101,12 +115,6 @@ The project served as a practical entry point into distributed systems design, c
 
 ---
 
-## 🔧 Next Steps
+## 🔭 Next Phase
 
-1. *Deep dive into **`Dockerfile optimization`** [(read here)](../docker/)*
-2. *Refactor setup for production-ready Docker Compose*
-3. *Implement Kubernetes deployments*
-4. *Add email notification system*
-5. *Build a CI/CD pipeline*
-6. *Integrate monitoring (Prometheus + Grafana)*
-7. *Full Automation via terrafom and GitOps workflows***
+*Containerization with Docker [(read here)](../docker/)*

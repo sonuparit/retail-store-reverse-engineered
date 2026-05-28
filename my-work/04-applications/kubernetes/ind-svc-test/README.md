@@ -2,15 +2,15 @@
 
 *After **`Docker Compose`**, I didn’t directly jump to Kubernetes.*
 
-*Instead, I **`isolated each microservice and tested them individually using custom-written Kubernetes YAML manifests`**.*
+*Instead, I isolated each microservice and tested them individually using custom-written Kubernetes YAML manifests.*
 
-*This helped me **`verify service-level behavior, dependencies, and communication patterns in a better and controlled way`**.*
+*This helped me verify service-level behavior, dependencies, and communication patterns in a better and controlled way.*
 
 Once confident, I moved toward full Kubernetes deployment.
 
 ## 🔗 Individual service deployment
 
-*Individual service **`testing and configs`** are linked below:*
+*Individual service testing and configs are linked below:*
 
 - ### 1. Carts Service *[(know more)](./cart-dynamodb-test/)*
 

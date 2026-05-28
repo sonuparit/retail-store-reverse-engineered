@@ -4,16 +4,17 @@ A hands-on reverse-engineered microservices project focused on understanding pro
 
 ## 📑 Table of Contents
 
-1. [Implementation Roadmap](#️-implementation-roadmap)
-2. [Overview](#-overview)
-3. [Architecture](#️-architecture-original)
-4. [Dockerfile Breakdown](#-dockerfile-breakdown-key-insights)
-5. [What I choose](#-what-i-chose-for-my-project)
-6. [My Contribution](#-my-contribution)
-7. [Key Technical Learnings](#-key-technical-learnings)
-8. [Why This Project Matters](#-why-this-project-matters)
-9. [Next Phase](#-next-phase)
-10. [Screenshots](#-screenshots)
+- [Implementation Roadmap](#️-implementation-roadmap)
+- [Project Navigation](#-project-navigation)
+- [Overview](#-overview)
+- [Architecture](#️-architecture-original)
+- [Dockerfile Breakdown](#-dockerfile-breakdown-key-insights)
+- [What I choose](#-what-i-chose-for-my-project)
+- [My Contribution](#-my-contribution)
+- [Key Technical Learnings](#-key-technical-learnings)
+- [Why This Project Matters](#-why-this-project-matters)
+- [Next Phase](#-next-phase)
+- [Screenshots](#-screenshots)
 
 ## 🗺️ Implementation Roadmap
 
@@ -21,22 +22,33 @@ A hands-on reverse-engineered microservices project focused on understanding pro
   <img src="./3-Docker.jpg" width="80%"/>
 </p>
 
-> [!TIP]
-> 📍 Current Focus: Containerization with Docker
+## 🔗 Project Navigation
 
-### 🔗 Jump to Other Phases
+- [Root Directory](https://github.com/sonuparit/retail-store-reverse-engineered)
 
-- [Source Code Understanding](../../../src-code/)
-- [Architectural Understanding](../architecture/)
-- Containerization (Docker) ← (📍 You are here )
-- [Docker Compose](../docker-compose/)
-- [Kubernetes](../kubernetes/)
-  - [Individual Microservice Testing](../kubernetes/ind-svc-test/)
-  - [Helm Templating](../kubernetes/helm-template/)
-  - [Full App Deployment via Helmfile](../kubernetes/helmfile-deploy/)
-  - [Multi Env Deployment via ArgoCD](../kubernetes/argocd-deploy/)
-- [Monitoring & Observability](../../03-observability/)
-- [Production grade GitOps](../../)
+### 📖 Understanding Phase
+
+- [Source Code Understanding](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/src-code)
+- [Architecture Understanding](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/architecture)
+- [Containerization (Docker)](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/docker) ← (📍 You are here )
+- [Docker Compose Orchestration](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/docker-compose)
+
+### ☸️ Kubernetes Implementation Phase
+
+- [Individual Service Testing](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/ind-svc-test)
+  - [Carts](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/ind-svc-test/cart-dynamodb-test)
+  - [Catalog](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/ind-svc-test/catalog-test)
+  - [Checkout](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/ind-svc-test/checkout-test)
+  - [Orders](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/ind-svc-test/orders-postgreSQL-test)
+  - [UI](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/ind-svc-test/ui-test)
+- [Helm Templating](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/helm-template)
+- [Full App Deployment via Helmfile](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/helmfile-deploy)
+- [Multi-Environment GitOps via ArgoCD](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/argocd-deploy)
+
+### 📊 Production & Observability
+
+- [Monitoring & Observability](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/03-observability)
+- [Production-Grade GitOps Workflow](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work)
 
 ## 📌 Overview
 
@@ -177,16 +189,9 @@ This helped evaluate:
 
 **It also established the foundation for later orchestration, Kubernetes deployments, GitOps workflows, and observability implementation phases.**
 
-## 🚀 Next Phase
+## 🔭 Next Phase
 
-➡️ Continue to:
-
-- Docker Compose orchestration  → [(read here)](../docker-compose/)
-- Helm templating
-- Kubernetes deployments
-- GitOps workflows with ArgoCD
-- Monitoring and observability
-- Production-grade infrastructure automation
+*Docker Compose Orchestration [(read here)](../docker-compose/)*
 
 ------------------------------------------------------------------------
 

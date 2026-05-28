@@ -1,55 +1,97 @@
-# 🚀 PV and PVC for PostgreSQL (From Mock to Production)
+# 🚀 Production-Oriented PostgreSQL Persistence for Orders service
+
+A production-oriented Kubernetes implementation focused on persistent PostgreSQL storage, StatefulSet behavior, and durable cloud-backed data management using Persistent Volumes (PV), Persistent Volume Claims (PVC), and AWS EBS.
 
 ## 📑 Table of Contents
 
-- **[Overview](#-overview)**
-- **[Architectural Decision Record (ADR)](#️-architectural-decision-record--adr)**
-- **[Key Implementations](#-key-implementations)**
-- **[Challenges & Solutions](#️-challenges--solutions)**
-- **[Outcome](#-outcome)**
-- **[Key Learnings](#-key-learnings)**
-- **[Next Steps](#-next-steps)**
-- **[Extra Screenshots](#-extra-screenshots)**
+- [Implementation Roadmap](#️-implementation-roadmap)
+- [Project Navigation](#-project-navigation)
+- [Overview](#-overview)
+- [Architectural Decision](#️-architectural-decision)
+- [Key Implementations](#-key-implementations)
+- [Challenges & Solutions](#️-challenges--solutions)
+- [Outcome](#-outcome)
+- [Key Learnings](#-key-learnings)
+- [Next Phase](#-next-phase)
+- [Extra Screenshots](#-extra-screenshots)
+
+## 🗺️ Implementation Roadmap
+
+<p align="left">
+  <img src="../5-Kubernetes.jpg" width="80%"/>
+</p>
+
+## 🔗 Project Navigation
+
+- [Root Directory](https://github.com/sonuparit/retail-store-reverse-engineered)
+
+### 📖 Understanding Phase
+
+- [Source Code Understanding](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/src-code)
+- [Architecture Understanding](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/architecture)
+- [Containerization (Docker)](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/docker)
+- [Docker Compose Orchestration](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/docker-compose)
+
+### ☸️ Kubernetes Implementation Phase
+
+- [Individual Service Testing](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/ind-svc-test)
+  - [Carts](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/ind-svc-test/cart-dynamodb-test)
+  - [Catalog](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/ind-svc-test/catalog-test)
+  - [Checkout](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/ind-svc-test/checkout-test)
+  - [Orders](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/ind-svc-test/orders-postgreSQL-test) ← (📍 You are here )
+  - [UI](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/ind-svc-test/ui-test)
+- [Helm Templating](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/helm-template)
+- [Full App Deployment via Helmfile](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/helmfile-deploy)
+- [Multi-Environment GitOps via ArgoCD](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/argocd-deploy)
+
+### 📊 Production & Observability
+
+- [Monitoring & Observability](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/03-observability)
+- [Production-Grade GitOps Workflow](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work)
 
 ## 📌 Overview
 
-*This section of project demonstrates the **`transition from in-memory mock storage to a real persistent PostgreSQL Database`** within a microservices-based retail application.*
+*This implementation focused on transitioning the Orders service from ephemeral mock storage to a production-oriented PostgreSQL persistence architecture within Kubernetes.*
 
-*The **`goal is to move closer to a production-ready architecture`** by replacing simulated components with actual cloud services, however I **`got several errors`** in the process, but finally I **`fixed them all`**.*
+*The primary objective was to validate durable storage behavior, StatefulSet orchestration patterns, and cloud-backed persistence using AWS EBS-integrated Persistent Volumes and Persistent Volume Claims.*
 
-------------------------------------------------------------------------
+## 🏛️ Architectural Decision
 
-## 🏛️ Architectural Decision Record 📝 (ADR)
+### RabbitMQ
 
-### Rabbitmq:
+RabbitMQ integration was intentionally excluded to reduce unnecessary stateful infrastructure complexity during this implementation phase.
 
-- *From the very start of this project. My focus was to achieve deep proficiency in **`Docker`**, **`IaC (Terraform)`**, **`Kubernetes orchestration`**, **`CI/CD pipeline`**, **`Monitoring`** and **`Automation`**. By removing the message broker, I reduced unnecessary stateful complexity, allowing me to focus entirely on my initial goal*.
+The primary focus remained on:
 
-### The Decision:
+- Kubernetes orchestration
+- persistent storage behavior
+- infrastructure automation
+- CI/CD workflows
+- operational reliability
 
-- *I chose to keep the application logic synchronous to my **`GOAL`** to ensure the **`"one click - full automation"`** remains the star of the show.*
+### The Decision
 
-### PostgreSQL (PV & PVC):
+- *I chose to keep the application logic synchronous to my `GOAL` to ensure the fully automated infrastructure workflows remains the star of the show.*
 
-- *Order data requires persistence, instead of losing records when the cluster is destroyed, I **`implemented PV and PVC backed by external EBS`** for durable storage.*
+### PostgreSQL (PV & PVC)
 
-### The Decision:
+Order-related data required durable persistence beyond pod or cluster lifecycle events. To support production-oriented storage behavior, AWS EBS-backed Persistent Volumes and Persistent Volume Claims were implemented for PostgreSQL state management.
+
+### The Decision
 
 - *Adopted **`persistent PostgreSQL`** storage for the orders service.*
 
-------------------------------------------------------------------------
-
 ## 🔧 Key Implementations
 
--   *Created all resources for **`Orders`** service*
+- *Created all resources for **`Orders`** service*
 
     ![alt text](screenshots/screenshot20.png)
 
--   *Replaced in-memory / local postgreSQL image storage with **`persistent PostgreSQL database storage`***
+- *Replaced in-memory / local postgreSQL image storage with **`persistent PostgreSQL database storage`***
 
     ![alt text](screenshots/screenshot15.png)
 
--   *Attached EBS volume to **`persist the data after cluster dispose`** using **`PV and PVC`***
+- *Attached EBS volume to **`persist the data after cluster dispose`** using **`PV and PVC`***
 
     ![alt text](screenshots/screenshot02.png)
 
@@ -57,22 +99,22 @@
 
     ![alt text](screenshots/screenshot14.png)
 
--   *Implemented correct **`fsgroup`** permission for **`PostgreSQL container`** to have read / write access to EBS volume*
+- Implemented Pod-level `fsGroup` security context configuration to ensure PostgreSQL containers received correct read/write permissions on attached EBS-backed storage volumes
 
     ![alt text](screenshots/screenshot19.png)
 
--   *Implemented **`PGDATA`** env variable variable to mitigate **`drive not empty`**) error*
+- *Implemented **`PGDATA`** env variable variable to mitigate **`drive not empty`**) error*
 
 ------------------------------------------------------------------------
 
 ## ⚠️ Challenges & Solutions
 
-### Problem:
+### Problem
 
 ***PostgreSQL Initialization Failure on EBS Volumes:***\
 *While implementing persistent storage for the orders-db service using AWS EBS volumes, the PostgreSQL container failed to initialize with the following error:*
 
-```
+```bash
 initdb: error: directory "/var/lib/postgresql/data" exists but is not empty (lost+found found)
 ```
 
@@ -81,13 +123,13 @@ initdb: error: directory "/var/lib/postgresql/data" exists but is not empty (los
 - ***Technical Root Cause:***\
 *Block Storage Metadata: AWS EBS volumes (ext4/xfs) automatically include a lost+found directory at the mount point root.*
 
-- ***PostgreSQL Pickiness:***\
+- ***PostgreSQL Initialization Constraints:***\
 *The initdb utility requires a completely empty directory to initialize a new database cluster to prevent accidental data overwrites.*
 
 - ***Permission Mismatch:***\
 *By default, EBS volumes are mounted with root ownership, preventing the postgres user (UID 999) from creating sub-directories.*
 
-### The Engineered Solution:
+### The Engineered Solution
 
 ***I resolved this by implementing a two-tier configuration strategy in the Kubernetes `StatefulSet`:***
 
@@ -120,54 +162,49 @@ initdb: error: directory "/var/lib/postgresql/data" exists but is not empty (los
 
 ## ✅ Outcome
 
-***`Zero-Touch Persistence`**:*\
-*Successfully **`integrated AWS EBS`** with a StatefulSet, ensuring database records survive Pod restarts or node failures without manual data recovery.*
+**Zero-Touch Persistence:**\
+*Successfully integrated AWS EBS with a StatefulSet, ensuring database records survive Pod restarts or node failures without manual data recovery.*
 
-***`Resolved Storage Collisions`**:*\
-*Automated the bypass of the lost+found block storage error by reconfiguring the **`PGDATA path`**, allowing for seamless automated database initialization.*
+**Resolved Storage Collisions:**\
+*Automated the bypass of the lost+found block storage error by reconfiguring the `PGDATA` path, allowing for seamless automated database initialization.*
 
-***`Infrastructure-as-Code Security`**:*\
-*Implemented Pod-level Security Contexts (fsGroup), enforcing the **`Principle of Least Privilege`** by ensuring the container only accesses necessary storage volumes without requiring root permissions.*
+**Infrastructure-as-Code Security:**\
+*Implemented Pod-level Security Contexts (fsGroup), enforcing the Principle of Least Privilege by ensuring the container only accesses necessary storage volumes without requiring root permissions.*
 
-***`Production-Ready Stability`**:*\
+**Production-Ready Stability:**\
 *Achieved a stable "Ready" state for the retail-app data tier, handling the complex handshake between AWS infrastructure and Kubernetes storage primitives.*
 
 ![alt text](screenshots/screenshot25.png)
 
-------------------------------------------------------------------------
-
 ## 💡 Key Learnings
 
-*Moving from a stateless mock environment to a persistent production-grade architecture taught me that the **`"devil is in the details"`** of the infrastructure handshake. Here are my core takeaways:*
+*Moving from a stateless mock environment to a persistent production-grade architecture taught me that the `devil is in the details` of the infrastructure handshake. Here are my core takeaways:*
 
-**1. Decoupling Storage from Logic**
-- *I learned that managing state in Kubernetes isn't just about attaching a disk.Iit’s about managing the lifecycle of data. **`Implementing PVs and PVCs`** taught me how to abstract physical storage (AWS EBS) from the application pods, ensuring data outlives the compute.*
+**1. Decoupling Storage from Logic:**
+
+- *I learned that managing state in Kubernetes isn't just about attaching a disk.Iit’s about managing the lifecycle of data. Implementing PVs and PVCs taught me how to abstract physical storage (AWS EBS) from the application pods, ensuring data outlives the compute.*
 
 **2. Navigating the "Impedance Mismatch" of Cloud Storage:**
-- *The **`lost+found error`** was a masterclass in how Linux filesystems and database engines interact. I learned that production-ready configurations require a deep understanding of how tools like **`initdb`** behave, leading me to use **`PGDATA`** sub-directories as a standard practice for clean initializations.*
+
+- *The `lost+found error` was a masterclass in how Linux filesystems and database engines interact. I learned that production-ready configurations require a deep understanding of how tools like `initdb` behave, leading me to use `PGDATA` sub-directories as a standard practice for clean initializations.*
 
 **3. Security-First Infrastructure:**
-- *My experience with fsGroup reinforced the importance of the **`Principle of Least Privilege`**. I realized that solving **"Permission Denied"** errors by using **chmod 777** is a debt-heavy shortcut. Instead, I focused on using Kubernetes Security Contexts to handle volume ownership gracefully and securely.*
 
-**4. StatefulSet Nuances**
-- *Working with PostgreSQL in K8s highlighted **`why StatefulSets are preferred over Deployments for databases`**. I gained a better grasp of stable network identifiers and the necessity of ordered, graceful deployments when dealing with persistent data.*
+- *My experience with fsGroup reinforced the importance of the Principle of Least Privilege. I realized that solving Permission Denied errors by using `chmod 777` is a debt-heavy shortcut. Instead, I focused on using Kubernetes Security Contexts to handle volume ownership gracefully and securely.*
 
-**6. Production-Oriented Thinking over Local Success**
-- *Transitioned from **“it work`**s locally”** to **`“it survives restarts, failures, and redeployments,”`** focusing on durability, reproducibility, and zero-touch recovery.*
+**4. StatefulSet Nuances:**
+
+- *Working with PostgreSQL in K8s highlighted why StatefulSets are preferred over Deployments for databases. I gained a better grasp of stable network identifiers and the necessity of ordered, graceful deployments when dealing with persistent data.*
+
+**6. Production-Oriented Thinking over Local Success:**
+
+- *Transitioned from it works locally to it survives restarts, failures, and redeployments, focusing on durability, reproducibility, and zero-touch recovery.*
 
 ![alt text](screenshots/screenshot28.png)
 
-------------------------------------------------------------------------
+## 🔭 Next Phase
 
-## 🚀 Next Steps
-
-1. *Full app deployment on **`Kubernetes`** [(know here)](../../)*
-2. *IaC Provisioning via **`Terraform`***
-3. *Implement **`CI/CD`** pipeline*
-4. *Add **`email notification`** system*
-5. *Add monitoring (**`Prometheus + Grafana`**)*
-6. *Full Automation via one command **`terraform apply`** on **`AWS EKS`***
-
+*UI Service testing and deployment [(read here)](../ui-test/)*
 
 ## 📸 Extra Screenshots
 

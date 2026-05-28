@@ -1,80 +1,107 @@
-# 🚀 UI Service Solo Testing
-*Removed **`Kubernetes-specific environment flags`** to keep the application agnostic of its runtime environment*
+# 🚀 Production-Oriented Validation of the UI Service
+
+A production-oriented Kubernetes implementation focused on validating environment-agnostic service behavior, separating observability concerns from application logic, and simplifying runtime dependencies within a microservices architecture.
 
 ## 📑 Table of Contents
 
-- **[Overview](#-overview)**
-- **[Architectural Decision Record (ADR)](#️-architectural-decision-record--adr)**
-- **[Key Implementations](#-key-implementations)**
-- **[Challenges & Solutions](#️-challenges--solutions)**
-- **[Outcome](#-outcome)**
-- **[Key Learnings](#-key-learnings)**
-- **[Next Steps](#-next-steps)**
-- **[Extra Screenshots](#-extra-screenshots)**
+- [Implementation Roadmap](#️-implementation-roadmap)
+- [Project Navigation](#-project-navigation)
+- [Overview](#-overview)
+- [Architectural Decision](#️-architectural-decision)
+- [Key Implementations](#-key-implementations)
+- [Challenges & Solutions](#️-challenges--solutions)
+- [Outcome](#-outcome)
+- [Key Learnings](#-key-learnings)
+- [Next Phase](#-next-phase)
+- [Extra Screenshots](#-extra-screenshots)
 
+## 🗺️ Implementation Roadmap
+
+<p align="left">
+  <img src="../5-Kubernetes.jpg" width="80%"/>
+</p>
+
+## 🔗 Project Navigation
+
+- [Root Directory](https://github.com/sonuparit/retail-store-reverse-engineered)
+
+### 📖 Understanding Phase
+
+- [Source Code Understanding](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/src-code)
+- [Architecture Understanding](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/architecture)
+- [Containerization (Docker)](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/docker)
+- [Docker Compose Orchestration](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/docker-compose)
+
+### ☸️ Kubernetes Implementation Phase
+
+- [Individual Service Testing](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/ind-svc-test)
+  - [Carts](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/ind-svc-test/cart-dynamodb-test)
+  - [Catalog](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/ind-svc-test/catalog-test)
+  - [Checkout](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/ind-svc-test/checkout-test)
+  - [Orders](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/ind-svc-test/orders-postgreSQL-test)
+  - [UI](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/ind-svc-test/ui-test) ← (📍 You are here )
+- [Helm Templating](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/helm-template)
+- [Full App Deployment via Helmfile](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/helmfile-deploy)
+- [Multi-Environment GitOps via ArgoCD](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/04-applications/kubernetes/argocd-deploy)
+
+### 📊 Production & Observability
+
+- [Monitoring & Observability](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work/03-observability)
+- [Production-Grade GitOps Workflow](https://github.com/sonuparit/retail-store-reverse-engineered/tree/main/my-work)
 
 ## 📌 Overview
 
-*While reverse engineering this retail microservices app, I focused on understanding **`service interactions, persistence strategies, and deployment`** across Docker and Kubernetes.*
+*This implementation focused on validating the UI service within Kubernetes while intentionally separating runtime observability concerns from application-layer logic.*
 
-*Instead of replicating everything blindly, I made **`selective architectural decisions`**—keeping implementations that added real learning value (**`DynamoDB for Cart, PostgreSQL for Orders`**) and removing redundant ones.*
+*The primary objective was to maintain an environment-agnostic application design and shift infrastructure visibility responsibilities toward dedicated observability tooling.*
 
-*This approach helped me stay **`focused on orchestration, system behavior, and production-relevant trade-offs`**.*
-
-------------------------------------------------------------------------
-
-## 🏛️ Architectural Decision Record 📝 (ADR)
+## 🏛️ Architectural Decision
 
 ***Context:***
 
-*The UI service relied on environment-based auto-detection using runtime variables to identify its execution environment. While functional, **`this mixed observability concerns with the application code`**, which I prefer to keep separate*
+*The UI service relied on environment-based auto-detection using runtime variables to identify its execution environment. While functional, `this mixed observability concerns with the application code`, which I prefer to keep separate*
 
 ***Rationale:***
 
-- *Application should not be **`aware of its execution environment`***
+- *Application should not be `aware of its execution environment`*
 - *Mixing application logic with observability increases unnecessary complexity and state management.*
-- ***`Results in mixed logs that don’t directly relate to each other`**.*
+- *Results in mixed logs that don’t directly relate to each other*
 - *Better to use tools like **`Prometheus`** to maintain separation of concerns*
 - *Can be good for local development.*
 
-### The Decision:
-*Removed the internal metadata provider to later implement **`Prometheus-based service discovery`**, offloading observability to the infrastructure layer where it belongs.*
+### The Decision
 
-------------------------------------------------------------------------
+*Removed the internal metadata provider to later implement **`Prometheus-based service discovery`**, offloading observability to the infrastructure layer where it belongs.*
 
 ## 🔧 Key Implementations
 
-*Analyzed from top to bottom for dependencies to check their behaviour in K8s environment*
+*Analyzed application runtime dependencies and infrastructure-awareness patterns within Kubernetes environments.*
 
--   ***`Removed all env variables`** to make application agnostic of its runtime environment*
+- *Removed environment-detection variables to preserve application-level environment abstraction*
 
     ![alt text](screenshots/screenshot07.png)
 
--   *Created all deployment resources.*
+- *Created and validated all required Kubernetes deployment resources*
 
     ![alt text](screenshots/screenshot08.png)
 
-------------------------------------------------------------------------
-
 ## ⚠️ Challenges & Solutions
 
-*The main challenge was to understand the application from its root, so I could analyze the behavior of the code and the actions it performs. Initially, I was unaware of the code’s underlying abstraction layers, which was performing an auto scan to identify the environment it was running in.*
+The primary challenge involved identifying hidden abstraction layers responsible for runtime environment introspection and understanding how infrastructure-awareness was embedded within application behavior.
 
 ***My approach:***
 
--   *Analyzed source code, to better understand the code behavior (**`KuernetesMetadataProvider.java`**)*
+- *Analyzed source code, to better understand the code behavior (**`KubernetesMetadataProvider.java`**)*
 
     ![alt text](screenshots/screenshot03.png)
 
--   ***`Removed all env variables`** that were responsible for environment extraction*
-
-------------------------------------------------------------------------
+- Removed runtime environment-detection variables responsible for infrastructure introspection behavior
 
 ## ✅ Outcome
 
-*As a result, I developed a clear understanding of the **`system’s architecture, execution flow, and underlying abstractions`**, enabling me to make informed design decisions.*
+*Successfully validated the UI service within Kubernetes while maintaining an environment-agnostic runtime model.*
 
-------------------------------------------------------------------------
+*This implementation improved separation of concerns by decoupling infrastructure observability behavior from application-layer logic and reinforced cleaner operational architecture boundaries.*
 
 ## 💡 Key Learnings
 
@@ -84,19 +111,11 @@
 
 - *Learned to **`validate systems incrementally`** — testing services in isolation before full orchestration improved reliability and debugging clarity.*
 
-- *Gianed **`hands-on experience in reverse engineering systems`** — an invaluable skill for translating legacy applications into scalable microservices architectures.*
+- *Gained **`hands-on experience in reverse engineering systems`** — an invaluable skill for translating legacy applications into scalable microservices architectures.*
 
-------------------------------------------------------------------------
+## 🔭 Next Phase
 
-## 🚀 Next Steps
-
-1. *Full app deployment on **`Kubernetes`** [(know here)](../../)*
-2. *IaC Provisioning via **`Terraform`***
-3. *Implement **`CI/CD`** pipeline*
-4. *Add **`email notification`** system*
-5. *Add monitoring (**`Prometheus + Grafana`**)*
-6. *Full Automation via one command **`terraform apply`** on **`EKS`***
-
+*Helm templating all micro services [(read here)](../../helm-template/)*
 
 ## 📸 Extra Screenshots
 
@@ -108,6 +127,6 @@
 
     ![alt text](screenshots/screenshot01.png)
 
--   Result:
+- Result:
 
     ![alt text](screenshots/screenshot02.png)
