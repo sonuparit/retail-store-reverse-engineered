@@ -126,6 +126,27 @@ repo*
   - **`Identifying and debugging issues at the service level`**
   - ***`Avoiding compounded errors`** during full-stack deployment*
   - ***`Improving deployment confidence and reliability`***
+  
+### 🌍 Multi-Environment Values Architecture
+
+- *Separated environment-specific configurations using values files*
+
+  Examples:
+
+  ```bash
+  values/
+  ├── kind-values.yml
+  └── eks-values.yml
+  ```
+
+- *This allowed deploying the same application across different infrastructures without modifying templates*
+
+**Benefits:**
+
+- *Cleaner deployments*
+- *Better scalability*
+- *Environment portability*
+- *Production-readiness*
 
 ### ✅ Result
 
