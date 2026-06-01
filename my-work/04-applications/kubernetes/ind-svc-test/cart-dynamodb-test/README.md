@@ -4,8 +4,13 @@ A production-oriented Kubernetes implementation focused on validating real cloud
 
 ## 📑 Table of Contents
 
+**🧭 Navigation:**
+
 - [Implementation Roadmap](#️-implementation-roadmap)
 - [Project Navigation](#-project-navigation)
+
+**📘 Project Documentation:**
+
 - [Overview](#-overview)
 - [Tech Stack](#-tech-stack)
 - [Source Code Analysis](#️️-source-code-analysis)

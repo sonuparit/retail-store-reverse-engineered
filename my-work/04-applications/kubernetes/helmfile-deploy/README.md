@@ -4,8 +4,13 @@ Production-oriented multi-service Kubernetes deployment architecture using Helm 
 
 ## 📑 Table of Contents
 
+**🧭 Navigation:**
+
 - [Implementation Roadmap](#️-implementation-roadmap)
 - [Project Navigation](#-project-navigation)
+
+**📘 Project Documentation:**
+
 - [Overview](#-overview)
 - [Repository Structure](#-repository-structure)
 - [Deployment Guide](#-deployment-guide)
@@ -20,7 +25,7 @@ Production-oriented multi-service Kubernetes deployment architecture using Helm 
 ## 🗺️ Implementation Roadmap
 
 <p align="left">
-  <img src="../5-Kubernetes.jpg" width="80%"/>
+  <img src="./7-Kubernetes.jpg" width="80%"/>
 </p>
 
 ## 🔗 Project Navigation

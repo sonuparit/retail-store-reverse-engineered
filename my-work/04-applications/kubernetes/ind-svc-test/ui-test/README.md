@@ -4,8 +4,13 @@ A production-oriented Kubernetes implementation focused on validating environmen
 
 ## 📑 Table of Contents
 
+**🧭 Navigation:**
+
 - [Implementation Roadmap](#️-implementation-roadmap)
 - [Project Navigation](#-project-navigation)
+
+**📘 Project Documentation:**
+
 - [Overview](#-overview)
 - [Core Implementation](#️-core-implementation)
 - [Architectural Decisions](#️-architectural-decisions)

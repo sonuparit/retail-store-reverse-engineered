@@ -4,8 +4,13 @@ Production-oriented Helm templating implementation for a reverse-engineered reta
 
 ## 📑 Table of Contents
 
+**🧭 Navigation:**
+
 - [Implementation Roadmap](#️-implementation-roadmap)
 - [Project Navigation](#-project-navigation)
+
+**📘 Project Documentation:**
+
 - [Overview](#-overview)
 - [Project Structure](#️-project-structure)
 - [What This Project Demonstrates](#-what-this-project-demonstrates)
@@ -51,14 +56,19 @@ Production-oriented Helm templating implementation for a reverse-engineered reta
 
 ## 📖 Overview
 
-*This project demonstrates building a complete Kubernetes deployment system using **Helm templating from scratch** for a retail microservices application.*
+*This project demonstrates building a complete Kubernetes deployment system using Helm templating from **scratch** for a retail microservices application.*
 
-*The goal was to move away from repetitive raw Kubernetes manifests and build a more **modular, reusable, scalable, and production-oriented deployment architecture**.*
+*The goal was to move away from repetitive raw Kubernetes manifests and build a more modular, reusable, scalable, and production-oriented deployment architecture.*
 
 ## 🏗️ Project Structure
 
+> [!NOTE]
+> Keeping identical versions of the same files across multiple directories introduced unnecessary duplication.
+>
+> The repository structure moved into helfile-deploy directory. → [(here)](../helmfile-deploy/)
+
 ```bash
-helm-templating/
+charts
 ├── carts
 |   ├── templates
 │   ├── Chart.yaml

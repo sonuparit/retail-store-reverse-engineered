@@ -21,7 +21,7 @@ This implementation focuses on production-oriented Kubernetes observability prac
 - [Challenges & Solutions](#️-challenges--solutions)
 - [Operational Outcomes](#-operational-outcomes)
 - [Key Learnings](#-key-learnings)
-- [Future Improvements](#-future-improvements)
+- [Next Phase](#-next-phase)
 - [Screenshots](#-screenshots)
 
 ## 🗺️ Implementation Roadmap
@@ -483,12 +483,9 @@ The implementation focuses on:
 - Improved observability design through structured labeling and metadata enrichment
 - Strengthened troubleshooting methodology through runtime validation and telemetry analysis
 
-## ⭐ Future Improvements
+## 🔭 Next Phase
 
-- EKS deployment
-- Terraform provisioning
-- Distributed tracing integration
-- Automated backup and disaster recovery workflows
+*Production GitOps with ArgoCD [(read here)](../)*
 
 ## 📸 Screenshots
 

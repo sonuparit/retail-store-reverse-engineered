@@ -4,8 +4,13 @@ This project is a retail store application built using a microservices architect
 
 ## 📑 Table of contents
 
+**🧭 Navigation:**
+
 - [Implementation Roadmap](#️-implementation-roadmap)
 - [Project Navigation](#-project-navigation)
+
+**📘 Project Documentation:**
+
 - [Overview](#-overview)
 - [Architecture](#️-architecture-original)
 - [What I Discovered](#-what-i-discovered)
