@@ -69,8 +69,8 @@ before integrating the services into a complete multi-service Kubernetes environ
 
 | Service | Purpose | Documentation |
 |---------|---------|---------------|
+| Carts | Shopping cart APIs | [Open](./cart-dynamodb-test) |
 | Catalog | Product APIs | [Open](./catalog-test) |
-| Cart | Shopping cart APIs | [Open](./cart-dynamodb-test) |
 | Checkout | Checkout orchestration | [Open](./checkout-test) |
 | Orders | Order persistence | [Open](./orders-postgreSQL-test) |
 | UI | Frontend integration | [Open](./ui-test) |
